@@ -26,7 +26,7 @@ Skills live in `ai-specs/skills/`. When a request matches a skill's description,
 Available skills:
 - `ai-specs/skills/enrich-us/SKILL.md` — enrich a vague user story before planning
 - `ai-specs/skills/using-git-worktrees/SKILL.md` — isolated workspace per feature
-- `ai-specs/skills/code-auditing/SKILL.md` — systematic 6-phase code audit
+- `ai-specs/skills/code-auditing/SKILL.md` — systematic 7-phase code audit
 - `ai-specs/skills/commit/SKILL.md` — conventional commits and PR creation
 
 ## Custom commands (OpenCode)
@@ -39,7 +39,7 @@ The following custom commands are defined in `opencode.json` for the SSD workflo
 | `/plan-change TICKET-ID` | Generate OpenSpec specs and tasks from a ticket |
 | `/apply TICKET-ID` | Implement tasks from OpenSpec artifacts (TDD) |
 | `/verify TICKET-ID` | Validate implementation against OpenSpec scenarios |
-| `/adversarial-review` | Systematic 6-phase code quality audit |
+| `/adversarial-review` | Systematic 7-phase code quality audit |
 | `/archive TICKET-ID` | Archive OpenSpec artifacts for the completed change |
 | `/commit` | Create conventional commits and pull request |
 

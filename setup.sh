@@ -8,6 +8,7 @@ echo "🔧 Zavando Specboot — Setup SSD"
 echo "================================"
 
 # Crear symlinks para compatibilidad multi-agente
+echo ""
 echo "→ Creando symlinks y verificando archivos de agente..."
 
 # AGENTS.md es el archivo de instrucciones principal para OpenCode/Codex
@@ -18,12 +19,16 @@ mkdir -p .claude
 if [ ! -L ".claude/skills" ]; then
   ln -s ../ai-specs/skills .claude/skills
   echo "  ✓ .claude/skills → ai-specs/skills"
+else
+  echo "  ✓ .claude/skills (ya existe)"
 fi
 
 # .claude/agents → ai-specs/agents
 if [ ! -L ".claude/agents" ]; then
   ln -s ../ai-specs/agents .claude/agents
   echo "  ✓ .claude/agents → ai-specs/agents"
+else
+  echo "  ✓ .claude/agents (ya existe)"
 fi
 
 # .cursor/rules → ai-specs (Cursor)
@@ -31,6 +36,8 @@ mkdir -p .cursor
 if [ ! -L ".cursor/rules" ]; then
   ln -s ../ai-specs .cursor/rules
   echo "  ✓ .cursor/rules → ai-specs"
+else
+  echo "  ✓ .cursor/rules (ya existe)"
 fi
 
 # Verificar estructura
@@ -66,9 +73,60 @@ for f in "${FILES[@]}"; do
   fi
 done
 
+# Verificar placeholders comunes (no deben existir en un proyecto personalizado)
+echo ""
+echo "→ Verificando configuración personalizada..."
+
+PLACEHOLDERS=(
+  "\[definir stack"
+  "\[Clean Architecture"
+  "\[descripción del dominio"
+  "\[nombre del cliente"
+  "\[definir stack del proyecto"
+)
+
+PLACEHOLDER_FOUND=false
+for placeholder in "${PLACEHOLDERS[@]}"; do
+  if grep -rqE "$placeholder" docs/ 2>/dev/null; then
+    echo "  ⚠️  Placeholder encontrado: $placeholder"
+    grep -rlE "$placeholder" docs/ | while read -r file; do
+      echo "      → $file"
+    done
+    PLACEHOLDER_FOUND=true
+  fi
+done
+
+if [ "$PLACEHOLDER_FOUND" = true ]; then
+  echo ""
+  echo "⚠️  ATENCIÓN: Se detectaron placeholders sin reemplazar."
+  echo "   Ejecuta los pasos de personalización en el README (sección 8)."
+  echo "   Archivos afetados: docs/base-standards.md, docs/backend-standards.md, docs/frontend-standards.md"
+else
+  echo "  ✓ Sin placeholders detectados"
+fi
+
+# Verificar que opencode.json tenga un model válido
+echo ""
+echo "→ Verificando opencode.json..."
+
+if grep -q '"model": "deepseek-v4-flash-free"' opencode.json 2>/dev/null; then
+  echo "  ⚠️  opencode.json usa el model por defecto (deepseek-v4-flash-free)"
+  echo "   Considera cambiarlo por tu modelo preferido en la sección 'model'"
+else
+  echo "  ✓ Model personalizado detectado"
+fi
+
 echo ""
 if [ "$ALL_OK" = true ]; then
-  echo "✅ Setup completo. Próximos pasos:"
+  echo "✅ Setup completo."
+
+  if [ "$PLACEHOLDER_FOUND" = true ]; then
+    echo ""
+    echo "⚠️  Recuerda personalizar los archivos docs/ antes de comenzar."
+  fi
+
+  echo ""
+  echo "Próximos pasos:"
   echo "   1. Editar docs/base-standards.md con el stack del proyecto"
   echo "   2. Editar docs/backend-standards.md y docs/frontend-standards.md"
   echo "   3. Actualizar opencode.json con el modelo y reglas del proyecto"
