@@ -78,6 +78,8 @@ opencode
 ├── opencode.json                  # ⚙️ EDITAR SOLO model
 ├── Makefile                       # CI stack-agnostic: make install/lint/test/build/audit/commitlint
 ├── specboot.sh                    # Setup + validación SSD (--init / --ci)
+├── check-refs.sh                  # Validación de integridad referencial ({file:...})
+├── tests/                         # Tests del template (bash check-refs-test.sh)
 ├── .env.example                   # Template de variables entorno
 ├── .commitlintrc.json             # Conventional commits enforced
 └── README.md                      # Este archivo
@@ -222,6 +224,9 @@ Ejecuta `bash specboot.sh --ci` para validar la configuración en modo CI (sin e
 # Validación estricta para CI (exit 1 si hay errores)
 bash specboot.sh --ci
 
+# Integridad referencial: {file:...} en opencode.json y SKILL.md
+bash check-refs.sh
+
 # Setup local: crea symlinks y verifica estructura
 bash specboot.sh --init
 
@@ -234,6 +239,7 @@ bash specboot.sh --help
 ✅ Detecta placeholders sin reemplazar
 ✅ Valida JSON de opencode.json
 ✅ Verifica skills y ejemplos
+✅ Verifica integridad referencial de {file:...} (check-refs.sh)
 
 ## FAQ
 

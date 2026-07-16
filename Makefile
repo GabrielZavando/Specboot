@@ -7,7 +7,7 @@
 # To customize for your stack, adjust the commands inside each target or add a
 # new branch to the STACK detection below.
 
-.PHONY: help install lint test build audit commitlint
+.PHONY: help install lint test build audit commitlint refs
 
 # Detect the active stack from its manifest file.
 STACK := $(shell \
@@ -40,6 +40,7 @@ lint: ## Lint and static analysis (stack-specific)
 	  rust)   cargo clippy -- -D warnings ;; \
 	  *)      bash specboot.sh --ci ;; \
 	esac
+	@$(MAKE) refs
 
 test: ## Run the test suite (stack-specific)
 	@case "$(STACK)" in \
@@ -50,6 +51,7 @@ test: ## Run the test suite (stack-specific)
 	  rust)   cargo test ;; \
 	  *)      echo "test: no stack detected — add your test command" ;; \
 	esac
+	@$(MAKE) refs
 
 build: ## Build the project (stack-specific)
 	@case "$(STACK)" in \
@@ -73,3 +75,6 @@ audit: ## Security audit (stack-specific)
 
 commitlint: ## Lint commit messages (stack-independent)
 	npx commitlint --from HEAD~1 --to HEAD --verbose
+
+refs: ## Check referential integrity of {file:...} references
+	bash check-refs.sh

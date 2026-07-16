@@ -46,6 +46,7 @@ REQUIRED_FILES=(
   "opencode.json"
   "LICENSE"
   "specboot.sh"
+  "check-refs.sh"
   "README.md"
   "docs/base-standards.md"
   "docs/backend-standards.md"
@@ -235,6 +236,11 @@ check_ci_cd() {
   fi
 }
 
+check_refs() {
+  echo "→ Verificando integridad referencial (check-refs.sh)..."
+  bash check-refs.sh || ERRORS=$((ERRORS + 1))
+}
+
 print_summary() {
   echo ""
   echo "================================"
@@ -304,6 +310,8 @@ run_ci() {
   check_git_hooks
   echo ""
   check_ci_cd
+  echo ""
+  check_refs
   echo ""
   print_summary
 
