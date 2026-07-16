@@ -271,6 +271,8 @@ de cambios vive en `CHANGELOG.md` (formato Keep a Changelog).
 
 **¿Puedo usar esto con proyecto existente?** Sí. Copia el template y ejecuta los pasos de personalización.
 
+**¿Funciona en Windows?** Sí, pero los symlinks requieren permiso. Habilita **Developer Mode** (Configuración → Para desarrolladores → Modo de desarrollador) y ejecuta `git config --global core.symlinks true` para que `bash specboot.sh --init` cree symlinks reales. Si no están disponibles, `specboot.sh` aplica un **fallback a copia** (copia los archivos en vez de enlazarlos), así el proyecto funciona sin fallos silenciosos. Nota: la copia es una instantánea estática; al actualizar con `update.sh` se re-copia.
+
 ---
 
 ## 📄 Licencia

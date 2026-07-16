@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Documentar que `.cursor/rules` expone `ai-specs/` como contexto pasivo (sin `.mdc`), aclarando la brecha entre agnosticismo de contenido y de comportamiento (base-standards.md §6, README FAQ).
+- specboot.sh: fallback a copia cuando los symlinks no están disponibles (Windows sin Developer Mode / core.symlinks), evitando fallos silenciosos; documentar el prerequisito de symlinks en Windows (base-standards.md §6, README FAQ).
 
 ## [0.1.0] - 2026-07-16
 

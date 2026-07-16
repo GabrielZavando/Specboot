@@ -8,9 +8,12 @@
 #   bash specboot.sh --ci     Validate configuration for CI (no side effects, strict exit codes)
 #   bash specboot.sh --help   Show this help
 
-# Run from the repository root regardless of the invocation directory.
+# Resolve the script directory; only change cwd when executed directly
+# (not when sourced for tests).
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+  cd "$SCRIPT_DIR"
+fi
 
 # Do NOT use 'set -e': this script counts errors/warnings and must keep running.
 set -uo pipefail
@@ -133,11 +136,25 @@ create_symlinks() {
     link="${entry%%:*}"
     target="${entry##*:}"
     mkdir -p "$(dirname "$link")"
-    if [ ! -L "$link" ]; then
-      ln -s "$target" "$link"
+    if [ -L "$link" ]; then
+      echo "  ✓ $link (ya existe como symlink)"
+    elif [ -e "$link" ]; then
+      echo "  ℹ $link ya existe (no symlink); se conserva"
+    elif ln -s "$target" "$link" 2>/dev/null && [ -L "$link" ]; then
       echo "  ✓ $link → $target"
     else
-      echo "  ✓ $link (ya existe)"
+      # Symlinks unavailable (e.g., Windows sin Developer Mode / core.symlinks).
+      # Fall back to a copy so the project still works (static snapshot, not live).
+      # Resolve the target relative to the link's parent dir: unlike ln, cp does
+      # not interpret the source relative to the destination.
+      link_parent="$(dirname "$link")"
+      src="$(cd "$link_parent/$target" 2>/dev/null && pwd)"
+      rm -rf "$link"
+      if [ -n "$src" ] && cp -R "$src" "$link" 2>/dev/null; then
+        echo "  ⚠ $link → $target (copia: symlinks no disponibles)"
+      else
+        echo "  ✗ No se pudo crear $link (ni symlink ni copia)"
+      fi
     fi
   done
 }
@@ -148,8 +165,12 @@ check_symlinks() {
   for entry in "${SYMLINKS[@]}"; do
     link="${entry%%:*}"
     target="${entry##*:}"
-    if [ -L "$link" ] && [ -e "$link" ]; then
-      pass "$link → $target"
+    if [ -e "$link" ]; then
+      if [ -L "$link" ]; then
+        pass "$link → $target (symlink)"
+      else
+        pass "$link → $target (copia)"
+      fi
     else
       fail "$link (roto o inexistente)"
     fi
@@ -341,9 +362,11 @@ show_help() {
 # ---------------------------------------------------------------------------
 # Argument parsing
 # ---------------------------------------------------------------------------
-case "${1:-}" in
-  --init) run_init ;;
-  --ci)   run_ci ;;
-  --help|-h|"") show_help ;;
-  *) echo "Opción desconocida: $1"; echo "Usa --init, --ci o --help"; exit 2 ;;
-esac
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+  case "${1:-}" in
+    --init) run_init ;;
+    --ci)   run_ci ;;
+    --help|-h|"") show_help ;;
+    *) echo "Opción desconocida: $1"; echo "Usa --init, --ci o --help"; exit 2 ;;
+  esac
+fi

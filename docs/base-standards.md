@@ -76,6 +76,15 @@ Esta asimetría es **intencional**: preserva la fuente única sin duplicar conte
 Si se requiere que Cursor aplique reglas activas, habría que generar `.mdc` con
 front-matter (lo que duplicaría el contenido o exigiría un generador en `update.sh`).
 
+### Symlinks en Windows
+
+En Windows, crear symlinks requiere **Developer Mode** (Configuración → Para
+desarrolladores → Modo de desarrollador) o permiso de administrador, y
+`git config --global core.symlinks true`. Sin ellos, `ln -s` falla. `specboot.sh`
+aplica un **fallback a copia** cuando el symlink no está disponible, de modo que el
+proyecto funciona sin fallos silenciosos (la copia es una instantánea estática, no
+una referencia viva; `update.sh` la re-copia al actualizar).
+
 ## 7. Actualización de artefactos OpenSpec ante cambios post-apply
 
 Si aparece un fix o cambio nuevo después de `/apply` y antes de `/archive`:
