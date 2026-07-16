@@ -58,6 +58,24 @@ El modelo para cada agente está definido en `opencode.json`. No hardcodear mode
 - **Nuevos artefactos**: Al crear un nuevo skill o agente en `ai-specs/`, crear los symlinks correspondientes en `.claude/` y `.cursor/`.
 - **Un cambio es incompleto** si deja symlinks rotos o artefactos canónicos duplicados.
 
+### Agnosticismo de contenido vs. de comportamiento
+
+Los symlinks hacen que **el contenido** sea idéntico para todas las herramientas
+(OpenCode, Claude Code, Cursor): todas leen desde la fuente canónica `ai-specs/`.
+Sin embargo, **el comportamiento no es agnóstico**: cada herramienta consume ese
+contenido de forma distinta:
+
+- **OpenCode**: `opencode.json` define los agentes (`plan`, `build`, `reviewer`) con
+  sus prompts → orquestación activa.
+- **Claude Code**: `.claude/agents` y `.claude/skills` (symlinks) → skills y agentes activos.
+- **Cursor**: `.cursor/rules` (symlink a `ai-specs/`) expone los mismos archivos como
+  **contexto pasivo**: Cursor los ve en el contexto del proyecto, pero al no ser
+  `.mdc` con front-matter no se aplican como reglas activas.
+
+Esta asimetría es **intencional**: preserva la fuente única sin duplicar contenido.
+Si se requiere que Cursor aplique reglas activas, habría que generar `.mdc` con
+front-matter (lo que duplicaría el contenido o exigiría un generador en `update.sh`).
+
 ## 7. Actualización de artefactos OpenSpec ante cambios post-apply
 
 Si aparece un fix o cambio nuevo después de `/apply` y antes de `/archive`:

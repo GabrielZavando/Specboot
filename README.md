@@ -267,7 +267,7 @@ de cambios vive en `CHANGELOG.md` (formato Keep a Changelog).
 
 **¿Puedo cambiar el modelo?** Sí. Edita `opencode.json > model`.
 
-**¿Funciona con Cursor/Claude Code?** Sí. `bash specboot.sh --init` crea los symlinks necesarios.
+**¿Funciona con Cursor/Claude Code?** Sí. `bash specboot.sh --init` crea los symlinks necesarios. OpenCode y Claude Code aplican agentes/skills de forma activa; Cursor recibe el mismo contenido como **contexto pasivo** (`.cursor/rules` expone `ai-specs/`, pero sin `.mdc` no son reglas activas). Ver `docs/base-standards.md` §6.
 
 **¿Puedo usar esto con proyecto existente?** Sí. Copia el template y ejecuta los pasos de personalización.
 
