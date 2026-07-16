@@ -74,7 +74,7 @@ audit: ## Security audit (stack-specific)
 	esac
 
 commitlint: ## Lint commit messages (stack-independent)
-	npx commitlint --from HEAD~1 --to HEAD --verbose
+	npx -p @commitlint/cli -p @commitlint/config-conventional commitlint --from HEAD~1 --to HEAD --verbose
 
 refs: ## Check referential integrity of {file:...} references
 	bash check-refs.sh
