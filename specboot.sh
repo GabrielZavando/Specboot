@@ -47,6 +47,7 @@ REQUIRED_FILES=(
   "LICENSE"
   "specboot.sh"
   "check-refs.sh"
+  "update.sh"
   "README.md"
   "docs/base-standards.md"
   "docs/backend-standards.md"

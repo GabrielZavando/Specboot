@@ -79,6 +79,8 @@ opencode
 ├── Makefile                       # CI stack-agnostic: make install/lint/test/build/audit/commitlint
 ├── specboot.sh                    # Setup + validación SSD (--init / --ci)
 ├── check-refs.sh                  # Validación de integridad referencial ({file:...})
+├── update.sh                      # Sync tooling a proyectos y bump de versión
+├── CHANGELOG.md                   # Historial de versiones (Keep a Changelog)
 ├── tests/                         # Tests del template (bash check-refs-test.sh)
 ├── .env.example                   # Template de variables entorno
 ├── .commitlintrc.json             # Conventional commits enforced
@@ -240,6 +242,24 @@ bash specboot.sh --help
 ✅ Valida JSON de opencode.json
 ✅ Verifica skills y ejemplos
 ✅ Verifica integridad referencial de {file:...} (check-refs.sh)
+
+## Versionado y actualización
+
+Specboot se versiona con **semver vía git tags** (ej. `v0.1.0`, `v0.2.0`). El historial
+de cambios vive en `CHANGELOG.md` (formato Keep a Changelog).
+
+- **Actualizar un proyecto ya creado** (sin tocar `docs/` personalizado):
+  ```bash
+  bash update.sh --template /ruta/a/nuevo/specboot
+  ```
+  Sincroniza `ai-specs/`, `AGENTS.md`, `specboot.sh`, `check-refs.sh` y `Makefile`.
+  Usa `--dry-run` para previsualizar.
+
+- **Cortar un release** (mantenedores):
+  ```bash
+  bash update.sh --bump minor   # crea tag vX.Y.Z y entrada en CHANGELOG.md
+  git push origin vX.Y.Z
+  ```
 
 ## FAQ
 
