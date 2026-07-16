@@ -61,7 +61,7 @@ cp .env.example .env
 # Edit .env with correct values
 
 # Verify setup
-bash setup.sh
+bash specboot.sh --init
 ```
 
 ### Step 5: Start Working
@@ -207,7 +207,7 @@ cp .env.example .env
 # Edit .env
 
 # 3. Verify setup
-bash setup.sh
+bash specboot.sh --init
 
 # 4. Start OpenCode
 opencode

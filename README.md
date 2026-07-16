@@ -26,7 +26,7 @@ git clone https://github.com/zavando/specboot.git mi-proyecto
 cd mi-proyecto
 
 # 2. Ejecuta setup
-bash setup.sh
+bash specboot.sh --init
 
 # 3. Inicializa OpenSpec
 openspec init
@@ -38,7 +38,7 @@ openspec init
 #    - Edita docs/data-model.md con tus entidades
 
 # 5. Verifica personalización
-bash setup.sh
+bash specboot.sh --init
 
 # 6. Abre con OpenCode
 opencode
@@ -76,8 +76,7 @@ opencode
 │
 ├── AGENTS.md                      # NO EDITAR — instrucciones OpenCode
 ├── opencode.json                  # ⚙️ EDITAR SOLO model
-├── setup.sh                       # Script de inicialización
-├── validate.sh                    # Validación de configuración
+├── specboot.sh                    # Setup + validación SSD (--init / --ci)
 ├── .env.example                   # Template de variables entorno
 ├── .commitlintrc.json             # Conventional commits enforced
 └── README.md                      # Este archivo
@@ -204,15 +203,24 @@ npm install -g @fission-ai/openspec@latest
 
 ## Validación
 
-Ejecuta `bash validate.sh` para verificar que todo está configurado:
+Ejecuta `bash specboot.sh --ci` para validar la configuración en modo CI (sin efectos secundarios), o `bash specboot.sh --init` para crear symlinks y verificar la estructura:
 
 ```bash
-✅ Valida estructura de archivos
+# Validación estricta para CI (exit 1 si hay errores)
+bash specboot.sh --ci
+
+# Setup local: crea symlinks y verifica estructura
+bash specboot.sh --init
+
+# Ayuda
+bash specboot.sh --help
+```
+
+✅ Valida estructura de archivos (lista única compartida entre --init y --ci)
 ✅ Valida symlinks
 ✅ Detecta placeholders sin reemplazar
 ✅ Valida JSON de opencode.json
 ✅ Verifica skills y ejemplos
-```
 
 ## FAQ
 
@@ -220,7 +228,7 @@ Ejecuta `bash validate.sh` para verificar que todo está configurado:
 
 **¿Puedo cambiar el modelo?** Sí. Edita `opencode.json > model`.
 
-**¿Funciona con Cursor/Claude Code?** Sí. `bash setup.sh` crea los symlinks necesarios.
+**¿Funciona con Cursor/Claude Code?** Sí. `bash specboot.sh --init` crea los symlinks necesarios.
 
 **¿Puedo usar esto con proyecto existente?** Sí. Copia el template y ejecuta los pasos de personalización.
 

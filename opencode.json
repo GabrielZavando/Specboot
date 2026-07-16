@@ -25,10 +25,12 @@
     "plan": {
       "mode": "primary",
       "model": "deepseek-v4-flash-free",
-      "prompt": "You are the planning agent for Spec-Driven Development.\n\nAlways load:\n- docs/base-standards.md\n- docs/backend-standards.md (for backend tasks)\n- docs/frontend-standards.md (for frontend tasks)\n- docs/documentation-standards.md\n- docs/api-spec.yml\n- docs/data-model.md\n\nUse OpenSpec CLI for planning:\n- openspec ff-change <ticket-id> to generate specs\n- Read existing OpenSpec artifacts from .openspec/\n\nYou are in read-only mode: design, analyze, and plan. No file edits or bash commands.",
+      "prompt": "You are the planning agent for Spec-Driven Development.\n\nAlways load:\n- docs/base-standards.md\n- docs/backend-standards.md (for backend tasks)\n- docs/frontend-standards.md (for frontend tasks)\n- docs/documentation-standards.md\n- docs/api-spec.yml\n- docs/data-model.md\n\nUse OpenSpec CLI for planning:\n- openspec new change <ticket-id> to generate specs\n- Read existing OpenSpec artifacts from .openspec/\n\nYou are in read-only mode: design, analyze, and plan. No file edits or bash commands.",
       "permission": {
         "edit": "deny",
-        "bash": "deny"
+        "bash": {
+          "openspec *": "allow"
+        }
       }
     },
     "build": {
@@ -58,7 +60,7 @@
       "agent": "plan"
     },
     "plan-change": {
-      "template": "Run 'openspec ff-change' for the given ticket ID.\n\n1. Verify the ticket ID is provided\n2. Run: openspec ff-change {input}\n3. Review generated artifacts in .openspec/\n4. Display the tasks.md for confirmation",
+      "template": "Run 'openspec new change' for the given ticket ID (must be lowercase kebab-case).\n\n1. Verify the ticket ID is provided\n2. Normalize the ticket ID to lowercase kebab-case if needed (e.g. 'TICKET-123' -> 'ticket-123')\n3. Run: openspec new change {input}\n4. Review generated artifacts in .openspec/changes/<ticket-id>/\n5. Display the tasks.md for confirmation",
       "description": "Generate OpenSpec specs and tasks from a ticket",
       "agent": "plan"
     },

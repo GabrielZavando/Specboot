@@ -113,7 +113,7 @@ Task list format for OpenSpec changes.
 
 ## How to Use
 
-1. **New project:** Copy this template, run `bash setup.sh`, personalize `docs/`
+1. **New project:** Copy this template, run `bash specboot.sh --init`, personalize `docs/`
 2. **SSD workflow:** Start with `/enrich-us` or `/plan-change`
 3. **Code review:** Use `/adversarial-review` before archiving
 4. **Deploy:** Follow `skills/deploy/SKILL.md` for releases
