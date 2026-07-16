@@ -22,7 +22,7 @@ Cada servicio o módulo relevante debe tener un README con:
 
 - OpenAPI 3.0 en `docs/api-spec.yml`
 - Cada endpoint documentado: descripción, params, request body, responses (incluyendo errores)
-- Actualizar el spec antes de implementar cambios en la API (SSD)
+- Actualizar el spec antes de implementar cambios en la API (SDD)
 - Ejemplos reales en el spec, no placeholders
 
 ## Data Model

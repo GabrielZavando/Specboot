@@ -3,9 +3,9 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![OpenCode](https://img.shields.io/badge/OpenCode-ready-5B48E5)
 ![OpenSpec](https://img.shields.io/badge/OpenSpec-ff--change-22C55E)
-![Status](https://img.shields.io/badge/Status-Template_SSD-0EA5E9)
+![Status](https://img.shields.io/badge/Status-Template_SDD-0EA5E9)
 
-Template boilerplate for **Spec-Driven Development (SSD)** using **OpenCode** + **OpenSpec**.
+Template boilerplate for **Spec-Driven Development (SDD)** using **OpenCode** + **OpenSpec**.
 
 ## ¿Qué es?
 
@@ -15,7 +15,7 @@ Incluye:
 - Estándares de backend, frontend y documentación
 - Definiciones de agentes IA (backend-developer, frontend-developer, build)
 - Skills reutilizables (enriquecer stories, commits, auditing, deploy, onboarding)
-- Comandos personalizados para el ciclo SSD completo
+- Comandos personalizados para el ciclo SDD completo
 - Contrato OpenAPI y modelo de datos
 
 ## Quick Start
@@ -43,7 +43,7 @@ bash specboot.sh --init
 # 6. Abre con OpenCode
 opencode
 
-# 7. Ejecuta tu primer ciclo SSD
+# 7. Ejecuta tu primer ciclo SDD
 /enrich-us TICKET-ID   # (opcional) si el ticket es vago
 /plan-change TICKET-ID # genera specs
 /apply TICKET-ID       # implementa (TDD)
@@ -77,7 +77,7 @@ opencode
 ├── AGENTS.md                      # NO EDITAR — instrucciones OpenCode
 ├── opencode.json                  # ⚙️ EDITAR SOLO model
 ├── Makefile                       # CI stack-agnostic: make install/lint/test/build/audit/commitlint
-├── specboot.sh                    # Setup + validación SSD (--init / --ci)
+├── specboot.sh                    # Setup + validación SDD (--init / --ci)
 ├── check-refs.sh                  # Validación de integridad referencial ({file:...})
 ├── update.sh                      # Sync tooling a proyectos y bump de versión
 ├── CHANGELOG.md                   # Historial de versiones (Keep a Changelog)
@@ -99,7 +99,7 @@ opencode
 | `docs/data-model.md` | Entidades reales del dominio |
 | `opencode.json` | Campo `model` si quieres otro proveedor |
 
-## Flujo SSD — Comandos
+## Flujo SDD — Comandos
 
 | Comando | Descripción |
 |---------|-------------|

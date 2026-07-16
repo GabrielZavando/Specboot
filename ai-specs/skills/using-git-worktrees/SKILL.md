@@ -212,7 +212,7 @@ bash specboot.sh --init
 # 4. Start OpenCode
 opencode
 
-# 5. Work on feature using SSD workflow
+# 5. Work on feature using SDD workflow
 /enrich-us AUTH-42    # (optional)
 /plan-change AUTH-42
 /apply AUTH-42

@@ -179,7 +179,7 @@ project/
 
 ### Day 3-4: First Feature
 - [ ] Pick up a "starter" ticket (labeled `good-first-issue`)
-- [ ] Follow the SSD workflow: `/plan-change` → `/apply` → `/verify`
+- [ ] Follow the SDD workflow: `/plan-change` → `/apply` → `/verify`
 - [ ] Complete the full cycle
 
 ### Day 5: Retrospective
