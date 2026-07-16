@@ -125,6 +125,7 @@ Task list format for OpenSpec changes.
 | `docs/base-standards.md` | Section 8: stack, architecture, domain |
 | `docs/backend-standards.md` | Stack: runtime, framework, ORM, DB |
 | `docs/frontend-standards.md` | Stack: framework, CSS, build tool |
+| `docs/deploy-standards.md` | Deploy flow: environments, versioning, Docker, rollback |
 | `docs/api-spec.yml` | Real API endpoints |
 | `docs/data-model.md` | Domain entities |
 | `opencode.json` | Model selection |

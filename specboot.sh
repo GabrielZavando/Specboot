@@ -53,6 +53,7 @@ REQUIRED_FILES=(
   "docs/documentation-standards.md"
   "docs/api-spec.yml"
   "docs/data-model.md"
+  "docs/deploy-standards.md"
   "ai-specs/README.md"
   "ai-specs/agents/backend-developer.md"
   "ai-specs/agents/frontend-developer.md"

@@ -1,6 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "deepseek-v4-flash-free",
   "autoupdate": true,
   "instructions": [
     "docs/base-standards.md",
@@ -24,7 +23,6 @@
   "agent": {
     "plan": {
       "mode": "primary",
-      "model": "deepseek-v4-flash-free",
       "prompt": "You are the planning agent for Spec-Driven Development.\n\nAlways load:\n- docs/base-standards.md\n- docs/backend-standards.md (for backend tasks)\n- docs/frontend-standards.md (for frontend tasks)\n- docs/documentation-standards.md\n- docs/api-spec.yml\n- docs/data-model.md\n\nUse OpenSpec CLI for planning:\n- openspec new change <ticket-id> to generate specs\n- Read existing OpenSpec artifacts from .openspec/\n\nYou are in read-only mode: design, analyze, and plan. No file edits or bash commands.",
       "permission": {
         "edit": "deny",
@@ -35,7 +33,6 @@
     },
     "build": {
       "mode": "primary",
-      "model": "deepseek-v4-flash-free",
       "prompt": "{file:ai-specs/agents/build-agent.md}",
       "permission": {
         "edit": "allow",
@@ -45,7 +42,6 @@
     "reviewer": {
       "description": "Adversarial code review — security, types, performance, test coverage, OpenSpec alignment",
       "mode": "subagent",
-      "model": "deepseek-v4-flash-free",
       "prompt": "{file:ai-specs/skills/code-auditing/SKILL.md}",
       "permission": {
         "edit": "deny",
@@ -75,7 +71,7 @@
       "agent": "build"
     },
     "adversarial-review": {
-      "template": "{file:ai-specs/skills/code-auditing/SKILL.md}\n\nRun the 6-phase audit on the current codebase changes.",
+      "template": "{file:ai-specs/skills/code-auditing/SKILL.md}\n\nRun the 7-phase audit on the current codebase changes.",
       "description": "Systematic 7-phase code quality audit",
       "agent": "reviewer"
     },
@@ -87,6 +83,11 @@
     "commit": {
       "template": "{file:ai-specs/skills/commit/SKILL.md}\n\nFollow the commit process for the current changes.",
       "description": "Create conventional commits and pull request",
+      "agent": "build"
+    },
+    "deploy": {
+      "template": "{file:ai-specs/skills/deploy/SKILL.md}\n\nFollow the deploy process defined in docs/deploy-standards.md for the current release.",
+      "description": "Release: version bump, build, deploy, smoke tests, rollback",
       "agent": "build"
     }
   }

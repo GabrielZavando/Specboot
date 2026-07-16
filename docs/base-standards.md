@@ -35,12 +35,7 @@ Para estándares detallados, leer los archivos correspondientes:
 - Los skills viven en `ai-specs/skills/`.
 - Cuando una solicitud coincida con la descripción de un skill, cargar y seguir el `SKILL.md` correspondiente automáticamente antes de continuar.
 - Cargar también los archivos referenciados en la carpeta del skill cuando el skill los requiera.
-
-Skills disponibles:
-- `enrich-us` — Enriquecer user story vaga antes de planificar
-- `using-git-worktrees` — Workspace aislado por feature
-- `code-auditing` — Auditoría sistemática de calidad
-- `commit` — Conventional commits y gestión de PR
+- La lista canónica y actualizada de skills (con descripciones y casos de uso) se mantiene en [`ai-specs/README.md`](../ai-specs/README.md). Referenciar ese archivo en vez de duplicar la lista aquí.
 
 ## 5. Modelo de planning
 

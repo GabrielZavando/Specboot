@@ -71,11 +71,12 @@ opencode
 │   └── examples/                  #   Ejemplos OpenSpec
 │
 ├── .github/workflows/             # CI/CD
-│   ├── ci.yml                     #   Tests, lint, security
+│   ├── ci.yml                     #   Invoca make lint/test/build/audit/commitlint
 │   └── deploy.yml                 #   Deploy a staging/production
 │
 ├── AGENTS.md                      # NO EDITAR — instrucciones OpenCode
 ├── opencode.json                  # ⚙️ EDITAR SOLO model
+├── Makefile                       # CI stack-agnostic: make install/lint/test/build/audit/commitlint
 ├── specboot.sh                    # Setup + validación SSD (--init / --ci)
 ├── .env.example                   # Template de variables entorno
 ├── .commitlintrc.json             # Conventional commits enforced
@@ -89,6 +90,7 @@ opencode
 | `docs/base-standards.md` | Sección 8: stack, arquitectura, dominio, cliente |
 | `docs/backend-standards.md` | Stack: runtime, framework, ORM, DB, tests |
 | `docs/frontend-standards.md` | Stack: framework, CSS, build, tests |
+| `docs/deploy-standards.md` | Flujo de despliegue: entornos, versionado, Docker, rollback |
 | `docs/api-spec.yml` | Endpoints reales de tu API |
 | `docs/data-model.md` | Entidades reales del dominio |
 | `opencode.json` | Campo `model` si quieres otro proveedor |
@@ -104,6 +106,7 @@ opencode
 | `/adversarial-review` | Auditoría 7 fases (seguridad, tipos, perf, etc.) |
 | `/archive TICKET-ID` | Archivar el cambio |
 | `/commit` | Commits convencionales + Pull Request |
+| `/deploy` | Release: version bump, build, deploy a staging/producción, smoke tests, rollback |
 
 ## Workflow Visual
 
@@ -137,17 +140,27 @@ Ver `ai-specs/README.md` para índice completo.
 
 ## Personalización Avanzada
 
-### Cambiar modelo de IA
+### Modelo de IA (agnóstico)
+
+Este template **no fija ningún modelo** en `opencode.json`. OpenCode usa el
+modelo que tengas seleccionado en el momento de trabajar (el modelo activo de tu
+proveedor/sesión), así el sistema es agnóstico al modelo de IA.
 
 ```json
-// opencode.json
+// opencode.json — sin campo "model": OpenCode usa el modelo activo
 {
-  "model": "anthropic/claude-sonnet-4-7",
   "agent": {
-    "plan": { "model": "anthropic/claude-opus-4-7" }
+    "plan":     { "mode": "primary" },
+    "build":    { "mode": "primary" },
+    "reviewer": { "mode": "subagent" }
   }
 }
 ```
+
+Si quieres fijar un default de proyecto, añade `"model"` a nivel superior; y si
+un agente necesita un modelo distinto, añade `"model"` solo en ese agente (los
+demás heredan el modelo global). No dupliques el valor: basta un único punto de
+configuración.
 
 ### Agregar nuevo skill
 
@@ -185,7 +198,7 @@ Ver `ai-specs/README.md` para índice completo.
 
 ## CI/CD Incluido
 
-- **`.github/workflows/ci.yml`**: Tests, lint, typecheck, security audit, commitlint
+- **`.github/workflows/ci.yml`**: Invoca los targets del `Makefile` (`make lint`, `make test`, `make build`, `make audit`, `make commitlint`). Cada stack implementa esos targets; `ci.yml` solo los invoca.
 - **`.github/workflows/deploy.yml`**: Docker build, deploy a staging/producción, smoke tests, rollback
 - **`.commitlintrc.json`**: Conventional Commits enforced
 
