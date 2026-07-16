@@ -28,7 +28,7 @@ The canonical, up-to-date list of available skills (with descriptions and use ca
 
 ## Custom commands (OpenCode)
 
-The following custom commands are defined in `opencode.json` for the SSD workflow:
+The following custom commands are defined in `opencode.json` for the SDD workflow:
 
 | Command | Description |
 |---------|-------------|

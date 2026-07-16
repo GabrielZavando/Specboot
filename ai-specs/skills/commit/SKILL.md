@@ -4,7 +4,7 @@
 
 Create semantic commits following Conventional Commits and manage Pull Requests when finishing an OpenSpec change.
 
-**Use when:** Executing `/commit` in the SSD workflow, after `/verify` and successful `/adversarial-review`.
+**Use when:** Executing `/commit` in the SDD workflow, after `/verify` and successful `/adversarial-review`.
 
 ---
 

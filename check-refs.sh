@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# check-refs.sh — Referential integrity check for the SSD template.
+# check-refs.sh — Referential integrity check for the SDD template.
 #
 # Verifies that every {file:...} reference found in opencode.json and in all
 # SKILL.md files resolves to an existing file (relative to the repository root).

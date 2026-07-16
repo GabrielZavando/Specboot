@@ -33,7 +33,7 @@ ai-specs/
 
 Full-stack implementation agent. Reads `tasks.md` and implements one task at a time following TDD.
 
-**Use case:** Executed by `/apply` in the SSD workflow.
+**Use case:** Executed by `/apply` in the SDD workflow.
 
 ### Backend Developer (`agents/backend-developer.md`)
 
@@ -63,7 +63,7 @@ Systematic 7-phase code quality audit.
 
 Conventional commits and pull request creation.
 
-**Use case:** `/commit` at the end of the SSD cycle.
+**Use case:** `/commit` at the end of the SDD cycle.
 
 ### Deploy (`skills/deploy/SKILL.md`) — NEW
 
@@ -114,7 +114,7 @@ Task list format for OpenSpec changes.
 ## How to Use
 
 1. **New project:** Copy this template, run `bash specboot.sh --init`, personalize `docs/`
-2. **SSD workflow:** Start with `/enrich-us` or `/plan-change`
+2. **SDD workflow:** Start with `/enrich-us` or `/plan-change`
 3. **Code review:** Use `/adversarial-review` before archiving
 4. **Deploy:** Follow `skills/deploy/SKILL.md` for releases
 

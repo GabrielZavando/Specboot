@@ -2,7 +2,7 @@
 
 ## Descripción
 
-Auditoría sistemática de calidad de código en 7 fases. Usar antes de releases importantes, durante revisiones de deuda técnica, o como `/adversarial-review` en el flujo SSD.
+Auditoría sistemática de calidad de código en 7 fases. Usar antes de releases importantes, durante revisiones de deuda técnica, o como `/adversarial-review` en el flujo SDD.
 
 ## Proceso — 7 fases
 

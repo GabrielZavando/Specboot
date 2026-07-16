@@ -1,5 +1,5 @@
 #!/bin/bash
-# specboot.sh — Combined setup & validation for Zavando Specboot (SSD template)
+# specboot.sh — Combined setup & validation for Zavando Specboot (SDD template)
 #
 # Replaces the former setup.sh and validate.sh with a single script.
 #
@@ -276,7 +276,7 @@ print_summary() {
 # Modes
 # ---------------------------------------------------------------------------
 run_init() {
-  echo "🔧 Zavando Specboot — Setup SSD"
+  echo "🔧 Zavando Specboot — Setup SDD"
   echo "================================"
   echo ""
   create_symlinks
