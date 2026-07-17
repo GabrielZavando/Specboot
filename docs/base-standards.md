@@ -35,7 +35,7 @@ Para estándares detallados, leer los archivos correspondientes:
 - Los skills viven en `ai-specs/skills/`.
 - Cuando una solicitud coincida con la descripción de un skill, cargar y seguir el `SKILL.md` correspondiente automáticamente antes de continuar.
 - Cargar también los archivos referenciados en la carpeta del skill cuando el skill los requiera.
-- La lista canónica y actualizada de skills (con descripciones y casos de uso) se mantiene en [`ai-specs/README.md`](../ai-specs/README.md). Referenciar ese archivo en vez de duplicar la lista aquí.
+- La lista de skills disponibles y sus triggers está en `AGENTS.md` (se carga junto con este archivo). Para descripciones extendidas, ver [`ai-specs/README.md`](../ai-specs/README.md).
 
 ## 5. Modelo de planning
 

@@ -18,13 +18,20 @@ For implementation, adopt the relevant agent role:
 - Backend work → `ai-specs/agents/backend-developer.md`
 - Frontend work → `ai-specs/agents/frontend-developer.md`
 
-Use the skills in `ai-specs/skills/` for workflow guidance when applicable. See `ai-specs/README.md` for the full list and descriptions.
-
 ## Skills
 
-Skills live in `ai-specs/skills/`. When a request matches a skill's description, load and follow the corresponding `SKILL.md` automatically before continuing.
+Skills live in `ai-specs/skills/`. When a request matches one of the triggers below, load and follow the corresponding `SKILL.md` automatically before continuing.
 
-The canonical, up-to-date list of available skills (with descriptions and use cases) is maintained in [`ai-specs/README.md`](ai-specs/README.md). Reference that file instead of a duplicated list here.
+| Skill | Trigger |
+|---|---|
+| `enrich-us` | Refine a vague ticket into a user story before `/plan-change` |
+| `code-auditing` | Run before archiving a change, or via `/adversarial-review` |
+| `commit` | End of the SDD cycle, via `/commit` |
+| `using-git-worktrees` | Parallel feature work during `/plan-change` |
+| `deploy` | Release to staging/production, via `/deploy` |
+| `onboarding` | A new developer is starting on the project |
+
+For extended detail (phases, full descriptions, examples) see [`ai-specs/README.md`](ai-specs/README.md) — that file is for humans and is not auto-loaded, so it can go deeper than this table without duplicating what agents need at request time.
 
 ## Custom commands (OpenCode)
 
