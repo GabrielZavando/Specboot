@@ -80,6 +80,26 @@ while IFS= read -r skill; do
   done <<< "$(extract_file_refs "$skill")"
 done <<< "$(find ai-specs/skills -type f -name SKILL.md 2>/dev/null | sort)"
 
+# Every skill folder under ai-specs/skills/*/ must be mentioned (as a substring)
+# in AGENTS.md. AGENTS.md is auto-loaded by opencode.json's instructions[], so a
+# skill whose folder name is absent there has no trigger to match against — which
+# silently breaks the "load the skill automatically" mechanism. This guards that.
+echo ""
+echo "→ Verificando que cada carpeta de skill aparezca en AGENTS.md..."
+if [ ! -f "AGENTS.md" ]; then
+  fail "AGENTS.md no encontrado en $ROOT"
+else
+  while IFS= read -r skill_dir; do
+    [ -z "$skill_dir" ] && continue
+    skill_name="$(basename "$skill_dir")"
+    if grep -qF "$skill_name" AGENTS.md 2>/dev/null; then
+      pass "$skill_name mencionado en AGENTS.md"
+    else
+      fail "Skill '$skill_name' (ai-specs/skills/$skill_name) no aparece en AGENTS.md"
+    fi
+  done <<< "$(find ai-specs/skills -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)"
+fi
+
 echo ""
 echo "========================================="
 echo -e "  ${RED}Errores: $ERRORS${NC}"

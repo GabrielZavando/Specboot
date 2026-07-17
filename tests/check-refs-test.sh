@@ -72,14 +72,72 @@ cat > "$FIXTURE_OK/ai-specs/skills/demo/SKILL.md" <<'MD'
 # Demo
 See {file:ai-specs/agents/build-agent.md}.
 MD
+# AGENTS.md must mention the demo skill folder so the new check passes.
+cat > "$FIXTURE_OK/AGENTS.md" <<'MD'
+# Agents
+Skills: demo
+MD
 bash "$SCRIPT" --root "$FIXTURE_OK" >/tmp/check-refs-ok.out 2>&1
 assert "valid fixture passes" 0 $?
 
-# --- Real repo: must pass (no broken references) ---
+# --- Fixture 3: a skill folder missing from AGENTS.md must FAIL ---
+FIXTURE_SKILL="$(mktemp -d)"
+mkdir -p "$FIXTURE_SKILL/ai-specs/agents" "$FIXTURE_SKILL/ai-specs/skills/demo" "$FIXTURE_SKILL/ai-specs/skills/other"
+cat > "$FIXTURE_SKILL/opencode.json" <<'JSON'
+{
+  "agent": {
+    "build": { "prompt": "{file:ai-specs/agents/build-agent.md}" }
+  }
+}
+JSON
+cat > "$FIXTURE_SKILL/ai-specs/agents/build-agent.md" <<'MD'
+# build agent
+MD
+cat > "$FIXTURE_SKILL/ai-specs/skills/demo/SKILL.md" <<'MD'
+# Demo
+MD
+cat > "$FIXTURE_SKILL/ai-specs/skills/other/SKILL.md" <<'MD'
+# Other
+MD
+# AGENTS.md that mentions only one of the two skill folders on purpose.
+cat > "$FIXTURE_SKILL/AGENTS.md" <<'MD'
+# Agents
+Skills: demo
+MD
+bash "$SCRIPT" --root "$FIXTURE_SKILL" >/tmp/check-refs-skill.out 2>&1
+assert "missing skill folder in AGENTS.md reports failure" 1 $?
+
+# --- Fixture 4: every skill folder mentioned in AGENTS.md must PASS ---
+FIXTURE_SKILL_OK="$(mktemp -d)"
+mkdir -p "$FIXTURE_SKILL_OK/ai-specs/agents" "$FIXTURE_SKILL_OK/ai-specs/skills/demo" "$FIXTURE_SKILL_OK/ai-specs/skills/other"
+cat > "$FIXTURE_SKILL_OK/opencode.json" <<'JSON'
+{
+  "agent": {
+    "build": { "prompt": "{file:ai-specs/agents/build-agent.md}" }
+  }
+}
+JSON
+cat > "$FIXTURE_SKILL_OK/ai-specs/agents/build-agent.md" <<'MD'
+# build agent
+MD
+cat > "$FIXTURE_SKILL_OK/ai-specs/skills/demo/SKILL.md" <<'MD'
+# Demo
+MD
+cat > "$FIXTURE_SKILL_OK/ai-specs/skills/other/SKILL.md" <<'MD'
+# Other
+MD
+cat > "$FIXTURE_SKILL_OK/AGENTS.md" <<'MD'
+# Agents
+Skills: demo and other
+MD
+bash "$SCRIPT" --root "$FIXTURE_SKILL_OK" >/tmp/check-refs-skill-ok.out 2>&1
+assert "all skill folders mentioned in AGENTS.md passes" 0 $?
+
+# --- Real repo: must pass (no broken references, all skills listed) ---
 bash "$SCRIPT" >/tmp/check-refs-real.out 2>&1
 assert "real repository passes" 0 $?
 
-rm -rf "$FIXTURE_BROKEN" "$FIXTURE_OK"
+rm -rf "$FIXTURE_BROKEN" "$FIXTURE_OK" "$FIXTURE_SKILL" "$FIXTURE_SKILL_OK"
 
 echo ""
 echo "TDD tests: $PASS passed, $FAIL failed"
