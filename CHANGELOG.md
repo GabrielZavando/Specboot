@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README: corrected clone URL, OpenSpec badge (`new change`), clarified `model` is optional, and replaced the Cursor/Claude FAQ with an OpenCode-only note.
 - CI: `build` job upload tolerates a missing `dist/` (`if-no-files-found: warn`) so the template repo passes CI without a build artifact.
 - `deploy.yml`: jobs are guarded by `hashFiles('Dockerfile') != ''` so tag pushes on the template (no Dockerfile) do not attempt a Node/Docker deploy.
+- `AGENTS.md`: restored the skill trigger table (name + trigger) that was replaced by a pointer to `ai-specs/README.md`. Since `AGENTS.md` is the file auto-loaded via `instructions[]` and `ai-specs/README.md` is not, the pointer left the auto-load matching mechanism with nothing to match against.
+- `check-refs.sh`: added a guard that fails if any `ai-specs/skills/*/` folder is not mentioned in `AGENTS.md`, to catch this class of drift automatically.
 
 ## [0.1.0] - 2026-07-16
 
