@@ -1,5 +1,5 @@
 ---
-description: Reglas globales de desarrollo para agentes IA (OpenCode, Codex, Cursor). Aplica siempre.
+description: Reglas globales de desarrollo para agentes IA (OpenCode). Aplica siempre.
 alwaysApply: true
 ---
 
@@ -51,39 +51,23 @@ Los flujos de planning se ejecutan mediante los custom commands definidos en `op
 
 El modelo para cada agente está definido en `opencode.json`. No hardcodear modelos aquí.
 
-## 6. Integridad de symlinks y portabilidad multi-agente
+## 6. Orquestación con OpenCode (fuente canónica)
 
-- **Fuente canónica**: Los artefactos reutilizables viven en `ai-specs/`. Los paths de agentes específicos (`.claude/`, `.cursor/`) los referencian vía symlinks.
-- **Seguridad al renombrar**: Al renombrar o mover un archivo, verificar y actualizar todos los symlinks que lo apuntan antes de cerrar el cambio.
-- **Nuevos artefactos**: Al crear un nuevo skill o agente en `ai-specs/`, crear los symlinks correspondientes en `.claude/` y `.cursor/`.
-- **Un cambio es incompleto** si deja symlinks rotos o artefactos canónicos duplicados.
-
-### Agnosticismo de contenido vs. de comportamiento
-
-Los symlinks hacen que **el contenido** sea idéntico para todas las herramientas
-(OpenCode, Claude Code, Cursor): todas leen desde la fuente canónica `ai-specs/`.
-Sin embargo, **el comportamiento no es agnóstico**: cada herramienta consume ese
-contenido de forma distinta:
-
-- **OpenCode**: `opencode.json` define los agentes (`plan`, `build`, `reviewer`) con
-  sus prompts → orquestación activa.
-- **Claude Code**: `.claude/agents` y `.claude/skills` (symlinks) → skills y agentes activos.
-- **Cursor**: `.cursor/rules` (symlink a `ai-specs/`) expone los mismos archivos como
-  **contexto pasivo**: Cursor los ve en el contexto del proyecto, pero al no ser
-  `.mdc` con front-matter no se aplican como reglas activas.
-
-Esta asimetría es **intencional**: preserva la fuente única sin duplicar contenido.
-Si se requiere que Cursor aplique reglas activas, habría que generar `.mdc` con
-front-matter (lo que duplicaría el contenido o exigiría un generador en `update.sh`).
-
-### Symlinks en Windows
-
-En Windows, crear symlinks requiere **Developer Mode** (Configuración → Para
-desarrolladores → Modo de desarrollador) o permiso de administrador, y
-`git config --global core.symlinks true`. Sin ellos, `ln -s` falla. `specboot.sh`
-aplica un **fallback a copia** cuando el symlink no está disponible, de modo que el
-proyecto funciona sin fallos silenciosos (la copia es una instantánea estática, no
-una referencia viva; `update.sh` la re-copia al actualizar).
+- **OpenCode es la única herramienta objetivo** de este template. No se generan
+  symlinks ni configuraciones para Claude Code (`.claude/`) ni Cursor (`.cursor/`).
+- **Fuente canónica**: Los artefactos reutilizables (agentes y skills) viven en
+  `ai-specs/`. OpenCode los consume directamente mediante referencias
+  `{file:...}` declaradas en `opencode.json`.
+- **Un cambio es incompleto** si deja referencias `{file:...}` rotas o artefactos
+  canónicos duplicados.
+- **Seguridad al renombrar**: Al renombrar o mover un archivo dentro de `ai-specs/`,
+  verificar y actualizar todas las referencias `{file:...}` que lo apuntan (usar
+  `bash check-refs.sh`) antes de cerrar el cambio.
+- **Nuevos artefactos**: Al crear un nuevo skill o agente en `ai-specs/`, añadir su
+  referencia `{file:...}` donde corresponda en `opencode.json` y registrarlo en
+  `ai-specs/README.md`.
+- `specboot.sh` valida la estructura, los placeholders y la integridad referencial
+  (`check-refs.sh`); no crea symlinks porque el template es OpenCode-only.
 
 ## 7. Actualización de artefactos OpenSpec ante cambios post-apply
 

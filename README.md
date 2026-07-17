@@ -2,7 +2,7 @@
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![OpenCode](https://img.shields.io/badge/OpenCode-ready-5B48E5)
-![OpenSpec](https://img.shields.io/badge/OpenSpec-ff--change-22C55E)
+![OpenSpec](https://img.shields.io/badge/OpenSpec-new%20change-22C55E)
 ![Status](https://img.shields.io/badge/Status-Template_SDD-0EA5E9)
 
 Template boilerplate for **Spec-Driven Development (SDD)** using **OpenCode** + **OpenSpec**.
@@ -22,7 +22,7 @@ Incluye:
 
 ```bash
 # 1. Copia el template a tu proyecto
-git clone https://github.com/zavando/specboot.git mi-proyecto
+git clone https://github.com/GabrielZavando/Specboot.git mi-proyecto
 cd mi-proyecto
 
 # 2. Ejecuta setup
@@ -75,7 +75,7 @@ opencode
 │   └── deploy.yml                 #   Deploy a staging/production
 │
 ├── AGENTS.md                      # NO EDITAR — instrucciones OpenCode
-├── opencode.json                  # ⚙️ EDITAR SOLO model
+├── opencode.json                  # ⚙️ EDITAR (modelo opcional)
 ├── Makefile                       # CI stack-agnostic: make install/lint/test/build/audit/commitlint
 ├── specboot.sh                    # Setup + validación SDD (--init / --ci)
 ├── check-refs.sh                  # Validación de integridad referencial ({file:...})
@@ -97,7 +97,7 @@ opencode
 | `docs/deploy-standards.md` | Flujo de despliegue: entornos, versionado, Docker, rollback |
 | `docs/api-spec.yml` | Endpoints reales de tu API |
 | `docs/data-model.md` | Entidades reales del dominio |
-| `opencode.json` | Campo `model` si quieres otro proveedor |
+| `opencode.json` | Opcional: añade `model` para fijar un proveedor distinto |
 
 ## Flujo SDD — Comandos
 
@@ -220,7 +220,7 @@ npm install -g @fission-ai/openspec@latest
 
 ## Validación
 
-Ejecuta `bash specboot.sh --ci` para validar la configuración en modo CI (sin efectos secundarios), o `bash specboot.sh --init` para crear symlinks y verificar la estructura:
+Ejecuta `bash specboot.sh --ci` para validar la configuración en modo CI (sin efectos secundarios), o `bash specboot.sh --init` para verificar la estructura del proyecto:
 
 ```bash
 # Validación estricta para CI (exit 1 si hay errores)
@@ -229,7 +229,7 @@ bash specboot.sh --ci
 # Integridad referencial: {file:...} en opencode.json y SKILL.md
 bash check-refs.sh
 
-# Setup local: crea symlinks y verifica estructura
+# Setup local: verifica estructura del proyecto
 bash specboot.sh --init
 
 # Ayuda
@@ -237,7 +237,7 @@ bash specboot.sh --help
 ```
 
 ✅ Valida estructura de archivos (lista única compartida entre --init y --ci)
-✅ Valida symlinks
+✅ Verifica que el proyecto es OpenCode-only (sin symlinks de .claude/.cursor)
 ✅ Detecta placeholders sin reemplazar
 ✅ Valida JSON de opencode.json
 ✅ Verifica skills y ejemplos
@@ -265,13 +265,13 @@ de cambios vive en `CHANGELOG.md` (formato Keep a Changelog).
 
 **¿Necesito OpenSpec?** Sí. Sin él, `/plan-change`, `/apply`, `/verify` y `/archive` no funcionan.
 
-**¿Puedo cambiar el modelo?** Sí. Edita `opencode.json > model`.
+**¿Puedo fijar un modelo?** Sí (opcional). Añade `"model"` a nivel superior en `opencode.json` si quieres usar un proveedor distinto al de tu sesión activa; si lo omites, OpenCode usa el modelo activo.
 
-**¿Funciona con Cursor/Claude Code?** Sí. `bash specboot.sh --init` crea los symlinks necesarios. OpenCode y Claude Code aplican agentes/skills de forma activa; Cursor recibe el mismo contenido como **contexto pasivo** (`.cursor/rules` expone `ai-specs/`, pero sin `.mdc` no son reglas activas). Ver `docs/base-standards.md` §6.
+**¿Es solo OpenCode?** Sí. Este template es **OpenCode-only**: los agentes y skills viven en `ai-specs/` y se consumen vía `{file:...}` en `opencode.json`. No se crean symlinks ni configuraciones para Claude Code (`.claude/`) ni Cursor (`.cursor/`). Ver `docs/base-standards.md` §6.
 
 **¿Puedo usar esto con proyecto existente?** Sí. Copia el template y ejecuta los pasos de personalización.
 
-**¿Funciona en Windows?** Sí, pero los symlinks requieren permiso. Habilita **Developer Mode** (Configuración → Para desarrolladores → Modo de desarrollador) y ejecuta `git config --global core.symlinks true` para que `bash specboot.sh --init` cree symlinks reales. Si no están disponibles, `specboot.sh` aplica un **fallback a copia** (copia los archivos en vez de enlazarlos), así el proyecto funciona sin fallos silenciosos. Nota: la copia es una instantánea estática; al actualizar con `update.sh` se re-copia.
+**¿Funciona en Windows?** Sí. `specboot.sh --ci`/`--init` validan la estructura y la integridad referencial sin crear symlinks (el template es OpenCode-only). `opencode.json` y los agentes/skills en `ai-specs/` se leen directamente, así que no hay requisito de symlinks ni de Developer Mode.
 
 ---
 

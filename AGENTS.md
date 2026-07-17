@@ -1,6 +1,6 @@
 # Zavando Specboot — Agent Instructions
 
-This file is read automatically by OpenCode, Codex, and other compatible agents.
+This file is read automatically by OpenCode.
 
 ## Context to load
 

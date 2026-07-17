@@ -8,8 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- Documentar que `.cursor/rules` expone `ai-specs/` como contexto pasivo (sin `.mdc`), aclarando la brecha entre agnosticismo de contenido y de comportamiento (base-standards.md §6, README FAQ).
-- specboot.sh: fallback a copia cuando los symlinks no están disponibles (Windows sin Developer Mode / core.symlinks), evitando fallos silenciosos; documentar el prerequisito de symlinks en Windows (base-standards.md §6, README FAQ).
+- **Template is OpenCode-only**: removed `.claude/` and `.cursor/` symlinks; no Claude Code or Cursor configuration is generated. Agent/skill artifacts live in `ai-specs/` and are consumed by OpenCode via `{file:...}` references in `opencode.json` (base-standards.md §6, README FAQ).
+- `specboot.sh`: dropped symlink creation and the Windows copy fallback; `--init`/`--ci` now only validate structure, placeholders, JSON and referential integrity.
+- Removed `tests/specboot-symlink-test.sh` (tested the removed symlink behavior).
+- README: corrected clone URL, OpenSpec badge (`new change`), clarified `model` is optional, and replaced the Cursor/Claude FAQ with an OpenCode-only note.
+- CI: `build` job upload tolerates a missing `dist/` (`if-no-files-found: warn`) so the template repo passes CI without a build artifact.
+- `deploy.yml`: jobs are guarded by `hashFiles('Dockerfile') != ''` so tag pushes on the template (no Dockerfile) do not attempt a Node/Docker deploy.
 
 ## [0.1.0] - 2026-07-16
 

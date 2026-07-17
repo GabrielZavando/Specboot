@@ -4,7 +4,7 @@
 # Replaces the former setup.sh and validate.sh with a single script.
 #
 # Usage:
-#   bash specboot.sh --init   Create symlinks and verify project structure (local setup)
+#   bash specboot.sh --init   Verify project structure (local setup)
 #   bash specboot.sh --ci     Validate configuration for CI (no side effects, strict exit codes)
 #   bash specboot.sh --help   Show this help
 
@@ -72,12 +72,9 @@ REQUIRED_FILES=(
   ".github/pull_request_template.md"
 )
 
-# Symlinks: "link:target" (target is relative to the link's parent directory).
-SYMLINKS=(
-  ".claude/skills:../ai-specs/skills"
-  ".claude/agents:../ai-specs/agents"
-  ".cursor/rules:../ai-specs"
-)
+# Note: This template is OpenCode-only. Agent and skill artifacts live in
+# ai-specs/ and are consumed directly by OpenCode via {file:...} references in
+# opencode.json. No .claude/ or .cursor/ symlinks are created.
 
 # Skill directories that must contain a SKILL.md.
 SKILL_DIRS=(
@@ -119,60 +116,6 @@ check_file_structure() {
       pass "$f"
     else
       fail "FALTA: $f"
-    fi
-  done
-}
-
-create_symlinks() {
-  echo "→ Creando symlinks y verificando archivos de agente..."
-  if [ -f "AGENTS.md" ]; then
-    echo "  ✓ AGENTS.md existe"
-  else
-    echo "  ✗ FALTA AGENTS.md"
-  fi
-
-  local entry link target
-  for entry in "${SYMLINKS[@]}"; do
-    link="${entry%%:*}"
-    target="${entry##*:}"
-    mkdir -p "$(dirname "$link")"
-    if [ -L "$link" ]; then
-      echo "  ✓ $link (ya existe como symlink)"
-    elif [ -e "$link" ]; then
-      echo "  ℹ $link ya existe (no symlink); se conserva"
-    elif ln -s "$target" "$link" 2>/dev/null && [ -L "$link" ]; then
-      echo "  ✓ $link → $target"
-    else
-      # Symlinks unavailable (e.g., Windows sin Developer Mode / core.symlinks).
-      # Fall back to a copy so the project still works (static snapshot, not live).
-      # Resolve the target relative to the link's parent dir: unlike ln, cp does
-      # not interpret the source relative to the destination.
-      link_parent="$(dirname "$link")"
-      src="$(cd "$link_parent/$target" 2>/dev/null && pwd)"
-      rm -rf "$link"
-      if [ -n "$src" ] && cp -R "$src" "$link" 2>/dev/null; then
-        echo "  ⚠ $link → $target (copia: symlinks no disponibles)"
-      else
-        echo "  ✗ No se pudo crear $link (ni symlink ni copia)"
-      fi
-    fi
-  done
-}
-
-check_symlinks() {
-  echo "→ Verificando symlinks..."
-  local entry link target
-  for entry in "${SYMLINKS[@]}"; do
-    link="${entry%%:*}"
-    target="${entry##*:}"
-    if [ -e "$link" ]; then
-      if [ -L "$link" ]; then
-        pass "$link → $target (symlink)"
-      else
-        pass "$link → $target (copia)"
-      fi
-    else
-      fail "$link (roto o inexistente)"
     fi
   done
 }
@@ -279,11 +222,7 @@ run_init() {
   echo "🔧 Zavando Specboot — Setup SDD"
   echo "================================"
   echo ""
-  create_symlinks
-  echo ""
   check_file_structure
-  echo ""
-  check_symlinks
   echo ""
   check_placeholders
   echo ""
@@ -318,8 +257,6 @@ run_ci() {
   echo "================================"
   echo ""
   check_file_structure
-  echo ""
-  check_symlinks
   echo ""
   check_placeholders
   echo ""
