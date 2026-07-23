@@ -26,9 +26,9 @@ alwaysApply: true
 
 Para estándares detallados, leer los archivos correspondientes:
 
-- [Backend Standards](docs/backend-standards.md) — API, base de datos, testing, seguridad
-- [Frontend Standards](docs/frontend-standards.md) — Componentes, UI/UX, estado
-- [Documentation Standards](docs/documentation-standards.md) — Estructura docs, OpenAPI, mantenimiento
+- [Backend Standards](backend-standards.md) — API, base de datos, testing, seguridad
+- [Frontend Standards](frontend-standards.md) — Componentes, UI/UX, estado
+- [Documentation Standards](documentation-standards.md) — Estructura docs, OpenAPI, mantenimiento
 
 ## 4. Skills del proyecto
 
@@ -105,8 +105,8 @@ Esta sección es solo el **principio rector a nivel de proyecto**. Las reglas
 **concretas y verificables** —umbrales numéricos, estructura de carpetas,
 patrones de inyección, ejemplos de violación por stack— viven en:
 
-- [Backend Standards](docs/backend-standards.md) — sección _Principios de Diseño — Backend (NestJS)_
-- [Frontend Standards](docs/frontend-standards.md) — secciones _Principios de Diseño — Frontend (Angular)_ y _Principios de Diseño — Astro_
+- [Backend Standards](backend-standards.md) — sección _Principios de Diseño — Backend (NestJS)_
+- [Frontend Standards](frontend-standards.md) — secciones _Principios de Diseño — Frontend (Angular)_ y _Principios de Diseño — Astro_
 
 No duplicar aquí contenido técnico: leer y aplicar el doc del stack
 correspondiente.
