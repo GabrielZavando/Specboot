@@ -93,3 +93,20 @@ Convenciones de commits: Conventional Commits
 Lenguaje del código: English
 Lenguaje de documentación cliente: Español
 ```
+
+## 9. Principios de Diseño No Negociables
+
+Todo el código generado para este proyecto debe respetar **SOLID** y priorizar
+**encapsulamiento y composición sobre herencia** como regla general rectora. La
+herencia solo se admite con justificación explícita en el código; por defecto se
+compone comportamiento inyectando abstracciones.
+
+Esta sección es solo el **principio rector a nivel de proyecto**. Las reglas
+**concretas y verificables** —umbrales numéricos, estructura de carpetas,
+patrones de inyección, ejemplos de violación por stack— viven en:
+
+- [Backend Standards](docs/backend-standards.md) — sección _Principios de Diseño — Backend (NestJS)_
+- [Frontend Standards](docs/frontend-standards.md) — secciones _Principios de Diseño — Frontend (Angular)_ y _Principios de Diseño — Astro_
+
+No duplicar aquí contenido técnico: leer y aplicar el doc del stack
+correspondiente.

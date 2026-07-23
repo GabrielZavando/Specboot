@@ -7,7 +7,7 @@
 # To customize for your stack, adjust the commands inside each target or add a
 # new branch to the STACK detection below.
 
-.PHONY: help install lint test build audit commitlint refs
+.PHONY: help install lint test build audit commitlint refs solid-lint
 
 # Detect the active stack from its manifest file.
 STACK := $(shell \
@@ -78,3 +78,29 @@ commitlint: ## Lint commit messages (stack-independent)
 
 refs: ## Check referential integrity of {file:...} references
 	bash check-refs.sh
+
+solid-lint: ## Run SOLID/POO static analysis (Ticket 4). Skips silently if no package.json (Metadoc template).
+	@if [ -f package.json ]; then \
+	  echo "→ SOLID/POO static analysis (ESLint + sonarjs + dependency-cruiser + madge)"; \
+	  if [ -f templates/ci/eslintrc.backend.js ] && [ -d src ]; then \
+	    echo "  → Backend ESLint (NestJS)"; \
+	    npx eslint -c templates/ci/eslintrc.backend.js 'src/**/*.{ts,tsx}' || exit 1; \
+	  fi; \
+	  if [ -f templates/ci/eslintrc.frontend.js ] && [ -d src ] && [ -f angular.json ]; then \
+	    echo "  → Frontend ESLint (Angular)"; \
+	    npx eslint -c templates/ci/eslintrc.frontend.js 'src/**/*.{ts,tsx}' || exit 1; \
+	    echo "  → madge circular deps (Angular)"; \
+	    npx madge --Circular --extensions ts --exclude '\.spec\.ts$$' src/ || exit 1; \
+	  fi; \
+	  if [ -f templates/ci/eslintrc.astro.js ] && [ -d src ]; then \
+	    echo "  → Astro ESLint"; \
+	    npx eslint -c templates/ci/eslintrc.astro.js 'src/**/*.{ts,astro}' || exit 1; \
+	  fi; \
+	  if [ -f templates/ci/.dependency-cruiser.js ] && [ -d src ]; then \
+	    echo "  → dependency-cruiser (DIP enforcement)"; \
+	    npx dependency-cruiser --config templates/ci/.dependency-cruiser.js src/ || exit 1; \
+	  fi; \
+	  echo "→ SOLID/POO static analysis: PASS"; \
+	else \
+	  echo "→ solid-lint: no package.json found — skipping (Metadoc template)"; \
+	fi
