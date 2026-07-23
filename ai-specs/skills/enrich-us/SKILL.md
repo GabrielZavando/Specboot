@@ -58,7 +58,19 @@ Format:
 **So that** [benefit/value]
 ```
 
-### Step 4: Add Acceptance Criteria (Gherkin)
+### Step 4: Draft Class/Component Design
+
+Generate the design declaration that the implementation agents will be held to during `/apply`. This section is produced **before** the acceptance criteria (Step 5) so that the design is fixed before `/plan-change` generates implementation tasks.
+
+```markdown
+## Diseño de Clases/Componentes
+
+- [Nombre de clase/componente]: responsabilidad única = "..."
+  - Depende de: [interfaz/abstracción], NO de [implementación concreta]
+  - Capa: domain | application | infrastructure (o smart | dumb para Angular)
+```
+
+### Step 5: Add Acceptance Criteria (Gherkin)
 
 ```markdown
 ### Acceptance Criteria
@@ -74,7 +86,7 @@ Format:
 - Then [error handling]
 ```
 
-### Step 5: Identify Edge Cases
+### Step 6: Identify Edge Cases
 
 ```markdown
 ### Edge Cases
@@ -84,7 +96,7 @@ Format:
 | [Edge case] | [How system handles it] |
 ```
 
-### Step 6: Add Technical Considerations
+### Step 7: Add Technical Considerations
 
 ```markdown
 ### Technical Considerations
@@ -95,7 +107,7 @@ Format:
 - [Third-party integrations]
 ```
 
-### Step 7: Define Done (DoD)
+### Step 8: Define Done (DoD)
 
 ```markdown
 ### Definition of Done
@@ -108,7 +120,7 @@ Format:
 - [ ] Data model reflects changes (if applicable)
 ```
 
-### Step 8: Confirm with User
+### Step 9: Confirm with User
 
 Show the enriched story and ask for confirmation before proceeding to `/plan-change`.
 
@@ -126,6 +138,12 @@ Show the enriched story and ask for confirmation before proceeding to `/plan-cha
 ### Context
 
 [Background and motivation]
+
+### Diseño de Clases/Componentes
+
+- [Nombre de clase/componente]: responsabilidad única = "..."
+  - Depende de: [interfaz/abstracción], NO de [implementación concreta]
+  - Capa: domain | application | infrastructure (o smart | dumb para Angular)
 
 ### Acceptance Criteria
 
@@ -183,6 +201,18 @@ Users frequently forget passwords. We need a secure, user-friendly password rese
 - Works even if user can't access their email (via support)
 - Prevents account takeover via email hijacking
 - Completes within reasonable time (< 5 minutes)
+
+### Diseño de Clases/Componentes
+
+- `RequestPasswordResetUseCase`: responsabilidad única = "orquestar la solicitud de reset: valida email, genera token, emite evento de email"
+  - Depende de: `IUserRepository`, `IResetTokenGenerator`, `IEmailNotifier`, NO de `TypeOrmUserRepository` o `ResendEmailService`
+  - Capa: application
+- `ResetToken` (value object): responsabilidad única = "encapsular un token válido (valor, expiry, hash); no sabe nada de DB ni de email"
+  - Depende de: ninguna abstracción externa (autocontenido en domain)
+  - Capa: domain
+- `ResetPasswordController`: responsabilidad única = "recibir HTTP, mapear al UseCase y devolver respuesta"
+  - Depende de: `RequestPasswordResetUseCase`, NO de `IUserRepository` directamente
+  - Capa: infrastructure
 
 ### Acceptance Criteria
 
