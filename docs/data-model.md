@@ -35,3 +35,12 @@ Order N--N Product (via OrderItem)
 - Campos FK: `{tabla_referenciada_singular}_id` (`user_id`, `product_id`)
 - Timestamps: siempre `created_at` y `updated_at`
 - Soft delete: campo `deleted_at` nullable
+
+## Modelo de dominio
+
+- Decisión del proyecto: **modelo anémico** — la `Entity` solo transporta datos y
+  mapea la tabla; la lógica de negocio vive en Domain/Application Services (patrón
+  típico NestJS + TypeORM/Prisma).
+- En cualquier caso, los decoradores de ORM (`@Entity()`, `@Column()`, `@OneToMany()`)
+  **no deben mezclarse con validación de negocio compleja** en la misma clase; la
+  validación va en el Service o en value objects dedicados.
