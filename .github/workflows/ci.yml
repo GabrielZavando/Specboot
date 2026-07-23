@@ -92,6 +92,35 @@ jobs:
       - name: Security audit
         run: make audit
 
+  # SOLID / POO mechanical enforcement (Ticket 4).
+  # Conditioned so that the Metadoc template (no package.json) skips this job
+  # and CI stays green. Real projects (with package.json) execute it and fail
+  # the merge if any threshold violation is detected.
+  # See docs/ci-standards.md for the threshold-to-config mapping.
+  # DEFERRED (Python/Django/LangChain stack): when that stack is activated in a
+  # future ticket, add a step here that runs `ruff check .` and `lint-imports`
+  # (import-linter) to forbid Django views.py from importing directly from the
+  # ORM bypassing the services.py layer. See docs/backend-standards.md deferred
+  # note for context.
+  solid-lint:
+    name: SOLID / POO Static Analysis
+    runs-on: ubuntu-latest
+    if: hashFiles('package.json') != ''
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: make install
+
+      - name: Run SOLID static analysis (ESLint + sonarjs + dependency-cruiser + madge)
+        run: make solid-lint
+
   commitlint:
     name: Commit Message Lint
     runs-on: ubuntu-latest

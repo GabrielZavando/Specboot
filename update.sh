@@ -10,7 +10,7 @@
 #       entry, then sync the tooling.
 #
 # Sync set (relative to the template directory):
-#   ai-specs/  AGENTS.md  specboot.sh  check-refs.sh  Makefile
+#   ai-specs/  AGENTS.md  specboot.sh  check-refs.sh  Makefile  templates/
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEMPLATE="$SCRIPT_DIR"
@@ -49,6 +49,7 @@ SYNC_ITEMS=(
   "specboot.sh"
   "check-refs.sh"
   "Makefile"
+  "templates"
 )
 
 sync_item() {

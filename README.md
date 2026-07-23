@@ -70,8 +70,14 @@ opencode
 │   ├── skills/                    #   Flujos reutilizables
 │   └── examples/                  #   Ejemplos OpenSpec
 │
+├── templates/ci/                  # CI configs de referencia (Ticket 4)
+│   ├── eslintrc.backend.js         #   ESLint NestJS: max-lines 300, complexity 10
+│   ├── eslintrc.frontend.js        #   ESLint Angular: max-lines 400
+│   ├── eslintrc.astro.js           #   ESLint Astro: max-lines warn
+│   └── .dependency-cruiser.js      #   DIP mecánico (domain|application → no infra/ORM/HTTP)
+│
 ├── .github/workflows/             # CI/CD
-│   ├── ci.yml                     #   Invoca make lint/test/build/audit/commitlint
+│   ├── ci.yml                     #   Invoca make lint/test/build/audit/solid-lint/commitlint
 │   └── deploy.yml                 #   Deploy a staging/production
 │
 ├── AGENTS.md                      # NO EDITAR — instrucciones OpenCode
@@ -81,7 +87,10 @@ opencode
 ├── check-refs.sh                  # Validación de integridad referencial ({file:...})
 ├── update.sh                      # Sync tooling a proyectos y bump de versión
 ├── CHANGELOG.md                   # Historial de versiones (Keep a Changelog)
-├── tests/                         # Tests del template (bash check-refs-test.sh)
+├── tests/                         # Tests del template
+│   ├── check-refs-test.sh          #   Integridad referencial {file:...}
+│   ├── update-test.sh              #   sync tool (update.sh)
+│   └── solid-templates-test.sh     #   meta-validación CI templates SOLID (Ticket 4)
 ├── .env.example                   # Template de variables entorno
 ├── .commitlintrc.json             # Conventional commits enforced
 └── README.md                      # Este archivo
@@ -107,7 +116,7 @@ opencode
 | `/plan-change TICKET-ID` | Generar specs (escenarios, requirements, tasks) |
 | `/apply TICKET-ID` | Implementar primera tarea con TDD |
 | `/verify TICKET-ID` | Validar código contra escenarios |
-| `/adversarial-review` | Auditoría 7 fases (seguridad, tipos, perf, etc.) |
+| `/adversarial-review` | Auditoría 8 fases (incluye lente Architect/SOLID por stack) |
 | `/archive TICKET-ID` | Archivar el cambio |
 | `/commit` | Commits convencionales + Pull Request |
 | `/deploy` | Release: version bump, build, deploy a staging/producción, smoke tests, rollback |
@@ -135,7 +144,7 @@ opencode
 |-------|-----|
 | `enrich-us` | `/enrich-us` antes de planificar |
 | `commit` | `/commit` al final del ciclo |
-| `code-auditing` | `/adversarial-review` antes de archivar |
+| `code-auditing` | `/adversarial-review` antes de archivar (incluye lente Architect/SOLID por stack) |
 | `using-git-worktrees` | Workspaces aislados por feature |
 | `deploy` | Release, version bump, Docker, rollback |
 | `onboarding` | Setup para nuevos desarrolladores |
@@ -252,7 +261,8 @@ de cambios vive en `CHANGELOG.md` (formato Keep a Changelog).
   ```bash
   bash update.sh --template /ruta/a/nuevo/specboot
   ```
-  Sincroniza `ai-specs/`, `AGENTS.md`, `specboot.sh`, `check-refs.sh` y `Makefile`.
+  Sincroniza `ai-specs/`, `AGENTS.md`, `specboot.sh`, `check-refs.sh`, `Makefile`
+  y `templates/` (configs de CI SOLID/POO del Ticket 4).
   Usa `--dry-run` para previsualizar.
 
 - **Cortar un release** (mantenedores):
