@@ -43,7 +43,7 @@ The following custom commands are defined in `opencode.json` for the SDD workflo
 | `/plan-change TICKET-ID` | Generate OpenSpec specs and tasks from a ticket |
 | `/apply TICKET-ID` | Implement tasks from OpenSpec artifacts (TDD) |
 | `/verify TICKET-ID` | Validate implementation against OpenSpec scenarios |
-| `/adversarial-review` | Systematic 8-phase code quality audit (incluye lente SOLID/POO) |
+| `/adversarial-review` | Systematic 8-phase code quality audit (incluye lente Architect/SOLID por stack) |
 | `/archive TICKET-ID` | Archive OpenSpec artifacts for the completed change |
 | `/commit` | Create conventional commits and pull request |
 | `/deploy` | Release: version bump, build, deploy, smoke tests, rollback |
