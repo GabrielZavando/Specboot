@@ -3,8 +3,6 @@
   "autoupdate": true,
   "instructions": [
     "docs/base-standards.md",
-    "docs/backend-standards.md",
-    "docs/frontend-standards.md",
     "docs/documentation-standards.md",
     "AGENTS.md"
   ],
@@ -23,12 +21,28 @@
   "agent": {
     "plan": {
       "mode": "primary",
-      "prompt": "You are the planning agent for Spec-Driven Development.\n\nAlways load:\n- docs/base-standards.md\n- docs/backend-standards.md (for backend tasks)\n- docs/frontend-standards.md (for frontend tasks)\n- docs/documentation-standards.md\n- docs/api-spec.yml\n- docs/data-model.md\n\nUse OpenSpec CLI for planning:\n- openspec new change <ticket-id> to generate specs\n- Read existing OpenSpec artifacts from .openspec/\n\nYou are in read-only mode: design, analyze, and plan. No file edits or bash commands.",
+      "prompt": "You are the planning agent for Spec-Driven Development.\n\nAlways load:\n- docs/base-standards.md\n- docs/documentation-standards.md\n- docs/api-spec.yml\n- docs/data-model.md\n\nUse OpenSpec CLI for planning:\n- openspec new change <ticket-id> to generate specs\n- Read existing OpenSpec artifacts from .openspec/\n\nYou are in read-only mode: design, analyze, and plan. No file edits or bash commands.",
       "permission": {
         "edit": "deny",
         "bash": {
           "openspec *": "allow"
         }
+      }
+    },
+    "backend": {
+      "mode": "primary",
+      "prompt": "{file:ai-specs/agents/backend-developer.md}",
+      "permission": {
+        "edit": "allow",
+        "bash": "deny"
+      }
+    },
+    "frontend": {
+      "mode": "primary",
+      "prompt": "{file:ai-specs/agents/frontend-developer.md}",
+      "permission": {
+        "edit": "allow",
+        "bash": "deny"
       }
     },
     "build": {
@@ -52,12 +66,12 @@
   "command": {
     "enrich-us": {
       "template": "{file:ai-specs/skills/enrich-us/SKILL.md}\n\nFollow the process above for the provided ticket or user story.",
-      "description": "Enrich a vague user story before planning",
-      "agent": "plan"
+      "description": "Enrich a vague user story before planning (opcional: no se invoca automáticamente en el ciclo estándar)",
+      "agent": null
     },
     "plan-change": {
-      "template": "Run 'openspec new change' for the given ticket ID (must be lowercase kebab-case).\n\n1. Verify the ticket ID is provided\n2. Normalize the ticket ID to lowercase kebab-case if needed (e.g. 'TICKET-123' -> 'ticket-123')\n3. Run: openspec new change {input}\n4. Review generated artifacts in .openspec/changes/<ticket-id>/\n5. Display the tasks.md for confirmation",
-      "description": "Generate OpenSpec specs and tasks from a ticket",
+      "template": "Generate OpenSpec specs and tasks from a ticket with a descriptive brief name.\n\n1. Verify the ticket ID and title are provided (format: 'TICKET-ID:\\\"Title here\\\"')\n2. Derive a 2-4 word kebab-case change name from the ticket title using the convention:\n   - Identify the core action/verb\n   - Identify the primary noun/entity\n   - Optionally prepend domain prefix (auth-, user-, invoice-)\n   - Combine into verb-led kebab-case, max 4 words\n   - Discard the ticket ID entirely\n3. Example derivation: 'PROJ-123:\\\"Implementar reset de contraseña\\\"' → 'auth-reset'\n4. Run: openspec new change {derived-name}\n5. Review generated artifacts in .openspec/changes/{derived-name}//\n6. Display the tasks.md for confirmation",
+      "description": "Generate OpenSpec specs and tasks from a ticket with descriptive brief name",
       "agent": "plan"
     },
     "apply": {

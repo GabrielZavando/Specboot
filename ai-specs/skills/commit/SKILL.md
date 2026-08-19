@@ -51,31 +51,6 @@ chore(deps): upgrade bcrypt from 5.0.1 to 5.1.0
 
 ---
 
-## Semver and Versioning
-
-### How Types Map to Version Bumps
-
-| Type | Version Bump | Example |
-|------|--------------|---------|
-| `feat` | Minor | 1.0.0 → 1.1.0 |
-| `fix` | Patch | 1.0.0 → 1.0.1 |
-| `feat` + `BREAKING CHANGE` | Major | 1.0.0 → 2.0.0 |
-| `refactor` (no feature change) | None | No version bump |
-
-### Version Bump Commands
-
-```bash
-# Automatic (creates commit + tag)
-npm version patch  # 1.0.0 → 1.0.1
-npm version minor  # 1.0.0 → 1.1.0
-npm version major  # 1.0.0 → 2.0.0
-
-# Manual with message
-git tag v1.2.3 -m "Release v1.2.3"
-```
-
----
-
 ## Process
 
 ### Step 1: Verify Preconditions
@@ -89,6 +64,7 @@ npm run lint
 
 # Build succeeds
 npm run build
+
 ```
 
 **If any check fails:** Fix before committing.
@@ -146,82 +122,6 @@ gh pr create \
 ```
 
 Or push to remote and create PR via GitHub UI.
-
----
-
-## Automated Changelog
-
-For automated changelog generation, use `standard-version`:
-
-```bash
-# Install
-npm install --save-dev standard-version
-
-# Generate CHANGELOG.md and bump version
-npm run release -- --release-as minor
-
-# Or手动
-npx standard-version --release-as minor
-```
-
-### CHANGELOG.md Format (keep-a-changelog)
-
-```markdown
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-## [1.2.0] - 2024-01-15
-
-### Features
-- **auth**: add password reset endpoint ([#42](link))
-
-### Bug Fixes
-- **orders**: prevent duplicate submission on slow connections
-
-### Documentation
-- **api**: update payment endpoint spec
-```
-
----
-
-## commitlint Configuration
-
-For enforced conventional commits, use `commitlint` with `@commitlint/config-conventional`:
-
-```bash
-npm install --save-dev @commitlint/config-conventional @commitlint/cli
-```
-
-### .commitlintrc.json
-
-```json
-{
-  "extends": ["@commitlint/config-conventional"],
-  "rules": {
-    "type-enum": [
-      2,
-      "always",
-      ["feat", "fix", "docs", "refactor", "test", "chore", "perf", "ci", "revert"]
-    ],
-    "subject-case": [
-      2,
-      "never",
-      ["sentence-case", "start-case", "pascal-case", "upper-case"]
-    ]
-  }
-}
-```
-
-### Git Hook (husky)
-
-```bash
-npm install --save-dev husky
-npx husky init
-
-# Add commitlint to commit-msg hook
-echo 'npx --no -- commitlint --edit $1' > .husky/commit-msg
-```
 
 ---
 

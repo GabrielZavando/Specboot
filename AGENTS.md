@@ -24,12 +24,17 @@ Skills live in `ai-specs/skills/`. When a request matches one of the triggers be
 
 | Skill | Trigger |
 |---|---|
-| `enrich-us` | Refine a vague ticket into a user story before `/plan-change` |
 | `code-auditing` | Run before archiving a change, or via `/adversarial-review` (incluye lente Architect/SOLID-POO) |
 | `commit` | End of the SDD cycle, via `/commit` |
 | `using-git-worktrees` | Parallel feature work during `/plan-change` |
 | `deploy` | Release to staging/production, via `/deploy` |
 | `onboarding` | A new developer is starting on the project |
+
+### Skills opcionales
+
+| Skill | Trigger |
+|---|---|
+| `enrich-us` | Ticket mal formado: refinamiento opcional antes de `/plan-change` |
 
 For extended detail (phases, full descriptions, examples) see [`ai-specs/README.md`](ai-specs/README.md) — that file is for humans and is not auto-loaded, so it can go deeper than this table without duplicating what agents need at request time.
 
@@ -40,7 +45,7 @@ The following custom commands are defined in `opencode.json` for the SDD workflo
 | Command | Description |
 |---------|-------------|
 | `/enrich-us TICKET-ID` | Enrich a vague user story before planning |
-| `/plan-change TICKET-ID` | Generate OpenSpec specs and tasks from a ticket |
+| `/plan-change TICKET-ID:"Title here"` | Generate OpenSpec specs and tasks from a ticket, deriving a 2-4 word descriptive name from the title (see `ai-specs/skills/plan-change/SKILL.md` for naming convention) |
 | `/apply TICKET-ID` | Implement tasks from OpenSpec artifacts (TDD) |
 | `/verify TICKET-ID` | Validate implementation against OpenSpec scenarios |
 | `/adversarial-review` | Systematic 8-phase code quality audit (incluye lente Architect/SOLID por stack) |

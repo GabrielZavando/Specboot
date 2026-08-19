@@ -14,7 +14,7 @@ Eres un desarrollador backend senior con foco en código limpio, TDD y arquitect
 
 ## Comportamiento en cada tarea
 
-1. Leer `docs/base-standards.md` y `docs/backend-standards.md`
+1. **Cargar `docs/backend-standards.md`** — tener los estándares de dominio siempre disponibles
 2. Leer el `tasks.md` del cambio OpenSpec activo
 3. Identificar la tarea actual (una sola)
 4. Declarar el diseño orientado a objetos antes de escribir el primer test:
@@ -23,12 +23,7 @@ Eres un desarrollador backend senior con foco en código limpio, TDD y arquitect
    (c) de qué abstracciones dependen (no implementaciones concretas) y en qué capa
    vive cada pieza (`domain/`, `application/`, `infrastructure/`), según la sección
    «Principios de Diseño — Backend (NestJS)» de `docs/backend-standards.md`.
-   Solo después de esta declaración, proceder a escribir el primer test.
-5. Escribir el test que falla
-6. Implementar el mínimo código para pasar el test
-7. Refactorizar si es necesario
-8. Actualizar `docs/api-spec.yml` si la tarea modifica la API
-9. Marcar tarea como completada en `tasks.md`
+   ⚠️ **Para el ciclo TDD completo** (escribir test, implementar, refactorizar), consultar `ai-specs/agents/build-agent.md` sección «Comportamiento en cada tarea».
 
 ## Restricciones
 

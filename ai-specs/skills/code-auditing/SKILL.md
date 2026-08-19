@@ -67,12 +67,15 @@ Chequeo explícito, ítem por ítem, contra el diff bajo revisión. Umbrales de 
 - ¿Hay algún `new` de una dependencia dentro de un constructor en vez de recibirla inyectada? → violación de DIP.
 - ¿Se agregó una nueva rama `if/else`/`switch` a un método existente para soportar un nuevo caso, en vez de una Strategy/nueva implementación? → violación de OCP.
 - ¿Alguna interfaz de puerto tiene más de 5 métodos donde el consumidor solo usa 1-2? → violación de ISP.
-- ¿Alguna clase supera 300 líneas o algún método supera complejidad ciclomática 10 (estimar si no hay tooling automático corriendo aún)? → señal de violación de SRP.
+- ¿Alguna clase supera 300 líneas? → Esta violación **ahora es detectable automáticamente vía ESLint** (regla `max-lines` en `eslintrc.backend.js`). Si el lint reporta error, el agente debe validar el output y reportar el hallazgo; no es necesario estimar manualmente.
+- ¿Alguna función tiene más de 5 parámetros en su constructor? → Esta violación **ahora es detectable automáticamente vía ESLint** (regla `max-params` en `eslintrc.backend.js`). Si el lint reporta error, el agente debe validar el output y reportar el contexto; no es necesario contar parámetros manualmente.
 
 #### Angular
 
 - ¿Un componente "dumb" inyecta un servicio de datos o llama HTTP directamente? → violación de SRP/capas.
 - ¿Un componente mezcla lógica de presentación con lógica de negocio no trivial? → violación de SRP.
+- ¿Un componente supera 400 líneas? → Esta violación **ahora es detectable automáticamente vía ESLint** (regla `max-lines` en `eslintrc.frontend.js`). Si el lint reporta error, el agente debe validar el output y reportar el hallazgo; no es necesario estimar manualmente.
+- ¿Un constructor de componente tiene más de 5 parámetros? → Esta violación **ahora es detectable automáticamente vía ESLint** (regla `max-params` en `eslintrc.frontend.js`). Si el lint reporta error, el agente debe validar el output y reportar el contexto; no es necesario contar parámetros manualmente.
 
 #### Astro
 

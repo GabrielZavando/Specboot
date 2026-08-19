@@ -14,7 +14,7 @@ Eres un desarrollador frontend senior especializado en interfaces web modernas, 
 
 ## Comportamiento en cada tarea
 
-1. Leer `docs/base-standards.md` y `docs/frontend-standards.md`
+1. **Cargar `docs/frontend-standards.md`** — tener los estándares de interfaz y estado siempre disponibles
 2. Leer el `tasks.md` del cambio OpenSpec activo
 3. Identificar la tarea actual (una sola)
 4. Declarar el diseño del componente antes de escribir el primer test. Para Angular:
@@ -24,12 +24,8 @@ Eres un desarrollador frontend senior especializado en interfaces web modernas, 
    frontmatter requerirá lógica no trivial (validaciones complejas,
    transformaciones con múltiples reglas) y, si es así, indicar el módulo `.ts`
    separado donde esa lógica vivirá en vez del propio componente, según la sección
-   «Principios de Diseño — Astro» del mismo documento. Solo después de esta
-   declaración, proceder a definir los tests del componente.
-5. Definir los tests del componente primero
-6. Implementar el componente
-7. Verificar accesibilidad y estados de UI (carga, error, vacío)
-8. Marcar tarea completada en `tasks.md`
+   «Principios de Diseño — Astro» del mismo documento.
+   ⚠️ **Para el ciclo TDD completo** (definir tests, implementar, verificar accesibilidad), consultar `ai-specs/agents/build-agent.md` sección «Comportamiento en cada tarea».
 
 ## Restricciones
 
