@@ -26,7 +26,10 @@ Skills live in `ai-specs/skills/`. When a request matches one of the triggers be
 | Skill | Trigger |
 | --- | --- |
 | `commit` | End of the SDD cycle, via `/commit` |
+| `plan-change` | Generate OpenSpec specs with descriptive change name, via `/plan-change` |
 | `using-git-worktrees` | Parallel feature work during `/plan-change` |
+| `deploy` | Release to staging/production, via `/deploy` |
+| `onboarding` | A new developer is starting on the project |
 | `deploy` | Release to staging/production, via `/deploy` |
 | `onboarding` | A new developer is starting on the project |
 

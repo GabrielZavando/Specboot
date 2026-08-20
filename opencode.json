@@ -70,7 +70,7 @@
       "agent": "plan"
     },
     "plan-change": {
-      "template": "Generate OpenSpec specs and tasks from a ticket with a descriptive brief name.\n\n1. Verify the ticket ID and title are provided (format: 'TICKET-ID: \"Title here\"')\n2. Derive a 2-4 word kebab-case change name from the ticket title using the convention:\n   - Identify the core action/verb\n   - Identify the primary noun/entity\n   - Optionally prepend domain prefix (auth-, user-, invoice-)\n   - Combine into verb-led kebab-case, max 4 words\n   - Discard the ticket ID entirely\n3. Example derivation: 'PROJ-123: \"Implementar reset de contraseña\"' → 'auth-reset'\n4. Run: openspec new change {derived-name}\n5. Review generated artifacts in .openspec/changes/{derived-name}/\n6. Display the tasks.md for confirmation",
+      "template": "{file:ai-specs/skills/plan-change/SKILL.md}\n\nFollow the process above for the provided ticket.",
       "description": "Generate OpenSpec specs and tasks from a ticket with descriptive brief name",
       "agent": "plan"
     },
