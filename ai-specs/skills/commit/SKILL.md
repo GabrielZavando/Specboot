@@ -4,7 +4,7 @@
 
 Create semantic commits following Conventional Commits and manage Pull Requests when finishing an OpenSpec change.
 
-**Use when:** Executing `/commit` in the SDD workflow, after `/verify` and successful `/adversarial-review`.
+**Use when:** Executing `/commit` in the SDD workflow, after `/verify` passes. If `/adversarial-review` was used as a rescue tool during this change, it must also pass before committing.
 
 **Reference:** For Conventional Commits format, allowed types, semver, and commitlint configuration, see `ai-specs/reference/commits.md`.
 
