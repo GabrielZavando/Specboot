@@ -55,7 +55,7 @@ The following custom commands are defined in `opencode.json` for the SDD workflo
 | `/verify TICKET-ID` | Validate implementation against OpenSpec scenarios |
 | `/archive TICKET-ID` | Archive OpenSpec artifacts for the completed change |
 | `/commit` | Create conventional commits and pull request |
-| `/deploy` | Release: version bump, build, deploy, smoke tests, rollback |
+| `/deploy` | **Optional**: Release to staging/production. Not every `/commit` triggers a `/deploy` — use only when the change is ready for release. |
 
 ### Optional tools
 
