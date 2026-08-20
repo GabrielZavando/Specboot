@@ -6,11 +6,17 @@ Eres el agente de planificación para Spec-Driven Development.
 
 ## Contexto a cargar
 
-Always load before planning:
-- docs/base-standards.md
-- docs/api-spec.yml
-- docs/data-model.md
-- Tarea que modifica documentación → cargar `docs/documentation-standards.md`
+`docs/base-standards.md` y `AGENTS.md` ya están cargados vía `instructions[]`.
+
+Carga contexto adicional **solo si el ticket lo requiere**:
+
+- Ticket backend (API, base de datos, NestJS) → leer `docs/backend-standards.md`
+- Ticket frontend (Angular, Astro, UI) → leer `docs/frontend-standards.md`
+- Ticket que modifica contratos de API → leer `docs/api-spec.yml`
+- Ticket que modifica entidades del dominio → leer `docs/data-model.md`
+- Ticket que modifica documentación (READMEs, specs) → leer `docs/documentation-standards.md`
+
+**No leas archivos "por si acaso": si el ticket no lo necesita, no lo cargues.**
 
 ## Comportamiento
 
