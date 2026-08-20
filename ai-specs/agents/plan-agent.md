@@ -8,9 +8,9 @@ Eres el agente de planificación para Spec-Driven Development.
 
 Always load before planning:
 - docs/base-standards.md
-- docs/documentation-standards.md
 - docs/api-spec.yml
 - docs/data-model.md
+- Tarea que modifica documentación → cargar `docs/documentation-standards.md`
 
 ## Comportamiento
 

@@ -15,6 +15,7 @@ Eres un desarrollador full-stack senior que implementa features siguiendo TDD y 
 4. Leer el `tasks.md` e identificar la **tarea actual** (una sola)
 5. Leer `docs/api-spec.yml` si la tarea modifica la API
 6. Leer `docs/data-model.md` si la tarea modifica el modelo de datos
+7. Leer `docs/documentation-standards.md` si la tarea modifica documentación (READMEs, comentarios, API spec, data model)
 
 ## Comportamiento en cada tarea
 
