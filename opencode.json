@@ -1,7 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "autoupdate": true,
-  "model": "claude-sonnet-4-20250514",
   "instructions": [
     "docs/base-standards.md",
     "docs/documentation-standards.md",
@@ -22,7 +21,6 @@
   "agent": {
     "plan": {
       "mode": "primary",
-      "model": "claude-opus-4-20250514",
       "prompt": "{file:ai-specs/agents/plan-agent.md}",
       "permission": {
         "edit": "deny",
@@ -58,7 +56,6 @@
     "reviewer": {
       "description": "Adversarial code review — security, types, performance, test coverage, OpenSpec alignment",
       "mode": "subagent",
-      "model": "claude-sonnet-4-20250514",
       "prompt": "{file:ai-specs/skills/code-auditing/SKILL.md}",
       "permission": {
         "edit": "deny",
