@@ -85,8 +85,8 @@
       "agent": "build"
     },
     "adversarial-review": {
-      "template": "{file:ai-specs/skills/code-auditing/SKILL.md}\n\nRun the 7-phase audit on the current codebase changes.",
-      "description": "Systematic 7-phase code quality audit (rescue tool, not part of standard cycle)",
+      "template": "{file:ai-specs/skills/code-auditing/SKILL.md}\n\nRun the audit process on the current codebase changes.",
+      "description": "Systematic code quality audit (rescue tool, not part of standard cycle)",
       "agent": "reviewer"
     },
     "archive": {
