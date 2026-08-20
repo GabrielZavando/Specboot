@@ -6,48 +6,7 @@ Create semantic commits following Conventional Commits and manage Pull Requests 
 
 **Use when:** Executing `/commit` in the SDD workflow, after `/verify` and successful `/adversarial-review`.
 
----
-
-## Commit Format
-
-```
-<type>(<scope>): <short description in English>
-
-[optional body — what and why, not how]
-
-[optional footer — BREAKING CHANGE, Closes #ticket]
-```
-
-### Allowed Types
-
-| Type | When to Use |
-|------|-------------|
-| `feat` | New functionality for the user |
-| `fix` | Bug fix |
-| `docs` | Documentation only |
-| `refactor` | Refactor with no behavior change |
-| `test` | Add or fix tests |
-| `chore` | Build, dependencies, config |
-| `perf` | Performance improvement |
-| `ci` | CI/CD changes |
-| `revert` | Revert previous commit |
-
-### Examples
-
-```
-feat(auth): add password reset endpoint
-
-fix(orders): prevent duplicate submission on slow connections
-Closes #SCRUM-42
-
-docs(api): update payment endpoint spec with new error codes
-
-refactor(user): extract email validation to shared util
-
-test(auth): add integration tests for password reset flow
-
-chore(deps): upgrade bcrypt from 5.0.1 to 5.1.0
-```
+**Reference:** For Conventional Commits format, allowed types, semver, and commitlint configuration, see `docs/documentation-standards.md` § "Conventional Commits — Referencia".
 
 ---
 
@@ -55,7 +14,7 @@ chore(deps): upgrade bcrypt from 5.0.1 to 5.1.0
 
 ### Step 1: Verify Preconditions
 
-```bash
+```
 # All tests must pass
 npm test
 
@@ -64,14 +23,13 @@ npm run lint
 
 # Build succeeds
 npm run build
-
 ```
 
 **If any check fails:** Fix before committing.
 
 ### Step 2: Review Changes
 
-```bash
+```
 # See all changes
 git status
 
@@ -88,7 +46,7 @@ Group into logical commits. One commit = one logical change.
 
 **Commits grouping example for a feature:**
 
-```bash
+```
 # Commit 1: Documentation changes
 git add docs/api-spec.yml docs/data-model.md
 git commit -m "docs(api): update spec with new auth endpoints"
@@ -104,7 +62,7 @@ git commit -m "feat(auth): implement password reset flow"
 
 ### Step 4: Push Commits
 
-```bash
+```
 git push origin feature/SCRUM-42
 ```
 
@@ -112,7 +70,7 @@ git push origin feature/SCRUM-42
 
 Use the template in `.github/pull_request_template.md`:
 
-```bash
+```
 # Create PR with conventional format
 gh pr create \
   --title "feat(auth): implement password reset" \
@@ -129,7 +87,7 @@ Or push to remote and create PR via GitHub UI.
 
 Use `.github/pull_request_template.md`. The key sections:
 
-```markdown
+```
 ## What changes
 
 <!-- Brief description of changes -->
@@ -169,7 +127,7 @@ Use `.github/pull_request_template.md`. The key sections:
 ## Common Mistakes
 
 | ❌ Wrong | ✅ Correct |
-|----------|-----------|
+| --- | --- |
 | `git commit -m "fixed stuff"` | `fix(auth): prevent duplicate submission` |
 | `feat: Add new feature` | `feat(checkout): add coupon code support` |
 | `Update test.js` | `test(auth): add password reset tests` |
