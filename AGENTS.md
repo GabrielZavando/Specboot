@@ -8,8 +8,8 @@ This file is read automatically by OpenCode.
 
 El resto del contexto es condicional a la tarea y el agente activo ya lo resuelve por ti:
 
-- Agente `backend` / rol backend en `build` → carga `docs/backend-standards.md`
-- Agente `frontend` / rol frontend en `build` → carga `docs/frontend-standards.md`
+- Tarea backend detectada por `build` → carga `docs/backend-standards.md`
+- Tarea frontend detectada por `build` → carga `docs/frontend-standards.md`
 - Tarea que modifica la API → carga `docs/api-spec.yml`
 - Tarea que modifica el modelo de datos → carga `docs/data-model.md`
 - Tarea de deploy → carga `docs/deploy-standards.md` (vía skill `deploy`)
