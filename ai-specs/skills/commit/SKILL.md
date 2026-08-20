@@ -6,7 +6,7 @@ Create semantic commits following Conventional Commits and manage Pull Requests 
 
 **Use when:** Executing `/commit` in the SDD workflow, after `/verify` and successful `/adversarial-review`.
 
-**Reference:** For Conventional Commits format, allowed types, semver, and commitlint configuration, see `docs/documentation-standards.md` § "Conventional Commits — Referencia".
+**Reference:** For Conventional Commits format, allowed types, semver, and commitlint configuration, see `ai-specs/reference/commits.md`.
 
 ---
 
