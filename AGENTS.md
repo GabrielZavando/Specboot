@@ -30,8 +30,6 @@ Skills live in `ai-specs/skills/`. When a request matches one of the triggers be
 | `using-git-worktrees` | Parallel feature work during `/plan-change` |
 | `deploy` | Release to staging/production, via `/deploy` |
 | `onboarding` | A new developer is starting on the project |
-| `deploy` | Release to staging/production, via `/deploy` |
-| `onboarding` | A new developer is starting on the project |
 
 ### Optional skills (use only when needed)
 

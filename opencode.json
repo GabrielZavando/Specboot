@@ -18,34 +18,17 @@
     "webfetch": "allow"
   },
   "agent": {
-  "plan": {
-    "mode": "primary",
-    "prompt": "{file:ai-specs/agents/plan-agent.md}",
-    "permission": {
-      "edit": "deny",
-      "bash": {
-        "openspec *": "allow"
+    "plan": {
+      "mode": "primary",
+      "prompt": "{file:ai-specs/agents/plan-agent.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "openspec *": "allow"
+        }
       }
-    }
-  },
-  "build": {
-    "mode": "primary",
-    "prompt": "{file:ai-specs/agents/build-agent.md}",
-    "permission": {
-      "edit": "allow",
-      "bash": "allow"
-    }
-  },
-  "reviewer": {
-    "description": "Adversarial code review — security, types, performance, test coverage, OpenSpec alignment",
-    "mode": "subagent",
-    "prompt": "{file:ai-specs/skills/code-auditing/SKILL.md}",
-    "permission": {
-      "edit": "deny",
-      "bash": "deny"
-    }
-  }
-}
+    },
+    "build": {
       "mode": "primary",
       "prompt": "{file:ai-specs/agents/build-agent.md}",
       "permission": {
