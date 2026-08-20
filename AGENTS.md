@@ -4,19 +4,18 @@ This file is read automatically by OpenCode.
 
 ## Context to load
 
-Always read these files before starting any work:
+`docs/base-standards.md` y este archivo se cargan siempre automáticamente vía `instructions[]`.
 
-- `docs/base-standards.md` — core principles, single source of truth
-- `docs/backend-standards.md` — for any backend task
-- `docs/frontend-standards.md` — for any frontend task
-- `docs/deploy-standards.md` — for any deploy/release task
-- `docs/documentation-standards.md` — for docs, API spec, or data model changes
-- `docs/api-spec.yml` — API contracts (update before implementing API changes)
-- `docs/data-model.md` — domain entities and database conventions
+El resto del contexto es condicional a la tarea y el agente activo ya lo resuelve por ti:
 
-For implementation, adopt the relevant agent role:
-- Backend work → `ai-specs/agents/backend-developer.md`
-- Frontend work → `ai-specs/agents/frontend-developer.md`
+- Agente `backend` / rol backend en `build` → carga `docs/backend-standards.md`
+- Agente `frontend` / rol frontend en `build` → carga `docs/frontend-standards.md`
+- Tarea que modifica la API → carga `docs/api-spec.yml`
+- Tarea que modifica el modelo de datos → carga `docs/data-model.md`
+- Tarea de deploy → carga `docs/deploy-standards.md` (vía skill `deploy`)
+- Tarea de docs → carga `docs/documentation-standards.md`
+
+**No leas estos archivos "por si acaso": si la tarea actual no los necesita, no los cargues.**
 
 ## Skills
 
@@ -61,6 +60,8 @@ The following custom commands are defined in `opencode.json` for the SDD workflo
 | --- | --- | --- |
 | `/enrich-us TICKET-ID` | Enrich a vague user story before planning | Only for poorly formed tickets without acceptance criteria |
 | `/adversarial-review` | Systematic code quality audit | Rescue tool: use when tests fail unexpectedly or implementation diverges from spec |
+
+## Non-negotiable rules
 
 1. One task at a time. Never skip ahead.
 2. Write the failing test first. Never write production code before a failing test exists.
