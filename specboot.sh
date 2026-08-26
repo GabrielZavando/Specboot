@@ -203,7 +203,11 @@ check_ci_cd() {
 
 check_refs() {
   echo "→ Verificando integridad referencial (check-refs.sh)..."
-  bash check-refs.sh || ERRORS=$((ERRORS + 1))
+  if bash check-refs.sh; then
+    return 0
+  fi
+  ERRORS=$((ERRORS + 1))
+  return 1
 }
 
 print_summary() {
@@ -256,6 +260,8 @@ run_ci() {
   echo "🔍 Zavando Specboot — Validation (CI)"
   echo "================================"
   echo ""
+  check_refs || exit 1
+  echo ""
   check_file_structure
   echo ""
   check_placeholders
@@ -269,8 +275,6 @@ run_ci() {
   check_git_hooks
   echo ""
   check_ci_cd
-  echo ""
-  check_refs
   echo ""
   print_summary
 
