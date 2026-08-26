@@ -26,7 +26,7 @@ Skills live in `ai-specs/skills/`. When a request matches one of the triggers be
 | Skill | Trigger |
 | --- | --- |
 | `commit` | End of the SDD cycle, via `/commit` |
-| `plan-change` | Generate OpenSpec specs with descriptive change name, via `/plan-change` |
+| `plan-change` | Generate OpenSpec specs with descriptive change name, via `/plan-change`. Persisted artifacts from `enrich-us` live in `.openspec/tickets/`. |
 | `using-git-worktrees` | Parallel feature work during `/plan-change` |
 | `deploy` | Release to staging/production, via `/deploy` |
 | `onboarding` | A new developer is starting on the project |
@@ -48,11 +48,11 @@ The following custom commands are defined in `opencode.json` for the SDD workflo
 
 | Command | Description |
 | --- | --- |
-| `/plan-change TICKET-ID` | Generate OpenSpec specs and tasks from a ticket |
+| `/plan-change TICKET-ID:"[tag] Título"` | Generate validated, context-enriched OpenSpec specs from a ticket. Tag is optional (`[backend\|frontend\|api\|docs\|fullstack]`) and drives selective standards loading; if omitted, the agent infers it and asks for confirmation. If `.openspec/tickets/{TICKET-ID}-enriched.md` exists (from `/enrich-us`), it is used as the primary source. |
 | `/apply TICKET-ID` | Implement tasks from OpenSpec artifacts (TDD) |
-| `/verify TICKET-ID` | Validate implementation against OpenSpec scenarios |
-| `/archive TICKET-ID` | Archive OpenSpec artifacts for the completed change |
-| `/commit` | Create conventional commits and pull request |
+| `/verify TICKET-ID` | Execute tests and verify the active change works (files per Suggested Path, traceability, delta-incremental), reporting a compact YAML summary. Read-only agent. Ticket ID taken from the active change in `.openspec/changes/`. |
+| `/archive TICKET-ID` | Close the SDD cycle: pre-checks, preview of specs updated, `openspec archive`, append to manifest JSON, stage commit for `/commit`, cleanup. Token-light (no content reading). Ticket ID taken from the active change in `.openspec/changes/`. |
+| `/commit` | Create conventional commits and pull request (token-light diff, commit plan approval, TICKET-ID auto-extracted from proposal.md, push/PR only after explicit confirmation. Reuses openspec/ staged by /archive). |
 | `/deploy` | **Optional**: Release to staging/production. Not every `/commit` triggers a `/deploy` — use only when the change is ready for release. |
 
 ### Optional tools
@@ -60,7 +60,7 @@ The following custom commands are defined in `opencode.json` for the SDD workflo
 | Command | Description | When to use |
 | --- | --- | --- |
 | `/enrich-us TICKET-ID` | Enrich a vague user story before planning | Only for poorly formed tickets without acceptance criteria |
-| `/adversarial-review` | Systematic code quality audit | Rescue tool: use when tests fail unexpectedly or implementation diverges from spec |
+| `/adversarial-review` | Adversarial red-team code audit — runs eslint+dependency-cruiser+npm audit, emits SHIP/NO-SHIP verdict, complements /verify (does NOT re-check OpenSpec alignment). Read-only agent. Ticket ID taken from the active change in `.openspec/changes/`. |
 
 ## Non-negotiable rules
 
