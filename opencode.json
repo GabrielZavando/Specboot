@@ -22,9 +22,13 @@
       "mode": "primary",
       "prompt": "{file:ai-specs/agents/plan-agent.md}",
       "permission": {
-        "edit": "deny",
+        "edit": {
+          ".openspec/**": "allow",
+          "*": "deny"
+        },
         "bash": {
-          "openspec *": "allow"
+          "openspec *": "allow",
+          "*": "deny"
         }
       }
     },
@@ -36,25 +40,47 @@
         "bash": "allow"
       }
     },
+    "verify": {
+      "mode": "primary",
+      "prompt": "{file:ai-specs/agents/verify-agent.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "openspec *": "allow",
+          "git diff": "allow",
+          "git status": "allow",
+          "git log": "allow",
+          "git merge-base": "allow",
+          "npm test *": "allow",
+          "npx vitest *": "allow",
+          "npx jest *": "allow",
+          "pytest *": "allow",
+          "rg *": "allow",
+          "ls *": "allow",
+          "cat *": "allow",
+          "*": "deny"
+        }
+      }
+    },
     "reviewer": {
-      "description": "Adversarial code review — security, types, performance, test coverage, OpenSpec alignment",
+      "description": "Adversarial red-team code audit — security, robustness, SOLID, tradeoffs. Runs eslint+dependency-cruiser+npm audit, emits SHIP/NO-SHIP verdict. Complements /verify.",
       "mode": "subagent",
       "prompt": "{file:ai-specs/skills/code-auditing/SKILL.md}",
       "permission": {
         "edit": "deny",
-        "bash": "deny"
+        "bash": {
+          "npm audit *": "allow",
+          "npx eslint *": "allow",
+          "npx dependency-cruiser *": "allow",
+          "git diff *": "allow",
+          "git status": "allow",
+          "*": "deny"
+        }
       }
-    }
-  },
-  "command": {
-    "enrich-us": {
-      "template": "{file:ai-specs/skills/enrich-us/SKILL.md}\n\nFollow the process above for the provided ticket or user story.",
-      "description": "Enrich a vague user story before planning (optional: only for poorly formed tickets)",
-      "agent": "plan"
     },
     "plan-change": {
       "template": "{file:ai-specs/skills/plan-change/SKILL.md}\n\nFollow the process above for the provided ticket.",
-      "description": "Generate OpenSpec specs and tasks from a ticket with descriptive brief name",
+      "description": "Generate validated, context-enriched OpenSpec specs from a ticket (supports [backend|frontend|api|docs|fullstack] tags and enriched artifacts)",
       "agent": "plan"
     },
     "apply": {
@@ -63,23 +89,23 @@
       "agent": "build"
     },
     "verify": {
-      "template": "1. Read the OpenSpec scenarios from .openspec/<change>/scenarios.md\n2. Read the current implementation\n3. Verify each scenario is covered\n4. Run the test suite\n5. Report: what passes, what fails, what's missing",
-      "description": "Validate implementation against OpenSpec scenarios",
-      "agent": "build"
+      "template": "{file:ai-specs/skills/verify/SKILL.md}\n\nVerify the active OpenSpec change.",
+      "description": "Execute tests and verify the active change works (files per Suggested Path, traceability, delta-incremental), reporting a compact YAML summary. Read-only agent.",
+      "agent": "verify"
     },
     "adversarial-review": {
       "template": "{file:ai-specs/skills/code-auditing/SKILL.md}\n\nRun the audit process on the current codebase changes.",
-      "description": "Systematic code quality audit (rescue tool, not part of standard cycle)",
+      "description": "Adversarial red-team code audit — runs eslint+dependency-cruiser+npm audit, emits SHIP/NO-SHIP verdict, complements /verify (does NOT re-check OpenSpec alignment). Read-only agent.",
       "agent": "reviewer"
     },
     "archive": {
-      "template": "Run 'openspec archive' for the active change.\n\n1. Ensure all tasks in tasks.md are completed\n2. Run: openspec archive\n3. Confirm the change is archived",
-      "description": "Archive OpenSpec artifacts for the completed change",
-      "agent": "build"
+      "template": "{file:ai-specs/skills/archive/SKILL.md}\n\nArchive a completed OpenSpec change (preps commit for /commit). Pre-checks, preview of specs updated, openspec archive CLI, manifest JSON, staging for /commit, cleanup.",
+      "description": "Close the SDD cycle: pre-checks, preview, openspec archive, manifest JSON, staging for /commit, cleanup. Token-light (no content reading).",
+      "agent": "archive"
     },
     "commit": {
-      "template": "{file:ai-specs/skills/commit/SKILL.md}\n\nFollow the commit process for the current changes.",
-      "description": "Create conventional commits and pull request",
+      "template": "{file:ai-specs/skills/commit/SKILL.md}\n\n{file:ai-specs/reference/commits.md}\n\nFollow the commit process for the current changes.",
+      "description": "Create conventional commits and pull request (token-light diff, commit plan approval, TICKET-ID auto, push/PR confirmation)",
       "agent": "build"
     },
     "deploy": {
