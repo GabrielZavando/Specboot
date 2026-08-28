@@ -90,9 +90,9 @@ commitlint: ## Lint commit messages (stack-independent)
 refs: ## Check referential integrity of {file:...} references
 	bash check-refs.sh
 
-solid-lint: ## Run SOLID/POO static analysis (Ticket 4). Stack-agnostic: detects Node or Python and fails loudly if code exists but no config applies.
-	@# Resolve the source root(s). Prefer an explicit .specboot.json "services"
-	# glob when present (set by TICKET-C); otherwise fall back to src/ / app/.
+solid-lint: ## Run SOLID/POO static analysis (Ticket 4). Stack-agnostic: detects Node or Python, honors .specboot.json services glob, and fails loudly if code exists but no config applies.
+	@# Resolve the service root(s). Prefer an explicit .specboot.json "services" glob
+	# (TICKET-C) when present; otherwise fall back to a single src/ or app/.
 	ROOT_DIRS="$$(node -e "try{const s=require('./.specboot.json').services;s&&s.length&&process.stdout.write(s.join(' '))}catch(e){}" 2>/dev/null)"; \
 	if [ -z "$$ROOT_DIRS" ]; then \
 	  if [ -d src ]; then ROOT_DIRS="src"; \
@@ -106,24 +106,26 @@ solid-lint: ## Run SOLID/POO static analysis (Ticket 4). Stack-agnostic: detects
 	ran_any=0; \
 	if [ -f package.json ]; then \
 	  ran_any=1; \
-	  if [ -f templates/ci/eslintrc.backend.js ] && [ -d src ]; then \
-	    echo "  → Backend ESLint (NestJS)"; \
-	    npx eslint -c templates/ci/eslintrc.backend.js 'src/**/*.{ts,tsx}' || exit 1; \
-	  fi; \
-	  if [ -f templates/ci/eslintrc.frontend.js ] && [ -d src ] && [ -f angular.json ]; then \
-	    echo "  → Frontend ESLint (Angular)"; \
-	    npx eslint -c templates/ci/eslintrc.frontend.js 'src/**/*.{ts,tsx}' || exit 1; \
-	    echo "  → madge circular deps (Angular)"; \
-	    npx madge --Circular --extensions ts --exclude '\.spec\.ts$$' src/ || exit 1; \
-	  fi; \
-	  if [ -f templates/ci/eslintrc.astro.js ] && [ -d src ]; then \
-	    echo "  → Astro ESLint"; \
-	    npx eslint -c templates/ci/eslintrc.astro.js 'src/**/*.{ts,astro}' || exit 1; \
-	  fi; \
-	  if [ -f templates/ci/.dependency-cruiser.js ] && [ -d src ]; then \
-	    echo "  → dependency-cruiser (DIP enforcement)"; \
-	    npx dependency-cruiser --config templates/ci/.dependency-cruiser.js src/ || exit 1; \
-	  fi; \
+	  for d in $$ROOT_DIRS; do \
+	    if [ -f templates/ci/eslintrc.backend.js ] && [ -d "$$d" ]; then \
+	      echo "  → Backend ESLint (NestJS) in $$d"; \
+	      npx eslint -c templates/ci/eslintrc.backend.js "$$d/**/*.{ts,tsx}" || exit 1; \
+	    fi; \
+	    if [ -f templates/ci/eslintrc.frontend.js ] && [ -d "$$d" ] && [ -f angular.json ]; then \
+	      echo "  → Frontend ESLint (Angular) in $$d"; \
+	      npx eslint -c templates/ci/eslintrc.frontend.js "$$d/**/*.{ts,tsx}" || exit 1; \
+	      echo "  → madge circular deps (Angular)"; \
+	      npx madge --Circular --extensions ts --exclude '\.spec\.ts$$' "$$d" || exit 1; \
+	    fi; \
+	    if [ -f templates/ci/eslintrc.astro.js ] && [ -d "$$d" ]; then \
+	      echo "  → Astro ESLint in $$d"; \
+	      npx eslint -c templates/ci/eslintrc.astro.js "$$d/**/*.{ts,astro}" || exit 1; \
+	    fi; \
+	    if [ -f templates/ci/.dependency-cruiser.js ] && [ -d "$$d" ]; then \
+	      echo "  → dependency-cruiser (DIP enforcement) in $$d"; \
+	      npx dependency-cruiser --config templates/ci/.dependency-cruiser.js "$$d" || exit 1; \
+	    fi; \
+	  done; \
 	elif [ -f pyproject.toml ] || [ -f requirements.txt ]; then \
 	  ran_any=1; \
 	  if [ -f templates/ci/ruff.toml ]; then \
