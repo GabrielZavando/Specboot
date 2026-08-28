@@ -13,7 +13,7 @@ Repositorio de **configuración y estándares** para que los agentes IA tengan c
 
 Incluye:
 - Estándares de backend, frontend y documentación
-- Agentes IA cableados vía `{file:...}`: `plan`, `build` (full-stack), `verify`, `archive`, `reviewer`, y los subagentes `backend` / `frontend` (despachados por `/apply`)
+- Agentes IA cableados vía ``file:...``: `plan`, `build` (full-stack), `verify`, `archive`, `reviewer`, y los subagentes `backend` / `frontend` (despachados por `/apply`)
 - Skills reutilizables (enriquecer stories, commits, auditing, deploy, onboarding)
 - Comandos personalizados para el ciclo SDD completo
 - Contrato OpenAPI y modelo de datos
@@ -145,11 +145,11 @@ npm update @gabrielzavando/specboot
 ├── .specboot.example.json         # Plantilla de .specboot.json (raíces mono/multi-repo)
 ├── Makefile                       # CI stack-agnostic: make install/lint/test/build/audit/commitlint/solid-lint
 ├── specboot.sh                    # Setup + validación SDD (--init / --ci)
-├── check-refs.sh                  # Validación de integridad referencial ({file:...})
+├── check-refs.sh                  # Validación de integridad referencial (`file:...`)
 ├── update.sh                      # Sync tooling a proyectos y bump de versión
 ├── CHANGELOG.md                   # Historial de versiones (Keep a Changelog)
 ├── tests/                         # Tests del template
-│   ├── check-refs-test.sh          #   Integridad referencial {file:...}
+│   ├── check-refs-test.sh          #   Integridad referencial `file:...`
 │   ├── update-test.sh              #   sync tool (update.sh)
 │   └── solid-templates-test.sh     #   meta-validación CI templates SOLID (Ticket 4)
 ├── .env.example                   # Template de variables entorno
@@ -296,7 +296,7 @@ Ejecuta `bash specboot.sh --ci` para validar la configuración en modo CI (sin e
 # Validación estricta para CI (exit 1 si hay errores)
 bash specboot.sh --ci
 
-# Integridad referencial: {file:...} en opencode.json y SKILL.md
+# Integridad referencial: `file:...` en opencode.json y SKILL.md
 bash check-refs.sh
 
 # Setup local: verifica estructura del proyecto
@@ -311,7 +311,7 @@ bash specboot.sh --help
 ✅ Detecta placeholders sin reemplazar
 ✅ Valida JSON de opencode.json
 ✅ Verifica skills y ejemplos
-✅ Verifica integridad referencial de {file:...} (check-refs.sh)
+✅ Verifica integridad referencial de `file:...` (check-refs.sh)
 
 ## Versionado y actualización
 
@@ -338,7 +338,7 @@ de cambios vive en `CHANGELOG.md` (formato Keep a Changelog).
 
 **¿Puedo fijar un modelo?** Sí (opcional). Añade `"model"` a nivel superior en `opencode.json` si quieres usar un proveedor distinto al de tu sesión activa; si lo omites, OpenCode usa el modelo activo.
 
-**¿Es solo OpenCode?** Sí. Este template es **OpenCode-only**: los agentes y skills viven en `ai-specs/` y se consumen vía `{file:...}` en `opencode.json`. No se crean symlinks ni configuraciones para Claude Code (`.claude/`) ni Cursor (`.cursor/`). Ver `docs/base-standards.md` §6.
+**¿Es solo OpenCode?** Sí. Este template es **OpenCode-only**: los agentes y skills viven en `ai-specs/` y se consumen vía ``file:...`` en `opencode.json`. No se crean symlinks ni configuraciones para Claude Code (`.claude/`) ni Cursor (`.cursor/`). Ver `docs/base-standards.md` §6.
 
 **¿Puedo usar esto con proyecto existente?** Sí. Copia el template y ejecuta los pasos de personalización.
 

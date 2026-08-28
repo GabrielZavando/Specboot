@@ -32,7 +32,7 @@ ai-specs/
 
 > Architecture: agent *definitions* live in `.opencode/agents/*.md` (loaded by OpenCode
 > with frontmatter `mode`/`permission`). Their *role content* is written once in
-> `ai-specs/agents/*.md` and injected via `{file:...}`. This avoids duplicating the
+> `ai-specs/agents/*.md` and injected via ``file:...``. This avoids duplicating the
 > role text and keeps the per-task context load minimal.
 
 ### Native agents (`.opencode/agents/`)
@@ -43,7 +43,7 @@ ai-specs/
 - **archive** (`archive.md`) — closes the SDD change and stages for commit.
 - **reviewer** (`reviewer.md`) — adversarial red-team audit (`/adversarial-review`).
 
-### Subagents (wired via `{file:...}`, dispatched by `build`)
+### Subagents (wired via ``file:...``, dispatched by `build`)
 
 - **backend** (`backend.md` → `ai-specs/agents/backend-developer.md`) — backend tasks (NestJS/API/DB).
 - **frontend** (`frontend.md` → `ai-specs/agents/frontend-developer.md`) — frontend tasks (Angular/Astro).
