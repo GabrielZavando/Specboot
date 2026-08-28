@@ -3,7 +3,22 @@
 
 set -e
 
-echo "🔍 Validating references and skill registration..."
+# Allow running against a specific root directory (used by tests/fixtures).
+# Usage: bash check-refs.sh [--root <dir>]
+ROOT_DIR="."
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --root) ROOT_DIR="${2:-.}"; shift 2 ;;
+    *) shift ;;
+  esac
+done
+if [ ! -d "$ROOT_DIR" ]; then
+  echo "❌ Root directory not found: $ROOT_DIR"
+  exit 1
+fi
+cd "$ROOT_DIR"
+
+echo "🔍 Validating references and skill registration... (root: $ROOT_DIR)"
 
 errors=0
 files_checked=0

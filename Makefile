@@ -31,9 +31,14 @@ install: ## Install dependencies (stack-specific)
 	  *)      echo "install: no stack detected — personalize the project and add install steps" ;; \
 	esac
 
+# If a node project does not define a given script, skip it gracefully (the
+# Metadoc template carries a root package.json only for `npm publish` and has no
+# lint/test/build/audit scripts, so CI must not fail when they are absent).
+node_has_script = $(shell node -e "try{process.exit(Object.keys(require('./package.json').scripts||{}).includes('$(1)')?0:1)}catch(e){process.exit(1)}" 2>/dev/null && echo yes || echo no)
+
 lint: ## Lint and static analysis (stack-specific)
 	@case "$(STACK)" in \
-	  node)   npm run lint ;; \
+	  node)   if [ "$(call node_has_script,lint)" = "yes" ]; then npm run lint; else echo "→ lint: no lint script in package.json — skipping (Metadoc template)"; fi ;; \
 	  php)    composer lint ;; \
 	  python) ruff check . ;; \
 	  go)     go vet ./... ;; \
@@ -44,7 +49,7 @@ lint: ## Lint and static analysis (stack-specific)
 
 test: ## Run the test suite (stack-specific)
 	@case "$(STACK)" in \
-	  node)   npm test ;; \
+	  node)   if [ "$(call node_has_script,test)" = "yes" ]; then npm test; else echo "→ test: no test script in package.json — skipping (Metadoc template)"; fi ;; \
 	  php)    composer test ;; \
 	  python) pytest ;; \
 	  go)     go test ./... ;; \
@@ -55,7 +60,7 @@ test: ## Run the test suite (stack-specific)
 
 build: ## Build the project (stack-specific)
 	@case "$(STACK)" in \
-	  node)   npm run build ;; \
+	  node)   if [ "$(call node_has_script,build)" = "yes" ]; then npm run build; else echo "→ build: no build script in package.json — skipping (Metadoc template)"; fi ;; \
 	  php)    composer install --no-dev --optimize-autoloader ;; \
 	  python) pip install -e . ;; \
 	  go)     go build ./... ;; \
@@ -65,7 +70,7 @@ build: ## Build the project (stack-specific)
 
 audit: ## Security audit (stack-specific)
 	@case "$(STACK)" in \
-	  node)   npm audit --audit-level=high ;; \
+	  node)   if [ "$(call node_has_script,audit)" = "yes" ]; then npm audit --audit-level=high; else echo "→ audit: no audit script in package.json — skipping (Metadoc template)"; fi ;; \
 	  php)    composer audit ;; \
 	  python) pip-audit ;; \
 	  go)     go list -m -u ;; \
