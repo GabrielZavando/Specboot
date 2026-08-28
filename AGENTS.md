@@ -72,10 +72,10 @@ El template no fija ningún modelo en `opencode.json` — el agente usa el model
 | `/enrich-us TICKET-ID` | Enrich a vague user story before planning | Only for poorly formed tickets without acceptance criteria |
 | `/adversarial-review` | Adversarial red-team code audit — runs eslint+dependency-cruiser+npm audit, emits SHIP/NO-SHIP verdict, complements /verify (does NOT re-check OpenSpec alignment). Read-only agent. Ticket ID taken from the active change in `.openspec/changes/`. |
 
-### Subagents (wired via `{file:...}`)
+### Subagents (wired via {file:} references)
 
 These are dispatched by `/apply` (and can be invoked directly). Each loads its role
-and standards automatically through `{file:...}`, so the primary agent must delegate
+and standards automatically through its {file:} reference, so the primary agent must delegate
 to them instead of re-reading the role docs manually.
 
 | Subagent | File | Use |
