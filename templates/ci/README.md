@@ -17,6 +17,13 @@
 | `.dependency-cruiser.js` | NestJS / Node | `dependency-cruiser` | **DIP** (regla mecánica directa) |
 | `.madge.config.json` | Angular | `madge` | Detección de dependencias circulares (aux) |
 | `package.ci.json` | — | — | Snapshot de `devDependencies` para instalar |
+| `ruff.toml` | Python | `ruff` | SRP (max-lines 100), complejidad 10 (McCabe) |
+| `.importlinter` | Python (Django/LangChain) | `import-linter` | **DIP** (views/api no importan ORM; domain no importa infra) |
+
+> **Stack-agnostic:** `make solid-lint` detects Node (`package.json`) or Python
+> (`pyproject.toml` / `requirements.txt`) and runs the matching toolchain. If
+> application code exists (`src/` or `app/`) but no config applies, it **fails
+> loudly** instead of skipping silently.
 
 Static analysis can **only mechanically verify DIP** (via dependency-cruiser) and
 **numerical thresholds** (lines, complexity). OCP, LSP, ISP are *not* directly
@@ -50,6 +57,24 @@ npm install
 
 # Then wire these into your CI — see docs/ci-standards.md for the exact steps.
 ```
+
+### Python project (Django / LangChain / FastAPI)
+
+```bash
+# From the root of your Specboot-instantiated Python project:
+cp templates/ci/ruff.toml          ruff.toml
+cp templates/ci/.importlinter      .importlinter
+
+# Install the analysis tools (add to your requirements.txt / pyproject):
+pip install "ruff" "import-linter[config]+"
+
+# Then run: make solid-lint  (auto-detects pyproject.toml / requirements.txt)
+```
+
+> The `.importlinter` rule forbids `app.views` / `app.api` from importing
+> `app.models` directly (route through `app.services`), and forbids `app.domain`
+> from importing `django.db` / `sqlalchemy` / `langchain` — the Python equivalent
+> of the Node DIP rule in `.dependency-cruiser.js`.
 
 ## Notes on honest limitations
 
