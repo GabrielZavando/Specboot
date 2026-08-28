@@ -13,10 +13,12 @@ Repositorio de **configuración y estándares** para que los agentes IA tengan c
 
 Incluye:
 - Estándares de backend, frontend y documentación
-- Definiciones de agentes IA (backend-developer, frontend-developer, build)
+- Agentes IA cableados vía `{file:...}`: `plan`, `build` (full-stack), `verify`, `archive`, `reviewer`, y los subagentes `backend` / `frontend` (despachados por `/apply`)
 - Skills reutilizables (enriquecer stories, commits, auditing, deploy, onboarding)
 - Comandos personalizados para el ciclo SDD completo
 - Contrato OpenAPI y modelo de datos
+- **Stack-agnostic**: la CI detecta Node o Python y aplica la toolchain SOLID correspondiente
+- **Modelo agnóstico**: la selección de IA la gestiona tu gestor externo (Omniroute/OpenCode), no el template
 
 ## Quick Start
 
@@ -116,23 +118,32 @@ npm update @gabrielzavando/specboot
 │
 ├── ai-specs/                      # ⚙️ NO EDITAR — configuración IA
 │   ├── README.md                  #   Índice central de agents y skills
-│   ├── agents/                    #   Roles del agente IA
+│   ├── agents/                    #   Roles del agente IA (contenido incrustado vía {file:})
 │   ├── skills/                    #   Flujos reutilizables
 │   └── examples/                  #   Ejemplos OpenSpec
 │
-├── templates/ci/                  # CI configs de referencia (Ticket 4)
+├── .opencode/                     # ⚙️ Agentes y comandos nativos de OpenCode
+│   ├── agents/                    #   plan, build, verify, archive, reviewer (más backend/frontend subagentes)
+│   └── commands/                  #   /plan-change, /apply, /verify, /archive, /commit, /deploy, ...
+│
+├── templates/ci/                  # CI configs de referencia (instanciar en proyecto real)
 │   ├── eslintrc.backend.js         #   ESLint NestJS: max-lines 300, complexity 10
 │   ├── eslintrc.frontend.js        #   ESLint Angular: max-lines 400
 │   ├── eslintrc.astro.js           #   ESLint Astro: max-lines warn
-│   └── .dependency-cruiser.js      #   DIP mecánico (domain|application → no infra/ORM/HTTP)
+│   ├── .dependency-cruiser.js      #   DIP mecánico (domain|application → no infra/ORM/HTTP)
+│   ├── .madge.config.json          #   Detección de dependencias circulares (Angular)
+│   ├── ruff.toml                   #   Ruff (Python): complejidad 10 / línea 100
+│   ├── .importlinter               #   import-linter (Python/Django): DIP por capas
+│   └── package.ci.json             #   Snapshot de devDependencies
 │
 ├── .github/workflows/             # CI/CD
-│   ├── ci.yml                     #   Invoca make lint/test/build/audit/solid-lint/commitlint
+│   ├── ci.yml                     #   Invoca make install/lint/test/build/audit/solid-lint/commitlint/template-integrity
 │   └── deploy.yml                 #   Deploy a staging/production
 │
 ├── AGENTS.md                      # NO EDITAR — instrucciones OpenCode
-├── opencode.json                  # ⚙️ EDITAR (modelo opcional)
-├── Makefile                       # CI stack-agnostic: make install/lint/test/build/audit/commitlint
+├── opencode.json                  # ⚙️ Sin campo "model": el modelo lo gestiona tu gestor (Omniroute/OpenCode)
+├── .specboot.example.json         # Plantilla de .specboot.json (raíces mono/multi-repo)
+├── Makefile                       # CI stack-agnostic: make install/lint/test/build/audit/commitlint/solid-lint
 ├── specboot.sh                    # Setup + validación SDD (--init / --ci)
 ├── check-refs.sh                  # Validación de integridad referencial ({file:...})
 ├── update.sh                      # Sync tooling a proyectos y bump de versión
