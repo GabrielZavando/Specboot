@@ -1,11 +1,11 @@
 {
   "name": "@gabrielzavando/specboot",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Template boilerplate for Spec-Driven Development (SDD) using OpenCode + OpenSpec",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/GabrielZavando/Specboot.git"
+    "url": "git+https://github.com/GabrielZavando/Specboot.git"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
