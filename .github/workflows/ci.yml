@@ -138,6 +138,24 @@ jobs:
       - name: Validate commits
         run: make commitlint
 
+  template-integrity:
+    name: Template Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check referential integrity ({file:...})
+        run: bash tests/check-refs-test.sh
+
+      - name: Validate SOLID CI templates
+        run: bash tests/solid-templates-test.sh
+
+      - name: Validate update.sh sync tool
+        run: bash tests/update-test.sh
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
