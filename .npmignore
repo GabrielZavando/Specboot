@@ -1,0 +1,12 @@
+# Internal repository state — never ship to consumers
+.git/
+.github/
+.opencode/
+openspec/
+tests/
+node_modules/
+.env.example
+.env
+CHANGELOG.md
+*.log
+.DS_Store
