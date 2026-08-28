@@ -100,9 +100,14 @@ Create the folder `.openspec/changes/{derived-name}/` and write, enriched with t
 4. **`tasks.md`** — tasks with subtasks, priority, layer, and estimate, using the project's layer nomenclature:
     - Backend: `domain | application | infrastructure`
     - Frontend: `smart | dumb`
+    - **Mono/multi-repo roots (`.specboot.json`):** if `.specboot.json` exists in the
+      project root, read its `services` glob (e.g. `["src", "services/*/src"]`) and its
+      `layers` map, and use those for the `Suggested Path` / `Test Path` and layer labels
+      instead of the single hardcoded `src/`. Each service is analyzed independently by
+      `make solid-lint` (see TICKET-C). If `.specboot.json` is absent, default to `src/`.
     - If the enriched artifact declares a Diseño de Clases/Componentes, tasks must map to those classes/components — `/apply` will validate the implementation against that design.
-    - **Suggested Path**: `src/...` (archivo de implementación; verify leerá solo este)
-    - **Test Path**: `tests/...` (archivo de test; verify buscará coincidencias aquí)
+    - **Suggested Path**: `<service>/...` (implementation file; verify reads only this; replace `<service>` with each entry of `.specboot.json` `services`, or `src` by default)
+    - **Test Path**: `<service>/tests/...` or `tests/...` (test file; verify looks for matches here)
 
 ### Step 6 — Validate
 

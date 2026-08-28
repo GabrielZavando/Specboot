@@ -78,9 +78,35 @@ npm install
 ```
 
 El workflow `.github/workflows/ci.yml` ya incluye un job `solid-lint` que corre
-estas herramientas **si y solo si existe un `package.json`** (protección via
+estas herramientas **si y solo si existe un `package.json`** (protección vía
 `if: hashFiles('package.json') != ''`). El template Metadoc (sin código) no lo
-dispara; un proyecto real con `package.json` lo corre automáticamente.
+dispara; un proyecto real con `package.json` lo corre automáticamente. Para Python,
+el mismo job detecta `pyproject.toml` / `requirements.txt` y corre `ruff` +
+`import-linter` (ver sección 5).
+
+### Configuración de raíces (mono-repo vs multi-servicio) — `.specboot.json`
+
+Por defecto `make solid-lint` analiza `src/` (o `app/`). En un mono-repo con varios
+servicios, crea un `.specboot.json` en la raíz del proyecto para declarar los
+directorios de código:
+
+```json
+{
+  "services": ["src", "services/payments/src", "services/catalog/src"],
+  "layers": {
+    "backend": "domain | application | infrastructure",
+    "frontend": "smart | dumb"
+  },
+  "stack": "node"
+}
+```
+
+`make solid-lint` itera sobre cada entrada de `services` aplicando la toolchain del
+stack correspondiente. Si existe código de aplicación pero ninguna config aplica,
+el job **falla ruidosamente** (en vez de saltar en silencio). Ver
+[`.specboot.example.json`](../../.specboot.example.json) para una plantilla lista.
+`/plan-change` usa `services` y `layers` para derivar `Suggested Path` / `Test Path`
+y la nomenclatura de capas por servicio.
 
 ## 6. Snippet del job CI
 
@@ -118,7 +144,8 @@ umbrales del Ticket 1, llevan comentarios SOLID explícitos y que el job
 
 ## 8. Fuera de alcance
 
-- Stack Python real (`ruff`/`pylint` + `import-linter`: solo nota YAML diferida).
+- Stack Go / PHP / Rust: aún no tienen configs de referencia en `templates/ci/`;
+  `make solid-lint` fallará ruidosamente si hay código de esos stacks sin config.
 - Artefactos de Tickets 1-3 (docs de estándares, agents, code-auditing Fase 8):
   este doc los referencia, no los modifica.
 - `opencode.json.instructions[]`: este doc se carga bajo demanda, no siempre.

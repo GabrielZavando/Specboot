@@ -1,0 +1,8 @@
+{
+  "services": ["src"],
+  "layers": {
+    "backend": "domain | application | infrastructure",
+    "frontend": "smart | dumb"
+  },
+  "stack": "node"
+}
