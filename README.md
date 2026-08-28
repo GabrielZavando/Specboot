@@ -52,6 +52,56 @@ opencode
 /commit                # commits + PR
 ```
 
+## Instalación como paquete NPM
+
+Specboot se distribuye además como paquete privado `@gabrielzavando/specboot` en GitHub Packages, de modo que las aplicaciones consumidoras pueden instalarlo y actualizarlo con comandos NPM nativos (`npm install` / `npm update`).
+
+### Autenticación (una vez por máquina)
+
+Necesitas un Personal Access Token (PAT) con el scope `read:packages`. Créalo en <https://github.com/settings/tokens>.
+
+Opción A — `npm login` interactivo:
+
+```bash
+npm login --registry=https://npm.pkg.github.com --scope=@gabrielzavando
+# Username: tu usuario de GitHub
+# Password: tu PAT (ghp_xxx)
+# Email: tu email
+```
+
+Opción B — `.npmrc` global (`~/.npmrc`):
+
+```ini
+@gabrielzavando:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=ghp_xxx
+```
+
+### Instalación en un proyecto consumidor
+
+```bash
+npm install --save-dev @gabrielzavando/specboot
+```
+
+### Uso desde `node_modules`
+
+Una vez instalado, los scripts de Specboot viven dentro de `node_modules`:
+
+```bash
+# Inicializar Specboot en tu proyecto
+bash node_modules/@gabrielzavando/specboot/specboot.sh --init
+
+# Sincronizar actualizaciones del template tooling
+bash node_modules/@gabrielzavando/specboot/update.sh
+```
+
+### Actualización
+
+```bash
+npm update @gabrielzavando/specboot
+```
+
+> 💡 Para publicar una nueva versión (maintainers): ejecuta `bash update.sh --bump patch|minor|major`, lo que genera un nuevo tag `vX.Y.Z` y dispara automáticamente el workflow de publicación a GitHub Packages.
+
 ## Estructura del Proyecto
 
 ```
