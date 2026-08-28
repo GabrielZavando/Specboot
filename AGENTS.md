@@ -46,13 +46,23 @@ For extended detail (phases, full descriptions, examples) see `ai-specs/README.m
 
 The following custom commands are defined in `opencode.json` for the SDD workflow:
 
-### Recomendación de modelos (no obligatoria)
+### Modelo de IA (agnóstico — gestionado externamente)
 
-Para fases de **planificación** (`/enrich-us`, `/plan-change`), se recomienda usar un modelo con alto razonamiento (ej: Claude Opus, GPT-4, Gemini 1.5 Pro) si tu proveedor lo soporta. Esto mejora la calidad de specs y escenarios.
+El template **no fija ningún modelo** en `opencode.json`. La selección de modelo la
+gestiona tu gestor externo (p.ej. **Omniroute**) o el modelo activo de tu sesión en
+OpenCode, no este template.
 
-Para fases de **implementación** (`/apply`, `/verify`, `/commit`, `/deploy`), cualquier modelo funcional es suficiente.
+> Nota: una *recomendación* previa sugería usar un modelo de alto razonamiento para
+> las fases de planificación (`/enrich-us`, `/plan-change`). Eso **no está cableado**
+> en el template y, en uso personal con control de tokens, queda a tu criterio
+> activarlo en tu gestor de modelos. El framework NO fuerza ni cambia el modelo por
+> fase por sí mismo.
 
-El template no fija ningún modelo en `opencode.json` — el agente usa el modelo activo de tu sesión.
+Cómo aplicarlo en la práctica:
+- Si quieres más calidad en specs, selecciona un modelo fuerte en tu gestor (Omniroute)
+  antes de correr `/plan-change` — el template lo respetará sin configuración extra.
+- Si priorizas ahorro de tokens, usa un modelo económico; el ciclo SDD funciona igual.
+- `opencode.json` debe seguir sin el campo `model` para preservar esta agnosticidad.
 
 ### Standard cycle
 
