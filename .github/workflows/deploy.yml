@@ -24,11 +24,19 @@ jobs:
     name: Deploy to Staging
     runs-on: ubuntu-latest
     environment: staging
-    if: (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch') && hashFiles('Dockerfile') != ''
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Check Dockerfile exists
+        id: dockerfile
+        run: |
+          if [ ! -f Dockerfile ]; then
+            echo "No Dockerfile found — skipping deploy"
+            exit 0
+          fi
 
       - name: Extract version
         id: version
@@ -105,11 +113,19 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     needs: deploy-staging
-    if: startsWith(github.ref, 'refs/tags/v') && hashFiles('Dockerfile') != ''
+    if: startsWith(github.ref, 'refs/tags/v')
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Check Dockerfile exists
+        id: dockerfile
+        run: |
+          if [ ! -f Dockerfile ]; then
+            echo "No Dockerfile found — skipping deploy"
+            exit 0
+          fi
 
       - name: Extract version
         id: version
@@ -187,10 +203,21 @@ jobs:
     name: Rollback Production
     runs-on: ubuntu-latest
     environment: production
-    if: failure() && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && hashFiles('Dockerfile') != ''
+    if: failure() && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     needs: deploy-production
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Dockerfile exists
+        id: dockerfile
+        run: |
+          if [ ! -f Dockerfile ]; then
+            echo "No Dockerfile found — skipping rollback"
+            exit 0
+          fi
+
       - name: Get previous version
         id: prev_version
         run: |

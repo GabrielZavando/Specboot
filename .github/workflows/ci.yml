@@ -105,7 +105,6 @@ jobs:
   solid-lint:
     name: SOLID / POO Static Analysis
     runs-on: ubuntu-latest
-    if: hashFiles('package.json') != ''
     steps:
       - name: Checkout
         uses: actions/checkout@v4
