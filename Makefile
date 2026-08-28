@@ -23,7 +23,13 @@ help: ## Show available targets
 
 install: ## Install dependencies (stack-specific)
 	@case "$(STACK)" in \
-	  node)   npm ci ;; \
+	  node) \
+	    if node -e "const p=require('./package.json');process.exit((p.dependencies||p.devDependencies)?0:1)" 2>/dev/null; then \
+	      if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then npm ci; \
+	      else npm install; fi; \
+	    else \
+	      echo "→ install: package.json has no dependencies (Metadoc template for npm publish) — skipping"; \
+	    fi ;; \
 	  php)    composer install --no-interaction ;; \
 	  python) pip install -r requirements.txt ;; \
 	  go)     go mod download ;; \
@@ -84,9 +90,22 @@ commitlint: ## Lint commit messages (stack-independent)
 refs: ## Check referential integrity of {file:...} references
 	bash check-refs.sh
 
-solid-lint: ## Run SOLID/POO static analysis (Ticket 4). Skips silently if no package.json (Metadoc template).
-	@if [ -f package.json ]; then \
-	  echo "→ SOLID/POO static analysis (ESLint + sonarjs + dependency-cruiser + madge)"; \
+solid-lint: ## Run SOLID/POO static analysis (Ticket 4). Stack-agnostic: detects Node or Python and fails loudly if code exists but no config applies.
+	@# Resolve the source root(s). Prefer an explicit .specboot.json "services"
+	# glob when present (set by TICKET-C); otherwise fall back to src/ / app/.
+	ROOT_DIRS="$$(node -e "try{const s=require('./.specboot.json').services;s&&s.length&&process.stdout.write(s.join(' '))}catch(e){}" 2>/dev/null)"; \
+	if [ -z "$$ROOT_DIRS" ]; then \
+	  if [ -d src ]; then ROOT_DIRS="src"; \
+	  elif [ -d app ]; then ROOT_DIRS="app"; fi; \
+	fi; \
+	if [ -z "$$ROOT_DIRS" ]; then \
+	  echo "→ solid-lint: no application code (src/ or app/) found — skipping (Metadoc template)"; \
+	  exit 0; \
+	fi; \
+	echo "→ SOLID/POO static analysis (stack-agnostic) on: $$ROOT_DIRS"; \
+	ran_any=0; \
+	if [ -f package.json ]; then \
+	  ran_any=1; \
 	  if [ -f templates/ci/eslintrc.backend.js ] && [ -d src ]; then \
 	    echo "  → Backend ESLint (NestJS)"; \
 	    npx eslint -c templates/ci/eslintrc.backend.js 'src/**/*.{ts,tsx}' || exit 1; \
@@ -105,7 +124,20 @@ solid-lint: ## Run SOLID/POO static analysis (Ticket 4). Skips silently if no pa
 	    echo "  → dependency-cruiser (DIP enforcement)"; \
 	    npx dependency-cruiser --config templates/ci/.dependency-cruiser.js src/ || exit 1; \
 	  fi; \
-	  echo "→ SOLID/POO static analysis: PASS"; \
-	else \
-	  echo "→ solid-lint: no package.json found — skipping (Metadoc template)"; \
-	fi
+	elif [ -f pyproject.toml ] || [ -f requirements.txt ]; then \
+	  ran_any=1; \
+	  if [ -f templates/ci/ruff.toml ]; then \
+	    echo "  → Ruff (Python lint, complexity 10 / line 100)"; \
+	    ruff check --config templates/ci/ruff.toml . || exit 1; \
+	  fi; \
+	  if [ -f templates/ci/.importlinter ]; then \
+	    echo "  → import-linter (DIP enforcement)"; \
+	    lint-imports --config-file templates/ci/.importlinter || exit 1; \
+	  fi; \
+	fi; \
+	if [ "$$ran_any" = "0" ]; then \
+	  echo "❌ solid-lint: application code found ($$ROOT_DIRS) but no SOLID config applies."; \
+	  echo "   Add templates/ci/*.js (Node) or templates/ci/ruff.toml + .importlinter (Python) to your project."; \
+	  exit 1; \
+	fi; \
+	echo "→ SOLID/POO static analysis: PASS"
