@@ -17,6 +17,7 @@
     "specboot.sh",
     "update.sh",
     "check-refs.sh",
+    "validate-specboot.sh",
     "Makefile",
     "AGENTS.md",
     "opencode.json",

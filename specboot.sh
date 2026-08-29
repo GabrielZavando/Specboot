@@ -210,6 +210,32 @@ check_refs() {
   return 1
 }
 
+get_framework_version() {
+  if [ -f "package.json" ] && command -v node >/dev/null 2>&1; then
+    node -e "try{console.log(require('./package.json').version)}catch(e){process.exit(1)}" 2>/dev/null
+  fi
+}
+
+check_specboot_json() {
+  echo "→ Verificando .specboot.json (validate-specboot.sh)..."
+  if [ ! -f "validate-specboot.sh" ]; then
+    warn "validate-specboot.sh no encontrado; se omite la validación de .specboot.json"
+    return 0
+  fi
+  # Capture the child's exit code directly. validate-specboot.sh exits 0 on success
+  # or on a non-blocking warning (e.g. missing file); it exits 1 on a hard config
+  # error. A non-zero exit MUST propagate as a CI failure. We must NOT wrap the call
+  # in `if bash validate-specboot.sh; then ...` because a no-else `if` returns 0 for
+  # the false branch, which would swallow the hard-error exit code.
+  bash validate-specboot.sh
+  local rc=$?
+  if [ "$rc" -ne 0 ]; then
+    ERRORS=$((ERRORS + 1))
+    return 1
+  fi
+  return 0
+}
+
 print_summary() {
   echo ""
   echo "================================"
@@ -262,6 +288,8 @@ run_ci() {
   echo ""
   check_refs || exit 1
   echo ""
+  check_specboot_json
+  echo ""
   check_file_structure
   echo ""
   check_placeholders
@@ -300,6 +328,16 @@ show_help() {
   sed -n '2,8p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
 }
 
+show_version() {
+  local v
+  v=$(get_framework_version)
+  if [ -n "$v" ]; then
+    echo "$v"
+  else
+    echo "0.0.0"
+  fi
+}
+
 # ---------------------------------------------------------------------------
 # Argument parsing
 # ---------------------------------------------------------------------------
@@ -307,7 +345,8 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
   case "${1:-}" in
     --init) run_init ;;
     --ci)   run_ci ;;
+    --version|-v) show_version ;;
     --help|-h|"") show_help ;;
-    *) echo "Opción desconocida: $1"; echo "Usa --init, --ci o --help"; exit 2 ;;
+    *) echo "Opción desconocida: $1"; echo "Usa --init, --ci, --version o --help"; exit 2 ;;
   esac
 fi
