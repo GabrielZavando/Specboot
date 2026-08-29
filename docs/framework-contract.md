@@ -34,7 +34,7 @@ Los artefactos del ciclo SDD (changes, specs y tickets enriquecidos) viven en la
 - `openspec/tickets/<TICKET-ID>-enriched.md` — artefacto enriquecido que `/plan-change` usa como fuente primaria.
 - `openspec/specs/` — especificaciones consolidadas tras `/archive`.
 
-Cualquier documentación o skill que referencie `.openspec/` (con punto) está desactualizada y debe migrarse a `openspec/` en un ticket de framework posterior (fuera de este contrato).
+Cualquier documentación o skill que referenciara `.openspec/` (con punto) estaba desactualizada; esa migración se realizó en TICKET-0.2, pasando todo a la ruta canónica `openspec/`. El estándar concreto de la carpeta `docs/` (árbol y frontera intocable/del proyecto por archivo) se documenta en `docs/docs-standard.md`.
 
 ## Frontera intocable / del proyecto
 
