@@ -93,7 +93,16 @@ echo "→ Check 7: ci.yml has conditioned 'solid-lint' job"
 CI="$ROOT/.github/workflows/ci.yml"
 if [ -f "$CI" ]; then
   if grep -q "^  solid-lint:" "$CI"; then PASS "job 'solid-lint' defined"; else FAIL "missing job 'solid-lint'"; fi
-  if grep -q "if: hashFiles('package.json') != ''" "$CI"; then PASS "job conditioned on package.json existence (Metadoc safety)"; else FAIL "missing condition on package.json"; fi
+  # The "only run SOLID lint when there is application code" guard used to live as a
+  # job-level `if: hashFiles('package.json') != ''`, but hashFiles() is NOT available
+  # in a job-level `if` (GitHub rejects the workflow as "Unrecognized function").
+  # The guard now lives in the Makefile (make solid-lint skips when no src/ or app/ exists).
+  # Validate both: the job exists AND the Makefile skip-guard is present.
+  if grep -qE "no application code \(src/ or app/\) found" Makefile; then
+    PASS "solid-lint skip-guard present in Makefile (replaces job-level hashFiles)"
+  else
+    FAIL "Makefile missing solid-lint skip-guard (src/ or app/)"
+  fi
 else
   FAIL "ci.yml not found"
 fi
