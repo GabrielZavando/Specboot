@@ -4,13 +4,25 @@
       "change_name": "framework-contract",
       "ticket_id": "TICKET-0.1",
       "archived_at": "2026-08-29T14:11:23Z",
-      "specs_applied": ["framework-contract"]
+      "specs_applied": [
+        "framework-contract"
+      ]
     },
     {
       "change_name": "docs-standard",
       "ticket_id": "TICKET-0.2",
       "archived_at": "2026-08-29T17:58:21Z",
-      "specs_applied": ["docs-standard"]
+      "specs_applied": [
+        "docs-standard"
+      ]
+    },
+    {
+      "change_name": "specboot-json-schema",
+      "ticket_id": "TICKET-0.3",
+      "archived_at": "2026-08-29T19:35:20Z",
+      "specs_applied": [
+        "specboot-json-standard"
+      ]
     }
   ]
 }
