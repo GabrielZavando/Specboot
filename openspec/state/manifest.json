@@ -5,6 +5,12 @@
       "ticket_id": "TICKET-0.1",
       "archived_at": "2026-08-29T14:11:23Z",
       "specs_applied": ["framework-contract"]
+    },
+    {
+      "change_name": "docs-standard",
+      "ticket_id": "TICKET-0.2",
+      "archived_at": "2026-08-29T17:58:21Z",
+      "specs_applied": ["docs-standard"]
     }
   ]
 }
