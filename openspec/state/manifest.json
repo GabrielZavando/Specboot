@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "change_name": "framework-contract",
+      "ticket_id": "TICKET-0.1",
+      "archived_at": "2026-08-29T14:11:23Z",
+      "specs_applied": ["framework-contract"]
+    }
+  ]
+}
