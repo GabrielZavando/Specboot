@@ -55,6 +55,8 @@ La siguiente tabla es la regla de verdad sobre qué puede y qué no puede editar
 
 Regla: los archivos de la columna **Intocable** son inyectados y actualizados por el framework (vía `specboot update`). Si un desarrollador necesita cambiar su comportamiento, debe proponer el cambio a través del flujo SDD del propio Specboot (dogfooding), no editarlos localmente. Los archivos de la columna **Del proyecto** son responsabilidad y propiedad del desarrollador.
 
+El esquema y la validación de `.specboot.json` (columna Del proyecto) se definen en [`docs/specboot-json-standard.md`](specboot-json-standard.md).
+
 ## Flujo SDD obligatorio
 
 El ciclo es obligatorio y se ejecuta en este orden:
