@@ -6,7 +6,7 @@ Auditoría adversarial de calidad de código. Ejecútala antes de archivar un ca
 
 ## Paso 1 — Cargar contexto del cambio (token-light)
 
-- `ls .openspec/changes/` → cambio activo. Si hay varios, pedir al usuario cuál auditar.
+- `ls openspec/changes/` → cambio activo. Si hay varios, pedir al usuario cuál auditar.
 - Leer `proposal.md` (el "por qué" y el "qué" del cambio).
 - `git diff --stat` → lista resumida de archivos modificados.
 - **No** leer `scenarios.md`/`requirements.md`/`tasks.md` completos (eso es `/verify`).
@@ -61,7 +61,7 @@ Mostrar al usuario solo `verdict` + `summary`; los detalles expandibles están d
 
 ## Paso 6 — Detección de cambios ya stageados por /archive (compatibilidad)
 
-- Si `.openspec/state/manifest.json` existe y lista archivos en `openspec/archive/`, **no vuelva a auditarlos**. Reportarlos como *"archivados anteriormente, sin nuevos hallazgos"* y enfocarse solo en código nuevo.
+- Si `openspec/state/manifest.json` existe y lista archivos en `openspec/archive/`, **no vuelva a auditarlos**. Reportarlos como *"archivados anteriormente, sin nuevos hallazgos"* y enfocarse solo en código nuevo.
 
 ---
 **Eliminado**: la Fase 7 (OpenSpec Alignment) ha sido removida (cubre `/verify`). Esta skill ahora se enfoca únicamente en auditoría adversarial: robustez, seguridad, tradeoffs y diseño contextual.

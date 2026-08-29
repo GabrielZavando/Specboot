@@ -136,8 +136,8 @@ Task list format for OpenSpec changes.
 | `docs/frontend-standards.md` | Stack: framework, CSS, build tool |
 | `docs/deploy-standards.md` | Deploy flow: environments, versioning, Docker, rollback |
 | `docs/ci-standards.md` | SOLID/POO mechanical thresholds + instantiation of `templates/ci/` (Ticket 4) |
-| `docs/api-spec.yml` | Real API endpoints |
-| `docs/data-model.md` | Domain entities |
+| `docs/api/api-spec.yml` | Real API endpoints |
+| `docs/data-model/data-model.md` | Domain entities |
 | `templates/ci/` | ESLint + dependency-cruiser configs instantiated per project (see `docs/ci-standards.md`) |
 | `opencode.json` | Model selection |
 

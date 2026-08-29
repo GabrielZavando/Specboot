@@ -129,7 +129,7 @@ Show the enriched story and ask for confirmation before proceeding to `/plan-cha
 After user confirmation, save the enriched story to:
 
 ```
-.openspec/tickets/{TICKET-ID}-enriched.md
+openspec/tickets/{TICKET-ID}-enriched.md
 ```
 
 This path is a **contract with `/plan-change`**: that command checks for this exact file and, if present, uses it as the primary source (acceptance criteria, class design, edge cases) instead of the raw ticket title.

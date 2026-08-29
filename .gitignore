@@ -1,5 +1,5 @@
-# OpenSpec artifacts (generados automáticamente)
-.openspec/
+# OpenSpec artifacts: canonical path is openspec/ (tracked by git, do not ignore).
+# The legacy dotted path (leading dot) was removed in TICKET-0.2.
 
 # Node
 node_modules/

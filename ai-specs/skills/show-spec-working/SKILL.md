@@ -12,8 +12,8 @@ Debug and visualize the current state of an OpenSpec change.
 ## Workflow
 
 ### Step 1 — Check for active change
-1. List `.openspec/` directory
-2. If no `.openspec/` exists or is empty, say: "No active OpenSpec change found. Run `/plan-change TICKET-ID` first."
+1. List `openspec/` directory
+2. If no `openspec/` exists or is empty, say: "No active OpenSpec change found. Run `/plan-change TICKET-ID` first."
 3. Identify the active change directory (most recent or marked as active)
 
 ### Step 2 — Extract metadata
@@ -30,7 +30,7 @@ Parse `tasks.md` to count:
 - Current task (first pending task)
 
 ### Step 4 — Check enriched artifacts
-Check if `.openspec/tickets/{CHANGE-ID}.enriched.md` exists. If yes, note it.
+Check if `openspec/tickets/{CHANGE-ID}.enriched.md` exists. If yes, note it.
 
 ### Step 5 — List OpenSpec artifacts
 List files in the change directory:
@@ -52,7 +52,7 @@ List files in the change directory:
 **Progress**: {completed}/{total} tasks completed
 **Current task**: {first pending task description}
 
-**Enriched ticket**: .openspec/tickets/{CHANGE-ID}.enriched.md (if exists, else "None")
+**Enriched ticket**: openspec/tickets/{CHANGE-ID}.enriched.md (if exists, else "None")
 
 **Artifacts**:
 - ✅ proposal.md

@@ -48,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **ai-specs/agents/plan-agent.md**:
   - Reemplazada instrucción "Always load" por carga condicional basada en el tipo de ticket.
-  - El agente ahora solo carga `api-spec.yml`, `data-model.md`, o `documentation-standards.md` cuando el ticket explícitamente lo requiere.
+  - El agente ahora solo carga `docs/api/api-spec.yml`, `docs/data-model/data-model.md`, o `documentation-standards.md` cuando el ticket explícitamente lo requiere.
 
 - **ai-specs/skills/enrich-us/SKILL.md**:
   - Movido ejemplo AUTH-042 completo (~80 líneas) a `ai-specs/examples/enrich-us-auth-reset.md`.
@@ -82,7 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Conocimiento genérico de Conventional Commits y semver en `commit/SKILL.md` y `documentation-standards.md` (movido a `ai-specs/reference/commits.md` para carga bajo demanda).
 - Ejemplo AUTH-042 inline en `enrich-us/SKILL.md` (movido a `ai-specs/examples/` para carga bajo demanda).
 - Lógica inline duplicada de derivación de nombres de changes en `opencode.json` (ahora delegada a `plan-change/SKILL.md`).
-- Change huérfano `ticket-001` en `.openspec/changes/` (archivado).
+- Change huérfano `ticket-001` en `openspec/changes/` (archivado).
 
 ## [0.1.0] - 2026-07-16
 

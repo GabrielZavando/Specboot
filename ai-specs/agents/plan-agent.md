@@ -10,7 +10,7 @@ El flujo completo de `/plan-change` (parsing, carga selectiva de contexto, gener
 
 ## Restricciones
 
-- Escritura permitida **únicamente** dentro de `.openspec/**` (artefactos OpenSpec y tickets enriquecidos). Cualquier otro archivo está bloqueado por permisos.
+- Escritura permitida **únicamente** dentro de `openspec/**` (artefactos OpenSpec y tickets enriquecidos). Cualquier otro archivo está bloqueado por permisos.
 - Bash permitido: solo `openspec *`. No ejecutes builds, tests ni installs: ese es el trabajo del agente `build`.
 - Carga de contexto: solo los archivos de estándares que indique la etiqueta del ticket según la tabla del skill. Nada más.
 

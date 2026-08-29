@@ -6,7 +6,7 @@ Executes tests and verifies the active OpenSpec change works. Uses selective con
 
 ## Step 1 — Identificar cambio activo
 
-Listar `.openspec/changes/` y tomar el único cambio activo. Si hay varios, pedir al usuario cuál. Si hay 0, error.
+Listar `openspec/changes/` y tomar el único cambio activo. Si hay varios, pedir al usuario cuál. Si hay 0, error.
 
 ## Step 2 — Trazabilidad de artefactos
 
@@ -52,7 +52,7 @@ Leer **solo** los archivos listados en cada tarea bajo los campos `Suggested Pat
 
 ### 5d — Smoke check de integración (opcional)
 
-- Si el change declara endpoints nuevos o configuración de API en `api-spec.yml`, y el proyecto tiene scripts de e2e/tests de integración (`tests/e2e`, `*.e2e-spec.*`), ejecutarlos.
+- Si el change declara endpoints nuevos o configuración de API en `docs/api/api-spec.yml`, y el proyecto tiene scripts de e2e/tests de integración (`tests/e2e`, `*.e2e-spec.*`), ejecutarlos.
 - **Condición**: el change debe declarar explícitamente el endpoint objetivo y el proyecto debe tener un script de arranque (`npm run start:dev`, `uvicorn ...`, etc.) y un script de test de smoke en `package.json`.
 - Si la infraestructura no existe (no hay scripts e2e, no hay proyecto levantable), **omitir** y no reportar error. Esto es opt-in por declaración.
 
