@@ -31,6 +31,14 @@
       "specs_applied": [
         "npm-distribution"
       ]
+    },
+    {
+      "change_name": "git-workflow",
+      "ticket_id": "TICKET-3.1",
+      "archived_at": "2026-08-30T13:34:20Z",
+      "specs_applied": [
+        "git-workflow"
+      ]
     }
   ]
 }
