@@ -69,6 +69,29 @@ vía `instructions[]`. Para el resto del contexto de `docs/`, el agente activo l
 Esto evita que `AGENTS.md` deba enumerar cada archivo de `docs/` y permite que el estándar
 crezca sin tocar el puente.
 
+### 3.1 Carga condicional de `docs/project/*` con fallback a placeholder
+
+`AGENTS.md` documenta la carga condicional de los archivos del proyecto porque
+OpenCode's `{file:...}` y `instructions[]` requieren que los archivos existan
+(`check-refs.sh` falla si faltan). Por tanto, la carga se expresa como **prosa
+documentada en el puente**, no como un include condicional real.
+
+Regla canónica:
+
+- `docs/base-standards.md` siempre se carga vía `opencode.json` `instructions[]`.
+- Si `docs/project/domain.md` y `docs/project/stack.md` existen → el agente los
+  lee como contexto del proyecto (dominio de negocio y stack técnico).
+- Si faltan → el agente aplica el contenido por defecto marcado como
+  **"placeholder por proyecto"**: lo que el dev debe sustituir. Los
+  placeholders usan comentarios HTML `<!-- … -->` para que el dev los identifique
+  y reemplace.
+
+Estos archivos son propiedad del proyecto, por lo que el puente **no los
+referencia** vía `{file:...}`. Se resuelven como prosa condicional, no como
+includes. El contrato detallado del puente vive en
+[`docs/framework-contract.md`](framework-contract.md) → "Puente AGENTS.md ↔
+docs/".
+
 ## 4. Puesta en marcha de un proyecto nuevo
 
 1. El framework inyecta `docs/base-standards.md` (intocable).

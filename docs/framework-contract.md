@@ -79,6 +79,45 @@ Regla: los archivos de la columna **Intocable** son inyectados y actualizados po
 
 El esquema y la validación de `.specboot.json` (columna Del proyecto) se definen en [`docs/specboot-json-standard.md`](specboot-json-standard.md).
 
+### Puente AGENTS.md ↔ docs/
+
+`AGENTS.md` (raíz del proyecto) es un archivo **intocable del framework** que
+funciona como **puente dinámico** entre el agente y el proyecto. Su contrato
+es el siguiente:
+
+- **Inyección y reemplazo**: el framework lo inyecta en cada proyecto y lo
+  reemplaza íntegramente vía `specboot update`. El dev no lo edita
+  localmente. Es intocable, igual que `docs/base-standards.md` y el resto de
+  la columna izquierda de la tabla de frontera.
+- **Lo que carga siempre**: `docs/base-standards.md` vía `opencode.json`
+  `instructions[]`. Es la carga base del puente.
+- **Lo que carga dinámicamente**: el resto del contexto de `docs/`, resuelto
+  por el agente activo según la tarea (tag `[backend]`, `[frontend]`,
+  `[api]`, `[docs]`, `[deploy]`, etc.). El puente nunca hardcodea el
+  dominio, el stack ni el cliente del proyecto.
+- **Carga condicional de `docs/project/*`**: el puente documenta en prosa que
+  el agente debe leer `docs/project/domain.md` y `docs/project/stack.md` si
+  existen; si faltan, aplica el contenido por defecto marcado como
+  "placeholder por proyecto". OpenCode's `{file:...}` no se usa para
+  `docs/project/*` porque son archivos del proyecto y pueden no existir
+  (`check-refs.sh` fallaría). El detalle canónico de esta regla vive en
+  [`docs/docs-standard.md`](docs-standard.md) §3.1.
+- **No duplica contenido**: el puente no contiene el dominio ni el stack del
+  proyecto. Si el dev siente la tentación de pegar una descripción de
+  dominio o un listado de stack en `AGENTS.md`, ese contenido pertenece a
+  `docs/project/{domain,stack,client}.md` (o al `docs/*.md` correspondiente).
+- **Estructura estable**: las cuatro secciones del puente son
+  **Carga base**, **Carga dinámica**, **Herramientas** y
+  **Nota de puente**. Añadir o renombrar secciones es un cambio al
+  framework y debe pasar por el flujo SDD del propio Specboot.
+- **Actualización sin pérdida de contexto**: tras un `specboot update`, el
+  `AGENTS.md` se reemplaza íntegramente, pero el contexto del proyecto se
+  preserva porque vive en `docs/`, no en el puente.
+
+Este contrato se materializa en `AGENTS.md` y se complementa con la regla
+de carga de `docs/` detallada en [`docs/docs-standard.md`](docs-standard.md)
+§3.
+
 ## Flujo SDD obligatorio
 
 El ciclo es obligatorio y se ejecuta en este orden:
