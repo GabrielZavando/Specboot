@@ -15,6 +15,14 @@
       "specs_applied": [
         "npm-distribution"
       ]
+    },
+    {
+      "change_name": "npm-distribution-docs",
+      "ticket_id": "TICKET-1.2",
+      "archived_at": "2026-08-30T04:17:27Z",
+      "specs_applied": [
+        "npm-distribution"
+      ]
     }
   ]
 }
