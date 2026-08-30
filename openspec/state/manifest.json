@@ -1,1 +1,12 @@
-
+{
+  "changes": [
+    {
+      "change_name": "versioning-standard",
+      "ticket_id": "TICKET-0.4",
+      "archived_at": "2026-08-30T01:53:23Z",
+      "specs_applied": [
+        "versioning-standard"
+      ]
+    }
+  ]
+}
