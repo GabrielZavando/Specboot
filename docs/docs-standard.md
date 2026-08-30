@@ -92,6 +92,104 @@ includes. El contrato detallado del puente vive en
 [`docs/framework-contract.md`](framework-contract.md) → "Puente AGENTS.md ↔
 docs/".
 
+## 3.2 Validación del puente AGENTS.md
+
+> **Resultado de TICKET-2.2a.** Esta subsección documenta la validación de
+> fluidez del puente frente a estructuras de `docs/` parciales o asimétricas.
+> Los escenarios Gherkin completos y su trazabilidad viven en
+> `openspec/changes/validate-agents-bridge/` (proposal, scenarios, requirements,
+> tasks). La codificación normativa de este comportamiento está en
+> `openspec/specs/agents-bridge/spec.md` (requisitos REQ-VAB-1 a REQ-VAB-8).
+
+El puente NO es código ejecutable: es prosa declarada en `AGENTS.md` y
+resuelta dinámicamente por el agente según el tag de la tarea. Por tanto, la
+"ejecución" de los escenarios es **estática/documental**: se verifica que el
+texto del puente declara correctamente el comportamiento esperado y que las
+herramientas de integridad (`check-refs.sh`, `specboot.sh --ci`) no rompen.
+
+### 3.2.1 Escenario 1 — Proyecto completo con todos los archivos esperados
+
+```
+Given el proyecto tiene docs/base-standards.md
+  And el proyecto tiene docs/project/domain.md
+  And el proyecto tiene docs/project/stack.md
+When un agente usa el puente AGENTS.md
+Then el puente carga base-standards.md obligatoriamente
+  And carga domain.md y stack.md dinámicamente
+  And el flujo SDD continúa sin errores
+```
+
+**Resultado (OK):** `AGENTS.md` §1 carga `base-standards.md` siempre; §2.1
+mapea el tag a los estándares; §2.2 lee `docs/project/*` si existen.
+`check-refs.sh` → 0 errores, `specboot.sh --ci` → 0 errores.
+
+### 3.2.2 Escenario 2 — Proyecto parcial (falta algún archivo del project/)
+
+```
+Given el proyecto tiene docs/base-standards.md
+  And el proyecto NO tiene docs/project/domain.md
+When un agente usa el puente AGENTS.md
+Then el puente carga base-standards.md obligatoriamente
+  And usa fallback placeholder para domain.md
+  And documenta que domain.md está pendiente
+```
+
+**Resultado (OK con fallback):** `AGENTS.md` §2.2 declara el fallback a
+placeholder por proyecto (`<!-- … -->`). Como `domain.md` no se referencia
+vía `{file:...}`, su ausencia no dispara error en `check-refs.sh`. La traza
+"domain.md está pendiente" queda visible para el dev. `specboot.sh --ci` → 0
+errores (warning informativo, no fatal).
+
+### 3.2.3 Escenario 3 — Proyecto sin subcarpetas de framework
+
+```
+Given el proyecto tiene docs/base-standards.md
+  And el proyecto tiene docs/ pero sin carpetas project/api/data-model
+When un agente usa el puente AGENTS.md
+Then el puente carga base-standards.md
+  And emite una advertencia sobre estructura incompleta
+  And no rompe el flujo SDD
+```
+
+**Resultado (OK con advertencia de bootstrap):** `base-standards.md` se sigue
+cargando; solo se cargan los estándares del tag activo. La "advertencia" se
+materializa porque §4 de este mismo doc lista los archivos que el dev debe
+crear: el proyecto está en fase de bootstrap. `check-refs.sh` → 0 errores;
+`specboot.sh --ci` → 0 errores (placeholders pendientes reportados como
+información).
+
+### 3.2.4 Casos límite (edge cases) documentados
+
+| # | Caso límite | Comportamiento esperado | check-refs.sh | specboot.sh --ci |
+| --- | --- | --- | --- | --- |
+| A | Tag desconocido / ausente | El agente infiere el tag y pregunta antes de cargar; no carga "por si acaso" | 0 | 0 |
+| B | Falta `docs/base-standards.md` | **Rompe intencionalmente**: error de referencia rota → ejecutar `specboot update` | Error | n/a |
+| C | Falta `AGENTS.md` | **Rompe intencionalmente**: el proyecto no tiene puente → `specboot update` | n/a | n/a |
+| D | Falta `opencode.json` | **Rompe intencionalmente**: no hay instrucciones que cargar → `specboot update` | 0 (no hay refs) | n/a |
+
+Los casos **B/C/D rompen el flujo SDD a propósito**: son señales de que el
+proyecto no tiene el framework correctamente inicializado. La acción
+correctiva en todos ellos es ejecutar `specboot update`, nunca editar
+manualmente los archivos intocables.
+
+### 3.2.5 Matriz de resultados de validación
+
+| # | Escenario | Resultado | check-refs.sh | specboot.sh --ci |
+| --- | --- | --- | --- | --- |
+| 1 | Proyecto completo | OK | 0 | 0 |
+| 2 | Proyecto parcial (falta `domain.md`) | OK con fallback placeholder | 0 | 0 (warning) |
+| 3 | `docs/` sin subcarpetas | OK con advertencia de bootstrap | 0 | 0 (placeholders) |
+| A | Tag desconocido/ausente | OK, agente pregunta | 0 | 0 |
+| B | Falta `base-standards.md` | **Rompe** (deseable) | Error | n/a |
+| C | Falta `AGENTS.md` | **Rompe** (deseable) | n/a | n/a |
+| D | Falta `opencode.json` | **Rompe** (deseable) | 0 (no refs) | n/a |
+
+> **Conclusión de la Fase 2:** el puente `AGENTS.md ↔ docs/` es fluido y no
+> rompe el flujo SDD ante estructuras parciales o asimétricas de `docs/`,
+> siempre que los archivos intocables del framework estén presentes. La
+> verificación con `check-refs.sh` y `specboot.sh --ci` se mantiene en `0`
+> errores para los 3 escenarios del ticket.
+
 ## 4. Puesta en marcha de un proyecto nuevo
 
 1. El framework inyecta `docs/base-standards.md` (intocable).
