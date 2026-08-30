@@ -489,6 +489,344 @@ HELP
 }
 
 # ---------------------------------------------------------------------------
+# Framework update (TICKET-3.2): refresh an already-initialized project.
+# ---------------------------------------------------------------------------
+
+# Replacement set for `update`. Mirrors the `files` allowlist in package.json EXCEPT
+# it deliberately EXCLUDES project-owned files that `init` only drops into empty
+# projects: `README.md` and `LICENSE`. `.github` is handled file-by-file (only the
+# framework's own `.github/workflows/*` are replaced) so a project-authored workflow
+# is never deleted by an `rm -rf`.
+UPDATE_ITEMS=(
+  ".opencode/commands"
+  ".opencode/agents"
+  "ai-specs"
+  "check-refs.sh"
+  "specboot.sh"
+  "validate-specboot.sh"
+  "templates/ci"
+  "docs/base-standards.md"
+  "docs/framework-contract.md"
+  "docs/docs-standard.md"
+  "docs/specboot-json-standard.md"
+  "docs/versioning-standard.md"
+  "opencode.json"
+  "AGENTS.md"
+  "Makefile"
+  ".github/workflows"
+)
+
+# Resolve the installed framework version.
+# Precedence: 1) explicit --template dir 2) the script's own package.json (dogfooding).
+get_installed_version() {
+  local template="$1"
+  if [ -n "$template" ] && [ -f "$template/package.json" ]; then
+    get_framework_version "$template" && return 0
+  fi
+  get_framework_version "$SCRIPT_DIR"
+}
+
+# Classify the version jump between declared (project) and installed (framework).
+# Echoes: major | minor | patch | eq | older | bad
+semver_jump() {
+  local declared="$1" installed="$2"
+  local a_major a_minor a_patch b_major b_minor b_patch
+  a_major="${declared%%+*}"; a_major="${a_major%%-*}"
+  b_major="${installed%%+*}"; b_major="${b_major%%-*}"
+  IFS='.' read -r a_major a_minor a_patch <<< "$a_major"
+  IFS='.' read -r b_major b_minor b_patch <<< "$b_major"
+  a_major=${a_major:-0}; a_minor=${a_minor:-0}; a_patch=${a_patch:-0}
+  b_major=${b_major:-0}; b_minor=${b_minor:-0}; b_patch=${b_patch:-0}
+  if [ "$a_major" -lt "$b_major" ]; then echo "major"; return; fi
+  if [ "$a_major" -gt "$b_major" ]; then echo "older"; return; fi
+  if [ "$a_minor" -lt "$b_minor" ]; then echo "minor"; return; fi
+  if [ "$a_minor" -gt "$b_minor" ]; then echo "older"; return; fi
+  if [ "$a_patch" -lt "$b_patch" ]; then echo "patch"; return; fi
+  if [ "$a_patch" -gt "$b_patch" ]; then echo "older"; return; fi
+  echo "eq"
+}
+
+# Read frameworkVersion from a .specboot.json (node, fallback grep).
+read_specboot_json_version() {
+  local file="$1"
+  if command -v node >/dev/null 2>&1; then
+    node -e "try{console.log(require('$file').frameworkVersion||'')}catch(e){}" 2>/dev/null && return
+  fi
+  grep -o '"frameworkVersion"[[:space:]]*:[[:space:]]*"[^"]*"' "$file" 2>/dev/null | sed 's/.*:"//;s/"//'
+}
+
+# Write frameworkVersion preserving all other fields and 2-space JSON formatting.
+write_specboot_json_version() {
+  local file="$1" ver="$2"
+  if command -v node >/dev/null 2>&1; then
+    FW="$ver" node -e "
+      const fs=require('fs');const p='$file';
+      const o=JSON.parse(fs.readFileSync(p,'utf8'));
+      o.frameworkVersion=process.env.FW;
+      fs.writeFileSync(p,JSON.stringify(o,null,2)+'\n');
+    " 2>/dev/null && return 0
+  fi
+  # Fallback without node: crude in-place sed on the frameworkVersion line.
+  if grep -q '"frameworkVersion"' "$file"; then
+    sed -i.bak "s/\"frameworkVersion\"[[:space:]]*:[[:space:]]*\"[^\"]*\"/\"frameworkVersion\": \"$ver\"/" "$file" 2>/dev/null \
+      && rm -f "$file.bak" && return 0
+  fi
+  return 1
+}
+
+# Back up the current versions of the items about to be replaced.
+backup_framework_files() {
+  local src="$1" dst="$2" backup_dir="$3"
+  mkdir -p "$backup_dir"
+  local item src_path dst_path
+  for item in "${UPDATE_ITEMS[@]}"; do
+    src_path="$src/$item"
+    dst_path="$dst/$item"
+    if [ ! -e "$dst_path" ]; then
+      continue
+    fi
+    # Mirror the destination path under the backup dir.
+    local rel_parent
+    rel_parent="$(dirname "$item")"
+    if [ "$rel_parent" = "." ]; then
+      cp -R "$dst_path" "$backup_dir/" 2>/dev/null
+    else
+      mkdir -p "$backup_dir/$rel_parent"
+      cp -R "$dst_path" "$backup_dir/$rel_parent/" 2>/dev/null
+    fi
+  done
+}
+
+# Replace the intocable items (opción A: without mercy). README.md / LICENSE are NOT
+# in UPDATE_ITEMS, so they are never touched. .github is replaced file-by-file.
+replace_framework_files() {
+  local src="$1" dst="$2"
+  local item src_path dst_path dst_parent
+  for item in "${UPDATE_ITEMS[@]}"; do
+    # Never touch docs/ or .github as whole trees.
+    case "$item" in
+      docs/*|docs|.github) continue ;;
+    esac
+    src_path="$src/$item"
+    dst_path="$dst/$item"
+    if [ ! -e "$src_path" ]; then
+      warn "Origen no encontrado, se omite: $item"
+      continue
+    fi
+    dst_parent="$(dirname "$dst_path")"
+    mkdir -p "$dst_parent"
+    if [ -d "$src_path" ]; then
+      if [ "$item" = ".github/workflows" ]; then
+        # File-by-file: replace only the framework's own workflows, never delete a
+        # project-authored workflow (which would be lost by a recursive rm -rf).
+        local f
+        for f in "$src_path"/*; do
+          [ -e "$f" ] || continue
+          cp "$f" "$dst_path/" 2>/dev/null && pass "reemplazado: $item/$(basename "$f")"
+        done
+      else
+        rm -rf "$dst_path"
+        cp -R "$src_path" "$dst_path" 2>/dev/null
+      fi
+    else
+      cp "$src_path" "$dst_path" 2>/dev/null
+    fi
+    if [ -e "$dst_path" ]; then
+      pass "reemplazado: $item"
+    else
+      warn "falló el reemplazo de: $item"
+    fi
+  done
+}
+
+# Append the backup pattern to .gitignore if the file exists and lacks it.
+ensure_gitignore_entry() {
+  local dst="$1"
+  local gitignore="$dst/.gitignore"
+  if [ ! -f "$gitignore" ]; then
+    return 0
+  fi
+  if grep -q '.specboot-backup-\*' "$gitignore" 2>/dev/null; then
+    return 0
+  fi
+  printf '\n# Specboot update backups\n.specboot-backup-*\n' >> "$gitignore" 2>/dev/null \
+    && info "Añadido .specboot-backup-* a .gitignore"
+}
+
+run_update_project() {
+  local interactive_confirm=1   # 1 = ask; 0 = --yes
+  local template=""
+  local dry_run=0
+  local no_backup=0
+
+  # Strip the leading "update" token ($1) before parsing flags.
+  shift
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --yes)        interactive_confirm=0; shift ;;
+      --template)   template="${2:-}"; shift 2 ;;
+      --dry-run)    dry_run=1; shift ;;
+      --no-backup)  no_backup=1; shift ;;
+      --help|-h)    show_update_help; exit 0 ;;
+      *) echo "Opción desconocida para update: $1"; echo "Usa 'specboot update --help'"; exit 2 ;;
+    esac
+  done
+
+  local target="$ORIGINAL_PWD"
+
+  echo "🔄 Zavando Specboot — Update"
+  echo "================================"
+  echo "  Target : $target"
+
+  # 1. Guard: .specboot.json must exist.
+  if [ ! -f "$target/.specboot.json" ]; then
+    echo "❌ No existe .specboot.json. Usa 'specboot init' para crearlo."
+    exit 1
+  fi
+
+  # 2. Resolve the framework source directory.
+  local fw_dir
+  if ! fw_dir="$(determine_framework_dir "$template")"; then
+    exit 1
+  fi
+  echo "  Source : $fw_dir"
+
+  # Dogfooding guard: target == source -> nothing to sync.
+  if [ "$target" = "$fw_dir" ]; then
+    info "Target y template son iguales; no se sincroniza (usa --template para otro origen)."
+    return 0
+  fi
+
+  # 3. Read versions and compare.
+  local declared installed jump
+  declared="$(read_specboot_json_version "$target/.specboot.json")"
+  installed="$(get_installed_version "$template")"
+  echo "  Current: ${declared:-desconocido}  Installed: ${installed:-desconocido}"
+
+  if [ -z "$installed" ]; then
+    echo "❌ No se pudo determinar la versión instalada del framework."
+    exit 1
+  fi
+  if [ -z "$declared" ]; then
+    echo "❌ No se pudo leer frameworkVersion de .specboot.json."
+    exit 1
+  fi
+
+  jump="$(semver_jump "$declared" "$installed")"
+  case "$jump" in
+    older)
+      echo "❌ La versión instalada ($installed) es menor que la requerida ($declared)."
+      echo "   El proyecto requiere una versión más nueva del framework; no se puede retroceder."
+      exit 1
+      ;;
+    bad)
+      echo "❌ No se pudo comparar la versión (formato inesperado): declarada='$declared', instalada='$installed'."
+      exit 1
+      ;;
+  esac
+
+  # 4. Breaking-change warning on major jump.
+  if [ "$jump" = "major" ]; then
+    echo "⚠️ Breaking change. Lee CHANGELOG/release notes de v$installed"
+    echo "El puente AGENTS.md y los estándares pueden haber cambiado."
+    if [ "$interactive_confirm" -eq 1 ]; then
+      echo -n "¿Proceder? (y/N): "
+      read -r ANSWER
+      if [ "$ANSWER" != "y" ] && [ "$ANSWER" != "Y" ]; then
+        echo "Cancelado."
+        exit 0
+      fi
+    fi
+  fi
+
+  if [ "$dry_run" -eq 1 ]; then
+    echo ""
+    echo "→ Dry-run: se reemplazarían los siguientes items (salto: $jump):"
+    local item
+    for item in "${UPDATE_ITEMS[@]}"; do
+      case "$item" in
+        docs/*|docs|.github) continue ;;
+      esac
+      echo "    - $item"
+    done
+    info "Dry-run: no se modificó nada."
+    return 0
+  fi
+
+  # 5. Backup.
+  local backup_dir=""
+  if [ "$no_backup" -eq 0 ]; then
+    backup_dir="$target/.specboot-backup-$(date +%Y%m%d%H%M%S)"
+    backup_framework_files "$fw_dir" "$target" "$backup_dir"
+    ensure_gitignore_entry "$target"
+  fi
+
+  # 6. Replace framework intocable files (opción A).
+  echo ""
+  echo "→ Reemplazando archivos del framework..."
+  replace_framework_files "$fw_dir" "$target"
+
+  # 7. Rewrite frameworkVersion if it changed (eq = leave intact).
+  if [ "$jump" != "eq" ]; then
+    if write_specboot_json_version "$target/.specboot.json" "$installed"; then
+      pass "frameworkVersion actualizado a $installed"
+    else
+      warn "No se pudo reescribir frameworkVersion en .specboot.json"
+    fi
+  else
+    info "Versión igual; .specboot.json no se modifica."
+  fi
+
+  # 8. Post-update validation.
+  echo ""
+  echo "Validando estructura post-actualización..."
+  # check-refs.sh is a framework-owned script that validates the framework's own
+  # {file:...} integrity (update's own responsibility), so it MUST run from the
+  # framework directory ($SCRIPT_DIR), not from the project target. It is strict:
+  # a broken reference means update shipped a broken reference -> exit 1.
+  if ! ( cd "$SCRIPT_DIR" && bash check-refs.sh ); then
+    echo "❌ check-refs.sh falló. Revisa los cambios; backup en: $backup_dir"
+    exit 1
+  fi
+  pass "check-refs.sh OK"
+  # specboot.sh --ci audits project completeness and legitimately warns on incomplete
+  # consumer docs/; report but do NOT block (failsafe for real projects). Run it in the
+  # target so it inspects the updated project.
+  if ! ( cd "$target" && bash "$SCRIPT_DIR/specboot.sh" --ci --yes ); then
+    warn "specboot.sh --ci reportó advertencias/errores de completitud del proyecto (no bloquea)."
+  fi
+
+  echo ""
+  if [ -n "$backup_dir" ]; then
+    echo "✅ Proyecto actualizado a $installed. Backup en $backup_dir"
+  else
+    echo "✅ Proyecto actualizado a $installed (sin backup: --no-backup)."
+  fi
+}
+
+show_update_help() {
+  cat <<'HELP'
+Uso: specboot update [opciones]
+
+Actualiza un proyecto ya inicializado reemplazando los archivos intocables del framework.
+
+Opciones:
+  --template DIR  Usa DIR como origen de los archivos del framework.
+  --yes           No pedir confirmación en saltos major (para CI / no-TTY).
+  --dry-run       Muestra qué se reemplazaría sin cambiar nada.
+  --no-backup     No crea un backup de los archivos reemplazados.
+  --help, -h      Muestra esta ayuda.
+
+El comando:
+  1. Verifica que exista .specboot.json (si no, sugiere 'specboot init').
+  2. Lee frameworkVersion y compara con la versión instalada.
+  3. Avisa de breaking change en saltos major; reemplaza en silencio en minor/patch.
+  4. Reemplaza los archivos intocables sin tocar docs/ del proyecto ni el código.
+  5. Reescribe frameworkVersion en .specboot.json (salvo que sea igual).
+HELP
+}
+
+# ---------------------------------------------------------------------------
 # Checks (shared)
 # ---------------------------------------------------------------------------
 check_file_structure() {
@@ -594,8 +932,9 @@ check_refs() {
 }
 
 get_framework_version() {
-  if [ -f "package.json" ] && command -v node >/dev/null 2>&1; then
-    node -e "try{console.log(require('./package.json').version)}catch(e){process.exit(1)}" 2>/dev/null
+  local dir="${1:-.}"
+  if [ -f "$dir/package.json" ] && command -v node >/dev/null 2>&1; then
+    node -e "try{console.log(require('$dir/package.json').version)}catch(e){process.exit(1)}" 2>/dev/null
   fi
 }
 
@@ -709,6 +1048,10 @@ run_ci() {
 
 show_help() {
   sed -n '2,8p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+  echo ""
+  echo "Subcomandos de proyecto:"
+  echo "  init     Inicializa un proyecto nuevo (inyecta archivos + .specboot.json + docs/)"
+  echo "  update   Actualiza un proyecto existente (reemplaza archivos intocables)"
 }
 
 show_version() {
@@ -734,6 +1077,7 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
     --version|-v) show_version ;;
     --help|-h|"") show_help ;;
     init) run_init_project "$@" ;;
-    *) echo "Opción desconocida: $1"; echo "Usa --init, --ci, init, --version o --help"; exit 2 ;;
+    update) run_update_project "$@" ;;
+    *) echo "Opción desconocida: $1"; echo "Usa --init, --ci, init, update, --version o --help"; exit 2 ;;
   esac
 fi

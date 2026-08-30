@@ -143,7 +143,7 @@ Specboot sigue la **opción A**: `specboot update` reemplaza los archivos del fr
 `specboot init` (TICKET-3.1) es el comando que **crea un proyecto nuevo desde cero** inyectando los archivos intocables del framework. Es distinto de:
 
 - `specboot.sh --init` (con guiones): sólo *verifica* que un proyecto ya inicializado tiene la estructura correcta (no crea nada).
-- `specboot update` (TICKET-3.2, futuro): *sincroniza* los archivos intocables de un proyecto ya existente sin tocar `docs/` ni el código del proyecto.
+- `specboot update` (TICKET-3.2): *sincroniza* los archivos intocables de un proyecto ya existente sin tocar `docs/` ni el código del proyecto.
 
 ### Comportamiento
 
@@ -169,6 +169,41 @@ bash specboot.sh init --template /ruta/a/specboot
 ```
 
 Después de `init`, el proyecto ya tiene el puente `AGENTS.md`, los agentes/skills de OpenCode y los scripts de validación. El dev completa entonces los archivos de `docs/project/*` y `docs/*-standards.md` con el contexto real, y corre `specboot.sh --init` para verificar la estructura.
+
+## Actualización con `specboot update`
+
+`specboot update` (TICKET-3.2) es el comando que **sincroniza un proyecto ya inicializado** con una versión nueva del framework, reemplazando los archivos intocables según el modelo opción A. Es distinto de `specboot init` (crea desde cero) y de `specboot.sh --init` (sólo verifica). El script `update.sh` heredado mantiene únicamente su modo `--bump` para releases de maintainers; su modo de sincronización está deprecado a favor de `specboot update`.
+
+### Comportamiento
+
+1. **Guard**: si no existe `.specboot.json` en el directorio actual, `specboot update` imprime `❌ No existe .specboot.json. Usa 'specboot init' para crearlo.` y sale 1 sin modificar nada.
+2. **Resolución del origen**: prefiere `--template <dir>` y cae por defecto al directorio del propio `specboot.sh` (el paquete instalado o el repo del framework en dogfooding). Si el origen resuelto es igual al directorio destino (dogfooding sobre sí mismo), avisa y no sincroniza.
+3. **Comparación de versiones**: lee `frameworkVersion` de `.specboot.json` y lo compara con la versión instalada del framework. Si la instalada es **menor**, rechaza con exit 1 (no se permite retroceder).
+4. **Salto major**: imprime `⚠️ Breaking change. Lee CHANGELOG/release notes de vX.Y.Z` y pide confirmación (o procede con `--yes`). En **minor/patch** el reemplazo es **silencioso**, sin advertencia.
+5. **Backup**: antes de reemplazar, copia los archivos actuales a `.specboot-backup-<timestamp>/` (salvo `--no-backup`) y añade el patrón `.specboot-backup-*` a `.gitignore` si existe.
+6. **Reemplazo sin piedad (opción A)** de `UPDATE_ITEMS[]`: `.opencode/commands`, `.opencode/agents`, `ai-specs`, `check-refs.sh`, `specboot.sh`, `validate-specboot.sh`, `templates/ci`, los 5 documentos estándar, `opencode.json`, `AGENTS.md`, `Makefile`, y los `.github/workflows/*` del framework (archivo por archivo). **Exclusiones deliberadas**: `README.md` y `LICENSE` del proyecto nunca se tocan; `.github/` se trata archivo por archivo para no borrar workflows del proyecto.
+7. **Nunca toca `docs/` del proyecto** (salvo los 5 estándares) ni el código (`backend/`, `frontend/`…).
+8. **Reescritura de `.specboot.json`**: si la versión cambió, actualiza `frameworkVersion` preservando el resto de campos; si es igual, el archivo queda intacto (modo reparación de intocables editados a mano).
+9. **Post-validación**: corre `check-refs.sh` (estricto: exit 1 si hay referencia rota) y `specboot.sh --ci` (sólo avisa: la completitud del proyecto consumidor no bloquea).
+
+### Uso
+
+```bash
+# Desde un proyecto ya inicializado:
+bash node_modules/@gabrielzavando/specboot/specboot.sh update
+
+# Aceptar un salto major sin preguntar (CI / no-TTY):
+bash node_modules/@gabrielzavando/specboot/specboot.sh update --yes
+
+# Previsualizar sin cambiar nada:
+bash node_modules/@gabrielzavando/specboot/specboot.sh update --dry-run
+
+# Desde un origen explícito (p.ej. el repo del framework en desarrollo):
+bash specboot.sh update --template /ruta/a/specboot
+
+# Sin backup:
+bash node_modules/@gabrielzavando/specboot/specboot.sh update --no-backup
+```
 
 ## Dogfooding
 
