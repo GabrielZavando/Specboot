@@ -89,12 +89,22 @@ npm install --save-dev @gabrielzavando/specboot
 Una vez instalado, los scripts de Specboot viven dentro de `node_modules`:
 
 ```bash
-# Inicializar Specboot en tu proyecto
+# Inicializar un proyecto nuevo (inyecta archivos del framework + .specboot.json + docs/)
+bash node_modules/@gabrielzavando/specboot/specboot.sh init
+
+# Inicializar con valores interactivos (nombre, stack, services)
+bash node_modules/@gabrielzavando/specboot/specboot.sh init --interactive
+
+# Verificar que la estructura del proyecto ya inicializado es correcta
 bash node_modules/@gabrielzavando/specboot/specboot.sh --init
 
-# Sincronizar actualizaciones del template tooling
+# Sincronizar actualizaciones del template tooling (TICKET-3.2)
 bash node_modules/@gabrielzavando/specboot/update.sh
 ```
+
+> **`init` vs `--init`**: `specboot init` (sin guiones) **crea** el proyecto desde cero;
+> `specboot.sh --init` (con guiones) sólo **verifica** la estructura de un proyecto ya
+> inicializado. Si ya existe `.specboot.json`, `init` avisa y sugiere `specboot update`.
 
 ### Actualización
 

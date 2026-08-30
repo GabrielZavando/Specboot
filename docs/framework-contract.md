@@ -138,6 +138,38 @@ Specboot sigue la **opción A**: `specboot update` reemplaza los archivos del fr
 - `specboot update` **nunca** toca `docs/` del desarrollador ni el código del proyecto.
 - Si un desarrollador editó manualmente un archivo intocable, la edición se pierde al actualizar; el contrato del framework gana. Esta es una decisión de diseño deliberada, no un accidente.
 
+## Inicialización con `specboot init`
+
+`specboot init` (TICKET-3.1) es el comando que **crea un proyecto nuevo desde cero** inyectando los archivos intocables del framework. Es distinto de:
+
+- `specboot.sh --init` (con guiones): sólo *verifica* que un proyecto ya inicializado tiene la estructura correcta (no crea nada).
+- `specboot update` (TICKET-3.2, futuro): *sincroniza* los archivos intocables de un proyecto ya existente sin tocar `docs/` ni el código del proyecto.
+
+### Comportamiento
+
+1. **Guard**: si ya existe `.specboot.json` en el directorio actual, `specboot init` avisa (`⚠ Ya existe .specboot.json. Usa 'specboot update' para actualizar.`) y sale 0 sin sobrescribir nada.
+2. **Resolución del origen**: el comando resuelve la ubicación de los archivos del framework en este orden:
+   - `--template <dir>` (si se pasa).
+   - El directorio del propio `specboot.sh` (el paquete instalado en `node_modules/@gabrielzavando/specboot`, o el repo del framework en dogfooding).
+3. **Copia de archivos intocables**: copia los archivos del allowlist `files` de `package.json` (`.opencode/`, `ai-specs/`, `check-refs.sh`, `specboot.sh`, `validate-specboot.sh`, `templates/ci/`, los 5 documentos estándar, `opencode.json`, `AGENTS.md`, `Makefile`, `.github/`, `LICENSE`, `README.md`) al directorio actual. Los archivos que ya existen en el proyecto **no se sobrescriben** (se omiten con advertencia).
+4. **Creación de `.specboot.json`**: genera `.specboot.json` con `frameworkVersion` (la versión del framework), `services: ["."]` y `stack: "framework"` por defecto; si se pasa `--interactive`, solicita nombre, stack y services al usuario.
+5. **Esqueleto de `docs/`**: crea las plantillas del proyecto (propiedad del dev) que no existan — `backend-standards.md`, `frontend-standards.md`, `ci-standards.md`, `deploy-standards.md`, `documentation-standards.md`, `project/{domain,stack,client}.md`, `api/api-spec.yml`, `data-model/data-model.md` — sin sobrescribir las existentes. Los 5 documentos intocables ya fueron copiados en el paso 3.
+
+### Uso
+
+```bash
+# Desde un proyecto vacío (o con código propio, sin .specboot.json):
+bash node_modules/@gabrielzavando/specboot/specboot.sh init
+
+# Con valores interactivos:
+bash node_modules/@gabrielzavando/specboot/specboot.sh init --interactive
+
+# Desde un origen explícito (p.ej. el repo del framework en desarrollo):
+bash specboot.sh init --template /ruta/a/specboot
+```
+
+Después de `init`, el proyecto ya tiene el puente `AGENTS.md`, los agentes/skills de OpenCode y los scripts de validación. El dev completa entonces los archivos de `docs/project/*` y `docs/*-standards.md` con el contexto real, y corre `specboot.sh --init` para verificar la estructura.
+
 ## Dogfooding
 
 Specboot se desarrolla con su **propio flujo SDD**. El framework no se codifica a mano fuera del ciclo: sus propias features (comandos, skills, frontera, reglas de versión) pasan por `/plan-change → /apply → /verify → /archive → /commit` exactamente como lo haría un proyecto hijo. Cualquier ampliación de la lista de archivos intocables o de los principios rectores debe modificar primero este contrato y luego implementarse, nunca al revés.
