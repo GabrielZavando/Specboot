@@ -1,6 +1,14 @@
 {
   "changes": [
     {
+      "change_name": "agents-bridge",
+      "ticket_id": "TICKET-2.1",
+      "archived_at": "2026-08-30T12:36:18Z",
+      "specs_applied": [
+        "agents-bridge"
+      ]
+    },
+    {
       "change_name": "versioning-standard",
       "ticket_id": "TICKET-0.4",
       "archived_at": "2026-08-30T01:53:23Z",
