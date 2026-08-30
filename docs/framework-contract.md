@@ -9,7 +9,7 @@ Specboot es un framework de desarrollo SDD (Spec-Driven Development) que enjaula
 1. **Specboot es un framework / entorno de desarrollo** que provee herramientas (agentes, subagentes, skills, conexiones MCP, contexto) para desarrollar cualquier software siguiendo SDD, obligando a respetar el flujo. El contexto vive en `docs/` y cambia por proyecto; las herramientas y buenas prácticas (TDD, SOLID, pruebas) las determina el framework y mejoran por versión.
 2. **El dev activa el flujo explícitamente**: ejecuta los comandos y alimenta el proyecto con archivos de contexto e MCP.
 3. **La estructura del proyecto la define el dev** según su stack; Specboot no impone carpetas.
-4. **Hay un estándar de versionado**; el propio desarrollo de Specboot sigue su ciclo SDD (dogfooding).
+4. **Hay un estándar de versionado** (definido en [`docs/versioning-standard.md`](versioning-standard.md)); el propio desarrollo de Specboot sigue su ciclo SDD (dogfooding).
 5. **`AGENTS.md` vive en la raíz de cada proyecto** pero lo provee/inyecta el framework como puente. Specboot es una dependencia de desarrollo.
 6. **Agentes y skills son fijos y definidos por el framework (prefabricados)**, aportan estándares (calidad, TDD, SOLID), no código.
 7. **Las MCP son del proyecto**; el framework solo declara dónde se conectan. Queda abierto un MCP transversal futuro definido por el framework.
@@ -52,6 +52,7 @@ La siguiente tabla es la regla de verdad sobre qué puede y qué no puede editar
 | `templates/ci/*` | |
 | `.github/workflows/*` (del framework) | |
 | `docs/base-standards.md` | |
+| `docs/versioning-standard.md` | |
 
 Regla: los archivos de la columna **Intocable** son inyectados y actualizados por el framework (vía `specboot update`). Si un desarrollador necesita cambiar su comportamiento, debe proponer el cambio a través del flujo SDD del propio Specboot (dogfooding), no editarlos localmente. Los archivos de la columna **Del proyecto** son responsabilidad y propiedad del desarrollador.
 

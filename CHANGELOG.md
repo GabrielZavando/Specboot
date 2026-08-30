@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-08-29
+
 ### Added
 
 - `ai-specs/agents/plan-agent.md`: nuevo archivo dedicado para el agente de planificación, con reglas de derivación de nombres descriptivos de changes (2-4 palabras kebab-case desde el título del ticket).
@@ -83,6 +85,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ejemplo AUTH-042 inline en `enrich-us/SKILL.md` (movido a `ai-specs/examples/` para carga bajo demanda).
 - Lógica inline duplicada de derivación de nombres de changes en `opencode.json` (ahora delegada a `plan-change/SKILL.md`).
 - Change huérfano `ticket-001` en `openspec/changes/` (archivado).
+
+### Breaking changes
+
+None. (Esta subsección es la plantilla canónica: en un release `major` debe listar los
+cambios clasificados como `major` en `docs/versioning-standard.md`, y si aplica una sección
+`### Migration` con los pasos de migración de `.specboot.json` / `docs/` / env.)
 
 ## [0.1.0] - 2026-07-16
 
