@@ -7,6 +7,14 @@
       "specs_applied": [
         "versioning-standard"
       ]
+    },
+    {
+      "change_name": "restrict-package-files",
+      "ticket_id": "TICKET-1.1",
+      "archived_at": "2026-08-30T03:15:15Z",
+      "specs_applied": [
+        "npm-distribution"
+      ]
     }
   ]
 }
