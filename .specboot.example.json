@@ -1,8 +1,12 @@
 {
-  "services": ["src"],
+  "frameworkVersion": "0.1.1",
+  "name": "directorio-concon",
+  "description": "Directorio de negocios",
+  "services": ["backend", "frontend"],
+  "stack": ["node", "python"],
+  "extraStandards": ["docs/client-rules.md"],
   "layers": {
-    "backend": "domain | application | infrastructure",
-    "frontend": "smart | dumb"
-  },
-  "stack": "node"
+    "backend": ["domain", "application", "infrastructure"],
+    "frontend": ["smart", "dumb"]
+  }
 }

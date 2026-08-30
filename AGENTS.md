@@ -10,8 +10,8 @@ El resto del contexto es condicional a la tarea y el agente activo ya lo resuelv
 
 - Tarea backend detectada por `build` → carga `docs/backend-standards.md`
 - Tarea frontend detectada por `build` → carga `docs/frontend-standards.md`
-- Tarea que modifica la API → carga `docs/api-spec.yml`
-- Tarea que modifica el modelo de datos → carga `docs/data-model.md`
+- Tarea que modifica la API → carga `docs/api/api-spec.yml`
+- Tarea que modifica el modelo de datos → carga `docs/data-model/data-model.md`
 - Tarea de deploy → carga `docs/deploy-standards.md` (vía skill `deploy`)
 - Tarea de docs → carga `docs/documentation-standards.md`
 
@@ -26,7 +26,7 @@ Skills live in `ai-specs/skills/`. When a request matches one of the triggers be
 | Skill | Trigger |
 | --- | --- |
 | `commit` | End of the SDD cycle, via `/commit` |
-| `plan-change` | Generate OpenSpec specs with descriptive change name, via `/plan-change`. Persisted artifacts from `enrich-us` live in `.openspec/tickets/`. |
+| `plan-change` | Generate OpenSpec specs with descriptive change name, via `/plan-change`. Persisted artifacts from `enrich-us` live in `openspec/tickets/`. |
 | `using-git-worktrees` | Parallel feature work during `/plan-change` |
 | `deploy` | Release to staging/production, via `/deploy` |
 | `onboarding` | A new developer is starting on the project |
@@ -68,10 +68,10 @@ Cómo aplicarlo en la práctica:
 
 | Command | Description |
 | --- | --- |
-| `/plan-change TICKET-ID:"[tag] Título"` | Generate validated, context-enriched OpenSpec specs from a ticket. Tag is optional (`[backend\|frontend\|api\|docs\|fullstack]`) and drives selective standards loading; if omitted, the agent infers it and asks for confirmation. If `.openspec/tickets/{TICKET-ID}-enriched.md` exists (from `/enrich-us`), it is used as the primary source. |
+| `/plan-change TICKET-ID:"[tag] Título"` | Generate validated, context-enriched OpenSpec specs from a ticket. Tag is optional (`[backend\|frontend\|api\|docs\|fullstack]`) and drives selective standards loading; if omitted, the agent infers it and asks for confirmation. If `openspec/tickets/{TICKET-ID}-enriched.md` exists (from `/enrich-us`), it is used as the primary source. |
 | `/apply TICKET-ID` | Implement tasks from OpenSpec artifacts (TDD) |
-| `/verify TICKET-ID` | Execute tests and verify the active change works (files per Suggested Path, traceability, delta-incremental), reporting a compact YAML summary. Read-only agent. Ticket ID taken from the active change in `.openspec/changes/`. |
-| `/archive TICKET-ID` | Close the SDD cycle: pre-checks, preview of specs updated, `openspec archive`, append to manifest JSON, stage commit for `/commit`, cleanup. Token-light (no content reading). Ticket ID taken from the active change in `.openspec/changes/`. |
+| `/verify TICKET-ID` | Execute tests and verify the active change works (files per Suggested Path, traceability, delta-incremental), reporting a compact YAML summary. Read-only agent. Ticket ID taken from the active change in `openspec/changes/`. |
+| `/archive TICKET-ID` | Close the SDD cycle: pre-checks, preview of specs updated, `openspec archive`, append to manifest JSON, stage commit for `/commit`, cleanup. Token-light (no content reading). Ticket ID taken from the active change in `openspec/changes/`. |
 | `/commit` | Create conventional commits and pull request (token-light diff, commit plan approval, TICKET-ID auto-extracted from proposal.md, push/PR only after explicit confirmation. Reuses openspec/ staged by /archive). |
 | `/deploy` | **Optional**: Release to staging/production. Not every `/commit` triggers a `/deploy` — use only when the change is ready for release. |
 
@@ -80,7 +80,7 @@ Cómo aplicarlo en la práctica:
 | Command | Description | When to use |
 | --- | --- | --- |
 | `/enrich-us TICKET-ID` | Enrich a vague user story before planning | Only for poorly formed tickets without acceptance criteria |
-| `/adversarial-review` | Adversarial red-team code audit — runs eslint+dependency-cruiser+npm audit, emits SHIP/NO-SHIP verdict, complements /verify (does NOT re-check OpenSpec alignment). Read-only agent. Ticket ID taken from the active change in `.openspec/changes/`. |
+| `/adversarial-review` | Adversarial red-team code audit — runs eslint+dependency-cruiser+npm audit, emits SHIP/NO-SHIP verdict, complements /verify (does NOT re-check OpenSpec alignment). Read-only agent. Ticket ID taken from the active change in `openspec/changes/`. |
 
 ### Subagents (wired via {file:} references)
 

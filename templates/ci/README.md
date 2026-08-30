@@ -20,10 +20,23 @@
 | `ruff.toml` | Python | `ruff` | SRP (max-lines 100), complejidad 10 (McCabe) |
 | `.importlinter` | Python (Django/LangChain) | `import-linter` | **DIP** (views/api no importan ORM; domain no importa infra) |
 
-> **Stack-agnostic:** `make solid-lint` detects Node (`package.json`) or Python
-> (`pyproject.toml` / `requirements.txt`) and runs the matching toolchain. If
+> **Stack-agnostic + stack-aware:** `make solid-lint` reads the `stack` field from
+> `.specboot.json` (string or array; normalized to lower-case tokens). It runs the
+> Node toolchain only when `stack` contains `node`, and the Python toolchain only
+> when `stack` contains `python`. If `stack` declares neither `node` nor `python`
+> (e.g. `"framework"`), the app linters are **skipped cleanly and the target exits
+> 0** — this is the documented, intentional behavior for repos that carry no
+> application code (the Specboot Metadoc repo itself declares `stack: "framework"`).
+>
+> When `.specboot.json` is absent, the legacy detection applies: Node if
+> `package.json` exists, Python if `pyproject.toml` / `requirements.txt` exists. If
 > application code exists (`src/` or `app/`) but no config applies, it **fails
 > loudly** instead of skipping silently.
+>
+> **ESLint is pinned to v8** (`npx eslint@8`) in every invocation to avoid an
+> unexpected pull of ESLint v9/v10 (flat config), which rejects the legacy
+> `.eslintrc` `root: true` declared in `eslintrc.*.js`. Consumer `package.json`
+> files already pin `eslint: "^8.57.0"`, so this only hardens the Metadoc/CI path.
 
 Static analysis can **only mechanically verify DIP** (via dependency-cruiser) and
 **numerical thresholds** (lines, complexity). OCP, LSP, ISP are *not* directly

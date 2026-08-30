@@ -43,17 +43,26 @@ Si aparece un fix o cambio nuevo después de `/apply` y antes de `/archive`:
 
 ## 8. Contexto del proyecto (personalizar por proyecto)
 
-> ⚠️ Esta sección DEBE ser actualizada al iniciar cada proyecto nuevo.
+> ⚠️ Esta sección no se completa aquí: `base-standards.md` es intocable (plantilla de
+> principios). El contexto específico del proyecto vive en `docs/project/` (plantillas del
+> framework): `docs/project/stack.md`, `docs/project/domain.md` y `docs/project/client.md`.
+> Ver `docs/docs-standard.md` para la frontera intocable/del proyecto en `docs/`.
 
-```
-Stack: [definir stack del proyecto aquí]
-Arquitectura: [Clean Architecture / MVC / etc.]
-Dominio: [descripción del dominio de negocio]
-Cliente: [nombre del cliente]
-Convenciones de commits: Conventional Commits
-Lenguaje del código: English
-Lenguaje de documentación cliente: Español
-```
+El proyecto debe definir, en esos archivos:
+
+- **Stack**: lenguajes, frameworks, bases de datos e infraestructura.
+- **Arquitectura**: estilo elegido por el proyecto (Clean Architecture, MVC, hexagonal, etc.).
+- **Dominio**: descripción del negocio y entidades centrales.
+- **Cliente / audiencia**: para quién se construye.
+
+Convenciones transversales (aplican a todo proyecto):
+
+- Convenciones de commits: Conventional Commits
+- Lenguaje del código: English
+- Lenguaje de documentación cliente: Español
+
+Esto mantiene `base-standards.md` como plantilla pura de principios (SDD/TDD/SOLID) sin
+placeholders sin reemplazar.
 
 ## 9. Principios de Diseño No Negociables
 

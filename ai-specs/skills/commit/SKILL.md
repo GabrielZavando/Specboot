@@ -14,8 +14,8 @@ Creates semantic commits following Conventional Commits and manages Pull Request
 
 Obtener el cambio activo:
 
-- `ls .openspec/changes/` y tomar el único cambio presente. Si hay varios, listar nombres y pedir al usuario cuál commitear.
-- Leer el `TICKET-ID` y el `derived-name` desde `proposal.md` (header `Ticket ID:`). Si no existe, intentar leerlo de `.openspec/tickets/{derived-name}-enriched.md` (solo el nombre de archivo, no su contenido).
+- `ls openspec/changes/` y tomar el único cambio presente. Si hay varios, listar nombres y pedir al usuario cuál commitear.
+- Leer el `TICKET-ID` y el `derived-name` desde `proposal.md` (header `Ticket ID:`). Si no existe, intentar leerlo de `openspec/tickets/{derived-name}-enriched.md` (solo el nombre de archivo, no su contenido).
 - **No** leer `scenarios.md`, `requirements.md` ni `tasks.md` en su contenido completo.
 
 ---

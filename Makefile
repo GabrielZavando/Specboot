@@ -90,7 +90,7 @@ commitlint: ## Lint commit messages (stack-independent)
 refs: ## Check referential integrity of {file:...} references
 	bash check-refs.sh
 
-solid-lint: ## Run SOLID/POO static analysis (Ticket 4). Stack-agnostic: detects Node or Python, honors .specboot.json services glob, and fails loudly if code exists but no config applies.
+solid-lint: ## Run SOLID/POO static analysis (TICKET-0.5). Stack-agnostic: detects Node or Python, honors .specboot.json services+stack, and fails loudly if code exists but no config applies.
 	@# Resolve the service root(s). Prefer an explicit .specboot.json "services" glob
 	# (TICKET-C) when present; otherwise fall back to a single src/ or app/.
 	ROOT_DIRS="$$(node -e "try{const s=require('./.specboot.json').services;s&&s.length&&process.stdout.write(s.join(' '))}catch(e){}" 2>/dev/null)"; \
@@ -104,29 +104,42 @@ solid-lint: ## Run SOLID/POO static analysis (Ticket 4). Stack-agnostic: detects
 	fi; \
 	echo "→ SOLID/POO static analysis (stack-agnostic) on: $$ROOT_DIRS"; \
 	ran_any=0; \
-	if [ -f package.json ]; then \
+	NODE_OK=0; PY_OK=0; \
+	if [ -f .specboot.json ]; then \
+	  APP_STACKS="$$(node -e "try{const s=require('./.specboot.json').stack;const a=Array.isArray(s)?s:(s?[s]:[]);process.stdout.write(a.join(' '))}catch(e){}" 2>/dev/null)"; \
+	  case " $$APP_STACKS " in *" node "*) NODE_OK=1 ;; esac; \
+	  case " $$APP_STACKS " in *" python "*) PY_OK=1 ;; esac; \
+	  if [ "$$NODE_OK" != "1" ] && [ "$$PY_OK" != "1" ]; then \
+	    echo "→ solid-lint: stack '$$APP_STACKS' no incluye node/python — saltando análisis de app (stack de framework/otro)."; \
+	    exit 0; \
+	  fi; \
+	else \
+	  NODE_OK=1; PY_OK=1; \
+	fi; \
+	if [ "$$NODE_OK" = "1" ] && [ -f package.json ]; then \
 	  ran_any=1; \
 	  for d in $$ROOT_DIRS; do \
 	    if [ -f templates/ci/eslintrc.backend.js ] && [ -d "$$d" ]; then \
 	      echo "  → Backend ESLint (NestJS) in $$d"; \
-	      npx eslint -c templates/ci/eslintrc.backend.js "$$d/**/*.{ts,tsx}" || exit 1; \
+	      npx eslint@8 -c templates/ci/eslintrc.backend.js "$$d/**/*.{ts,tsx}" || exit 1; \
 	    fi; \
 	    if [ -f templates/ci/eslintrc.frontend.js ] && [ -d "$$d" ] && [ -f angular.json ]; then \
 	      echo "  → Frontend ESLint (Angular) in $$d"; \
-	      npx eslint -c templates/ci/eslintrc.frontend.js "$$d/**/*.{ts,tsx}" || exit 1; \
+	      npx eslint@8 -c templates/ci/eslintrc.frontend.js "$$d/**/*.{ts,tsx}" || exit 1; \
 	      echo "  → madge circular deps (Angular)"; \
 	      npx madge --Circular --extensions ts --exclude '\.spec\.ts$$' "$$d" || exit 1; \
 	    fi; \
 	    if [ -f templates/ci/eslintrc.astro.js ] && [ -d "$$d" ]; then \
 	      echo "  → Astro ESLint in $$d"; \
-	      npx eslint -c templates/ci/eslintrc.astro.js "$$d/**/*.{ts,astro}" || exit 1; \
+	      npx eslint@8 -c templates/ci/eslintrc.astro.js "$$d/**/*.{ts,astro}" || exit 1; \
 	    fi; \
 	    if [ -f templates/ci/.dependency-cruiser.js ] && [ -d "$$d" ]; then \
 	      echo "  → dependency-cruiser (DIP enforcement) in $$d"; \
 	      npx dependency-cruiser --config templates/ci/.dependency-cruiser.js "$$d" || exit 1; \
 	    fi; \
 	  done; \
-	elif [ -f pyproject.toml ] || [ -f requirements.txt ]; then \
+	fi; \
+	if [ "$$PY_OK" = "1" ] && { [ -f pyproject.toml ] || [ -f requirements.txt ]; }; then \
 	  ran_any=1; \
 	  if [ -f templates/ci/ruff.toml ]; then \
 	    echo "  → Ruff (Python lint, complexity 10 / line 100)"; \

@@ -9,5 +9,5 @@ permission:
 {file:ai-specs/agents/backend-developer.md}
 
 You are the backend specialist. Before implementing, read `docs/backend-standards.md`
-and, when the task touches the API contract, `docs/api-spec.yml`; when it touches the
-data model, `docs/data-model.md`. Follow TDD and the SOLID rules declared there.
+and, when the task touches the API contract, `docs/api/api-spec.yml`; when it touches the
+data model, `docs/data-model/data-model.md`. Follow TDD and the SOLID rules declared there.

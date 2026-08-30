@@ -34,7 +34,7 @@ Los artefactos del ciclo SDD (changes, specs y tickets enriquecidos) viven en la
 - `openspec/tickets/<TICKET-ID>-enriched.md` — artefacto enriquecido que `/plan-change` usa como fuente primaria.
 - `openspec/specs/` — especificaciones consolidadas tras `/archive`.
 
-Cualquier documentación o skill que referencie `.openspec/` (con punto) está desactualizada y debe migrarse a `openspec/` en un ticket de framework posterior (fuera de este contrato).
+Cualquier documentación o skill que referenciara `.openspec/` (con punto) estaba desactualizada; esa migración se realizó en TICKET-0.2, pasando todo a la ruta canónica `openspec/`. El estándar concreto de la carpeta `docs/` (árbol y frontera intocable/del proyecto por archivo) se documenta en `docs/docs-standard.md`.
 
 ## Frontera intocable / del proyecto
 
@@ -54,6 +54,8 @@ La siguiente tabla es la regla de verdad sobre qué puede y qué no puede editar
 | `docs/base-standards.md` | |
 
 Regla: los archivos de la columna **Intocable** son inyectados y actualizados por el framework (vía `specboot update`). Si un desarrollador necesita cambiar su comportamiento, debe proponer el cambio a través del flujo SDD del propio Specboot (dogfooding), no editarlos localmente. Los archivos de la columna **Del proyecto** son responsabilidad y propiedad del desarrollador.
+
+El esquema y la validación de `.specboot.json` (columna Del proyecto) se definen en [`docs/specboot-json-standard.md`](specboot-json-standard.md).
 
 ## Flujo SDD obligatorio
 

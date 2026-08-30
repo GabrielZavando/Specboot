@@ -3,7 +3,7 @@ description: Planning agent — generates and updates OpenSpec artifacts only
 mode: primary
 permission:
   edit:
-    ".openspec/**": allow
+    "openspec/**": allow
     "*": deny
   bash:
     "openspec *": allow

@@ -3,7 +3,7 @@ description: Archive agent — closes OpenSpec changes and stages for commit
 mode: primary
 permission:
   edit:
-    ".openspec/**": allow
+    "openspec/**": allow
     "CHANGELOG.md": allow
     "*": deny
   bash:
@@ -13,7 +13,7 @@ permission:
     "git status": allow
     "ls *": allow
     "cat *": allow
-    "rm -rf .openspec/changes/*": allow
+    "rm -rf openspec/changes/*": allow
     "*": deny
 ---
 

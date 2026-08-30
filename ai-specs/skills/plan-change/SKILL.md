@@ -38,21 +38,21 @@ Load **only** the standards files indicated by the tag. `docs/base-standards.md`
 
 | Tag | Files to load |
 |---|---|
-| `[backend]` | `docs/backend-standards.md`, `docs/data-model.md` |
+| `[backend]` | `docs/backend-standards.md`, `docs/data-model/data-model.md` |
 | `[frontend]` | `docs/frontend-standards.md` |
-| `[api]` | `docs/api-spec.yml`, `docs/backend-standards.md` |
+| `[api]` | `docs/api/api-spec.yml`, `docs/backend-standards.md` |
 | `[docs]` | `docs/documentation-standards.md` |
 | `[fullstack]` | backend + frontend rows |
 
 **Step 2b — No tag (hybrid fallback):** infer the most likely tag from the title and/or the enriched artifact's `Capas afectadas` field (see Step 3), then **show the inference and ask the user to confirm** before reading any standards file:
 
-> "Este ticket parece `[backend]` (menciona reset de contraseña / auth). ¿Confirmo y cargo `backend-standards.md` + `data-model.md`?"
+> "Este ticket parece `[backend]` (menciona reset de contraseña / auth). ¿Confirmo y cargo `backend-standards.md` + `docs/data-model/data-model.md`?"
 
 Never load "extra" files just in case — that is exactly what this step exists to prevent.
 
 ### Step 3 — Detect Enriched Artifact
 
-Check for `.openspec/tickets/{TICKET-ID}-enriched.md`:
+Check for `openspec/tickets/{TICKET-ID}-enriched.md`:
 
 - **Exists** → read it and use it as the **primary source**: acceptance criteria (Gherkin), edge cases, Diseño de Clases/Componentes, and technical considerations all feed Step 5 directly. The raw title is only used for naming (Step 4).
 - **Absent** → if the title looks vague (no clear actor/action/outcome, no acceptance criteria available), suggest running `/enrich-us {TICKET-ID}` first and stop. If the title is specific enough, continue with the title as the only source.
@@ -85,14 +85,14 @@ Examples:
 
 > ⚠️ Do NOT run `openspec new change` — that command does not exist in the installed CLI. The agent writes the artifact files directly. Use `openspec instructions <artifact>` to consult the expected artifact format if unsure.
 
-Create the folder `.openspec/changes/{derived-name}/` and write, enriched with the loaded context (not generic templates):
+Create the folder `openspec/changes/{derived-name}/` and write, enriched with the loaded context (not generic templates):
 
 1. **`proposal.md`** — origin ticket ID, title, tag, summary and motivation.
 
 2. **`scenarios.md`** — Gherkin scenarios that:
    - If an enriched artifact exists: map its Acceptance Criteria scenarios 1:1 (do not regenerate from scratch).
    - Otherwise: derive from the title, covering happy path, error cases, and edge cases.
-   - Reference **real entities from `data-model.md`** and **real endpoints from `api-spec.yml`** when those files are loaded; never invent table or endpoint names.
+   - Reference **real entities from `docs/data-model/data-model.md`** and **real endpoints from `docs/api/api-spec.yml`** when those files are loaded; never invent table or endpoint names.
    - Apply non-functional rules from the loaded standards (e.g. security policies like "no email enumeration" from `backend-standards.md`).
 
 3. **`requirements.md`** — numbered requirements, each traceable to at least one scenario.
@@ -117,8 +117,8 @@ Checklist (apply before reporting):
 - [ ] Happy path, error cases, and edge cases are covered
 - [ ] Requirements are numbered and traceable to scenarios
 - [ ] Every task has subtasks, priority, layer, and estimate
-- [ ] Entities mentioned exist in `data-model.md` (if loaded)
-- [ ] Endpoints mentioned exist in `api-spec.yml` (if loaded)
+- [ ] Entities mentioned exist in `docs/data-model/data-model.md` (if loaded)
+- [ ] Endpoints mentioned exist in `docs/api/api-spec.yml` (if loaded)
 
 Then run:
 
@@ -139,8 +139,8 @@ If any check fails, regenerate the failing artifact with specific fix instructio
 **Original title**: [full title]
 **Tag (source)**: [tag] (explicit | inferred+confirmed)
 **Derived change name**: [derived-name]
-**Change folder**: .openspec/changes/[derived-name]/
-**Enriched artifact used**: yes (.openspec/tickets/...) | no
+**Change folder**: openspec/changes/[derived-name]/
+**Enriched artifact used**: yes (openspec/tickets/...) | no
 
 ### Naming rationale
 - Verb: [action word]
