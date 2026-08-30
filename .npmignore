@@ -1,7 +1,5 @@
 # Internal repository state — never ship to consumers
 .git/
-.github/
-.opencode/
 openspec/
 tests/
 node_modules/
@@ -10,3 +8,4 @@ node_modules/
 CHANGELOG.md
 *.log
 .DS_Store
+.openspec/

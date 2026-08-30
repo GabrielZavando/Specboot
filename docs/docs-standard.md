@@ -51,7 +51,7 @@ archivos son propiedad y responsabilidad del proyecto.
 El esquema de `.specboot.json` (incluido el campo `extraStandards` que apunta a `docs/`)
 se documenta en [`docs/specboot-json-standard.md`](specboot-json-standard.md).
 
-> **Nota de alcance**: `docs/framework-contract.md` y este `docs/docs-standard.md` también son documentos inyectados por el framework (se distribuyen con él y se actualizan vía el flujo SDD del propio Specboot, no por el dev del proyecto). En la frontera de `docs/` se marca `base-standards.md` como intocable porque es la plantilla de principios que el dev no debe alterar; `framework-contract.md` y `docs-standard.md` se consideran parte del framework y se tratan como tales.
+> **Nota de alcance**: `docs/framework-contract.md`, `docs/versioning-standard.md` y este `docs/docs-standard.md` también son documentos inyectados por el framework (se distribuyen con él y se actualizan vía el flujo SDD del propio Specboot, no por el dev del proyecto). En la frontera de `docs/` se marca `base-standards.md` como intocable porque es la plantilla de principios que el dev no debe alterar; `framework-contract.md`, `versioning-standard.md` y `docs-standard.md` se consideran parte del framework y se tratan como tales.
 
 ## 3. Regla de carga dinámica del puente `AGENTS.md`
 

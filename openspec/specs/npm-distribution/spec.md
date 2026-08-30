@@ -5,14 +5,33 @@ TBD - created by archiving change specboot-npm-publish. Update Purpose after arc
 ## Requirements
 ### Requirement: Package configuration
 
-The repository SHALL contain a `package.json` declaring the package name `@gabrielzavando/specboot`, an initial version `0.1.0`, the `publishConfig.registry` pointing to `https://npm.pkg.github.com`, and a `files` allowlist that includes framework assets (`docs/`, `ai-specs/`, `templates/`, `specboot.sh`, `update.sh`, `check-refs.sh`, `Makefile`, `AGENTS.md`, `opencode.json`, `README.md`, `LICENSE`) while excluding internal repository state (`.git/`, `.github/`, `tests/`, `openspec/`, `.opencode/`, `CHANGELOG.md`).
+The repository SHALL contain a `package.json` declaring the package name `@gabrielzavando/specboot`, an initial version `0.1.1`, the `publishConfig.registry` pointing to `https://npm.pkg.github.com`, a `bin.specboot` entry pointing to `./specboot.sh`, `scripts` (`check`, `validate`, `ci`), and a `files` allowlist that includes ONLY the following intocable framework assets:
+- `.opencode/commands`
+- `.opencode/agents`
+- `ai-specs`
+- `check-refs.sh`
+- `specboot.sh`
+- `validate-specboot.sh`
+- `templates/ci`
+- `docs/base-standards.md`
+- `docs/framework-contract.md`
+- `docs/docs-standard.md`
+- `docs/specboot-json-standard.md`
+- `docs/versioning-standard.md`
+- `opencode.json`
+- `AGENTS.md`
+- `Makefile`
+- `.github/workflows`
+- `LICENSE`
+- `README.md`
+
+while EXCLUDING internal repository state (`.git/`, `.github/` other than `workflows`, `openspec/`, `tests/`, `node_modules/`, the project `docs/` tree, the standalone `update.sh`, `CHANGELOG.md`). The `description` MUST NOT contain the word "template" and `keywords` MUST reflect a framework (e.g. `sdd`, `openspec`, `opencode`, `framework`, `spec-driven-development`, `agents`).
 
 #### Scenario: Package content validation
-
 - **Given** the `package.json` is configured with the `files` allowlist
 - **When** running `npm pack --dry-run`
 - **Then** only the allowlisted framework files are included in the package
-- **And** internal repository files (`.git/`, `.github/`, `tests/`, `openspec/`) are excluded
+- **And** internal repository files (`.git/`, `openspec/`, `tests/`, `node_modules/`, project `docs/`, `update.sh`) are excluded
 
 ### Requirement: Automated publication
 
@@ -35,4 +54,38 @@ The `README.md` SHALL document how consumers authenticate against GitHub Package
 - **When** running `npm install --save-dev @gabrielzavando/specboot`
 - **Then** the package is installed in `node_modules/@gabrielzavando/specboot`
 - **And** the consumer can execute `bash node_modules/@gabrielzavando/specboot/specboot.sh --init`
+
+### Requirement: Reconciled .npmignore
+
+The repository SHALL contain a `.npmignore` that does NOT block any path in the `files` allowlist (i.e. it MUST NOT contain blanket `.github/` or `.opencode/` exclusions) while still excluding internal repository state (`.git/`, `openspec/`, `tests/`, `node_modules/`, `.env*`, `CHANGELOG.md`, `*.log`, `.DS_Store`, and the legacy `.openspec/`).
+
+#### Scenario: .npmignore does not shadow the allowlist
+- **Given** `files` allowlists `.opencode/commands`, `.opencode/agents`, `.github/workflows`
+- **When** running `npm pack --dry-run`
+- **Then** those three paths are present in the tarball
+- **And** `openspec/`, `tests/`, `node_modules/`, `.git/` remain excluded
+
+### Requirement: Self-consistent shipped CLI
+
+`specboot.sh` SHALL NOT list `update.sh` in its `REQUIRED_FILES` array, because `update.sh` is no longer shipped in the package.
+
+#### Scenario: Shipped CLI validation passes
+- **Given** `update.sh` is absent from the installed package
+- **When** a consumer runs `bash specboot.sh --ci`
+- **Then** the validation exits 0 (no missing-required-file failure)
+
+### Requirement: Distribution boundary documentation
+
+`README.md` and `docs/framework-contract.md` SHALL explicitly document the npm distribution boundary: what the package includes (the `files` allowlist of intocable framework assets) and what stays in the project (application code, project `docs/` except the 5 standards, `.specboot.json`, project MCP, env/GitHub vars), including a note that the Specboot development repository's own `docs/` are not published because they are filtered out by `files`.
+
+#### Scenario: README documents the boundary
+- **Given** `package.json` declares a `files` allowlist shipping only intocable framework assets
+- **When** a reader opens `README.md`
+- **Then** a "Qué incluye el paquete" section lists the allowlisted assets
+- **And** a "Qué es del proyecto" section lists the NOT-shipped assets (app code, project `docs/` minus 5 standards, `.specboot.json`, project MCP, env/GitHub vars)
+
+#### Scenario: framework-contract reaffirms intocable-only
+- **Given** `docs/framework-contract.md` describes the distribution architecture
+- **When** a reader opens the document
+- **Then** a "Distribución vía npm" subsection states `files` is the source of truth and project `docs/` is filtered out by the allowlist
 

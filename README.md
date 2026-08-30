@@ -104,6 +104,53 @@ npm update @gabrielzavando/specboot
 
 > 💡 Para publicar una nueva versión (maintainers): ejecuta `bash update.sh --bump patch|minor|major`, lo que genera un nuevo tag `vX.Y.Z` y dispara automáticamente el workflow de publicación a GitHub Packages.
 
+## Qué incluye el paquete
+
+`@gabrielzavando/specboot` se publica como **dependencia de desarrollo**. El contenido
+del paquete está definido por la allowlist `files` de `package.json` y contiene
+**exclusivamente activos intocables del framework** (lo que el framework inyecta, no lo
+que tú personalizas):
+
+| Incluido en el paquete | Qué es |
+| --- | --- |
+| `.opencode/commands/` | Comandos del ciclo SDD (`/plan-change`, `/apply`, `/verify`, `/archive`, `/commit`, `/deploy`, …) |
+| `.opencode/agents/` | Agentes IA (plan, build, verify, archive, reviewer) y subagentes (backend, frontend) |
+| `ai-specs/` | Roles, skills y ejemplos reutilizables |
+| `check-refs.sh`, `specboot.sh`, `validate-specboot.sh` | Scripts de setup y validación SDD |
+| `templates/ci/` | Configs de referencia de CI (ESLint, dependency-cruiser, ruff, import-linter) |
+| `docs/base-standards.md` | Estándares globales (intocable) |
+| `docs/framework-contract.md` | Contrato del framework (intocable) |
+| `docs/docs-standard.md` | Estándar de documentación (intocable) |
+| `docs/specboot-json-standard.md` | Esquema de `.specboot.json` (intocable) |
+| `docs/versioning-standard.md` | Estándar de versionado (intocable) |
+| `opencode.json` | Configuración de OpenCode (sin `model` fijado) |
+| `AGENTS.md` | Instrucciones de OpenCode (puente, intocable) |
+| `Makefile` | Targets CI stack-agnostic (intocable) |
+| `.github/workflows/` | CI/CD del framework (intocable) |
+| `LICENSE`, `README.md` | Licencia MIT y este README |
+
+> Son **5** los documentos estándar del framework que se publican (los listados arriba).
+> El resto de `docs/` del repositorio **no** se incluye en el paquete.
+
+## Qué es del proyecto (NO se publica)
+
+Estos activos son propiedad y responsabilidad del desarrollador; **no** viajan en el
+paquete npm (quedan fuera de la allowlist `files`):
+
+- **Código de la aplicación** (`backend/`, `frontend/`, etc.).
+- **`docs/` del proyecto**, salvo los 5 estándares del framework listados arriba
+  (p.ej. `docs/backend-standards.md`, `docs/frontend-standards.md`,
+  `docs/documentation-standards.md`, `docs/deploy-standards.md`, `docs/api/`,
+  `docs/data-model/`, `docs/ci-standards.md`, `docs/project/`).
+- **`.specboot.json`** del proyecto (raíces mono/multi-repo).
+- **Servidores MCP** del proyecto.
+- **Variables de entorno / GitHub vars** del proyecto.
+
+> 💡 **Dogfooding**: el propio repositorio de desarrollo de Specboot contiene `docs/`
+> propios (los listados arriba como "del proyecto") que **no** se publican — quedan
+> filtrados por `files`. No los confundas con los 5 estándares que sí viajan en el
+> paquete.
+
 ## Estructura del Proyecto
 
 ```

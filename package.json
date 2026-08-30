@@ -1,37 +1,36 @@
 {
   "name": "@gabrielzavando/specboot",
   "version": "0.1.1",
-  "description": "Template boilerplate for Spec-Driven Development (SDD) using OpenCode + OpenSpec",
+  "description": "SDD development framework for OpenCode + OpenSpec: agents, commands, skills, and validation tools that enforce the Spec-Driven Development flow.",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/GabrielZavando/Specboot.git"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+  "bin": { "specboot": "./specboot.sh" },
+  "scripts": {
+    "check": "bash check-refs.sh",
+    "validate": "bash validate-specboot.sh",
+    "ci": "bash specboot.sh --ci"
   },
   "files": [
-    "docs",
+    ".opencode/commands",
+    ".opencode/agents",
     "ai-specs",
-    "templates",
-    "specboot.sh",
-    "update.sh",
     "check-refs.sh",
+    "specboot.sh",
     "validate-specboot.sh",
-    "Makefile",
-    "AGENTS.md",
+    "templates/ci",
+    "docs/base-standards.md",
+    "docs/framework-contract.md",
+    "docs/docs-standard.md",
+    "docs/specboot-json-standard.md",
+    "docs/versioning-standard.md",
     "opencode.json",
-    "README.md",
-    "LICENSE"
+    "AGENTS.md",
+    "Makefile",
+    ".github/workflows",
+    "LICENSE",
+    "README.md"
   ],
-  "keywords": [
-    "sdd",
-    "openspec",
-    "opencode",
-    "template",
-    "spec-driven-development"
-  ],
-  "engines": {
-    "node": ">=18"
-  }
+  "repository": { "type": "git", "url": "git+https://github.com/GabrielZavando/Specboot.git" },
+  "publishConfig": { "registry": "https://npm.pkg.github.com" },
+  "keywords": ["sdd", "openspec", "opencode", "framework", "spec-driven-development", "agents"],
+  "engines": { "node": ">=18" }
 }
