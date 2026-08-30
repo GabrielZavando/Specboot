@@ -26,6 +26,27 @@ Specboot se distribuye como un único paquete npm: `@gabrielzavando/specboot`. E
 - El proyecto no forkea ni copia el framework fuera del mecanismo de instalación/actualización; cualquier desviación es un bug, no un feature.
 - La publicación es automática por release: rama por cambio → merge a main → release cuando la versión (SemVer) esté lista.
 
+### Distribución vía npm
+
+El paquete `@gabrielzavando/specboot` publica **únicamente** los activos intocables del
+framework. La allowlist `files` de `package.json` es la fuente de verdad de lo que viaja
+en el tarball; cualquier archivo no listado queda fuera.
+
+- **Se publican**: comandos (`.opencode/commands/`), agentes (`.opencode/agents/`),
+  `ai-specs/`, scripts de validación (`check-refs.sh`, `specboot.sh`,
+  `validate-specboot.sh`), `templates/ci/`, los **5 documentos estándar**
+  (`docs/base-standards.md`, `docs/framework-contract.md`, `docs/docs-standard.md`,
+  `docs/specboot-json-standard.md`, `docs/versioning-standard.md`), `opencode.json`,
+  `AGENTS.md`, `Makefile`, `.github/workflows/`, `LICENSE` y `README.md`.
+- **NO** se publica `docs/` del proyecto (salvo los 5 estándares): al filtrarse por
+  `files`, el repositorio de desarrollo de Specboot conserva sus propios `docs/`
+  (backend/frontend/documentation/deploy standards, `api/`, `data-model/`,
+  `ci-standards.md`, `project/`) sin que estos lleguen a los consumidores. Esto evita
+  confusión durante el dogfooding: lo que ves en el repo no es lo que instala
+  `npm install`.
+- Tampoco se publican: código de aplicación, `.specboot.json`, servidores MCP ni
+  variables de entorno del proyecto.
+
 ### Rutas canónicas de artefactos SDD
 
 Los artefactos del ciclo SDD (changes, specs y tickets enriquecidos) viven en la ruta canónica **`openspec/`** (sin punto), coherente con el CLI `openspec` 1.3.1. Concretamente:
