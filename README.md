@@ -341,6 +341,49 @@ configuración.
 - **`.github/workflows/deploy.yml`**: Docker build, deploy a staging/producción, smoke tests, rollback
 - **`.commitlintrc.json`**: Conventional Commits enforced
 
+## Makefile del framework (parametrizado por `.specboot.json`)
+
+El `Makefile` es **intocable**: el proyecto no lo edita. Se parametriza vía `.specboot.json`
+declarando `services` (rutas a carpetas con código) y `stack` (`node`, `python`,
+`framework`, combinaciones en array, o `"auto"` para autodetección por manifiesto).
+
+```json
+{
+  "frameworkVersion": "0.1.1",
+  "services": ["backend", "frontend"],
+  "stack": ["node", "python"]
+}
+```
+
+Targets disponibles:
+
+| Target | Qué hace |
+|--------|----------|
+| `make install` | Instala dependencias por servicio (npm/pip) según stack |
+| `make lint` | Linting **propio del proyecto** por servicio (`npm run lint` / `ruff`) |
+| `make test` | Tests por servicio (`npm test` / `pytest`) |
+| `make build` | Compilación por servicio (`npm run build` / `python -m build`) |
+| `make audit` | Auditoría de dependencias (`npm audit` / `pip-audit`) |
+| `make solid-lint` | SOLID/DIP del framework por servicio (eslint@8 + dependency-cruiser + ruff + import-linter) |
+| `make commitlint` | Valida mensajes de commit |
+| `make refs` | Ejecuta `check-refs.sh` del proyecto |
+| `make validate-specboot` | Valida `.specboot.json` (si `validate-specboot.sh` existe) |
+| `make ci` | **CI gate del proyecto**: `refs` + `solid-lint` + `lint` + `test` + `audit` |
+
+```bash
+make ci            # CI gate del proyecto
+make solid-lint    # SOLID/DIP por servicio
+make lint          # linting propio del proyecto por servicio
+make install       # instalar dependencias por servicio
+```
+
+> **Nota:** `make ci` es el gate del proyecto consumidor. La validación del propio
+> framework (dogfooding) se hace con `bash specboot.sh --ci` (framework self-check),
+> que es un comando **aparte**, no un target de este Makefile.
+>
+> El proyecto **no edita el Makefile**: para infraestructura específica (VPS, Docker,
+> etc.) usa variables de entorno de GitHub Actions + configuración propia del proyecto.
+
 ## Requisitos
 
 | Herramienta | Versión mínima |

@@ -205,6 +205,58 @@ bash specboot.sh update --template /ruta/a/specboot
 bash node_modules/@gabrielzavando/specboot/specboot.sh update --no-backup
 ```
 
+## Makefile del framework
+
+El `Makefile` del framework es **intocable**: el proyecto no lo edita. Se parametriza
+vía `.specboot.json` leyendo `services` (rutas relativas a carpetas con código) y
+`stack` (`node`, `python`, `framework`, combinaciones en array, o `"auto"` para
+autodetección por presencia de manifiestos). La lectura usa `node -e` (convención del
+framework), nunca `jq`.
+
+**Targets (gate del proyecto):**
+
+| Target | Qué hace |
+|--------|----------|
+| `install` | Instala dependencias por servicio (npm/pip) según `stack` |
+| `lint` | Linting **propio del proyecto** por servicio (`npm run lint` / `ruff`) |
+| `test` | Tests por servicio (`npm test` / `pytest`) |
+| `build` | Compilación por servicio (`npm run build` / `python -m build`) |
+| `audit` | Auditoría de dependencias (`npm audit` / `pip-audit`) |
+| `solid-lint` | SOLID/DIP del framework por servicio (eslint@8 + dependency-cruiser + ruff + import-linter) |
+| `commitlint` | Valida mensajes de commit |
+| `refs` | Ejecuta `check-refs.sh` del proyecto |
+| `validate-specboot` | Valida `.specboot.json` (si `validate-specboot.sh` existe) |
+| `ci` | **CI gate del proyecto**: `refs` + `solid-lint` + `lint` + `test` + `audit` |
+| `help` | Muestra targets y los `services`/`stack` detectados |
+
+**Comportamiento:**
+
+- Por cada servicio en `services`, el Makefile aplica lint/test/build/audit/install
+  según el `stack` declarado; si un servicio no tiene el stack activo, no se linta
+  (solo advertencia).
+- Si un servicio no existe en disco o no tiene el script/manifest requerido, se salta
+  con advertencia y **no se genera error** (exit 0).
+- `stack: "framework"` (caso del propio repo de Specboot) hace que los targets de
+  app se salten limpio: `make ci` queda en verde.
+
+**`ci` (gate del proyecto) vs `specboot.sh --ci` (framework self-check):**
+
+- `make ci` es el **CI gate del proyecto consumidor**: `refs` + `solid-lint` + `lint` +
+  `test` + `audit`.
+- `bash specboot.sh --ci` es la validación del **propio framework** (dogfooding) y se
+  ejecuta por el desarrollador del framework, **no** como target del Makefile del
+  proyecto. En la documentación se nombra como "framework self-check", no como "ci del
+  proyecto".
+
+**Customización del proyecto:** el proyecto declara `services` y `stack` en
+`.specboot.json`. No edita el Makefile. Para infraestructura específica (VPS, Docker,
+etc.) usa variables de entorno de GitHub + configuración propia del proyecto.
+
+**Relación con `specboot update` / `update.sh`:** `specboot update` reemplaza el
+`Makefile` del framework como archivo intocable (opción A); `update.sh` mantiene solo
+el modo `--bump` y su modo de sincronización está deprecado. Ninguno de los dos debe
+ser editado a mano por el proyecto.
+
 ## Dogfooding
 
 Specboot se desarrolla con su **propio flujo SDD**. El framework no se codifica a mano fuera del ciclo: sus propias features (comandos, skills, frontera, reglas de versión) pasan por `/plan-change → /apply → /verify → /archive → /commit` exactamente como lo haría un proyecto hijo. Cualquier ampliación de la lista de archivos intocables o de los principios rectores debe modificar primero este contrato y luego implementarse, nunca al revés.
