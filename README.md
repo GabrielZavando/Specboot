@@ -89,12 +89,28 @@ npm install --save-dev @gabrielzavando/specboot
 Una vez instalado, los scripts de Specboot viven dentro de `node_modules`:
 
 ```bash
-# Inicializar Specboot en tu proyecto
+# Inicializar un proyecto nuevo (inyecta archivos del framework + .specboot.json + docs/)
+bash node_modules/@gabrielzavando/specboot/specboot.sh init
+
+# Inicializar con valores interactivos (nombre, stack, services)
+bash node_modules/@gabrielzavando/specboot/specboot.sh init --interactive
+
+# Verificar que la estructura del proyecto ya inicializado es correcta
 bash node_modules/@gabrielzavando/specboot/specboot.sh --init
 
-# Sincronizar actualizaciones del template tooling
-bash node_modules/@gabrielzavando/specboot/update.sh
+# Actualizar un proyecto existente (reemplaza archivos intocables, no toca docs/ ni código)
+bash node_modules/@gabrielzavando/specboot/specboot.sh update
+
+# Aceptar un salto major sin preguntar (CI / no-TTY)
+bash node_modules/@gabrielzavando/specboot/specboot.sh update --yes
+
+# Previsualizar sin cambiar nada
+bash node_modules/@gabrielzavando/specboot/specboot.sh update --dry-run
 ```
+
+> **`init` vs `--init`**: `specboot init` (sin guiones) **crea** el proyecto desde cero;
+> `specboot.sh --init` (con guiones) sólo **verifica** la estructura de un proyecto ya
+> inicializado. Si ya existe `.specboot.json`, `init` avisa y sugiere `specboot update`.
 
 ### Actualización
 
@@ -102,7 +118,7 @@ bash node_modules/@gabrielzavando/specboot/update.sh
 npm update @gabrielzavando/specboot
 ```
 
-> 💡 Para publicar una nueva versión (maintainers): ejecuta `bash update.sh --bump patch|minor|major`, lo que genera un nuevo tag `vX.Y.Z` y dispara automáticamente el workflow de publicación a GitHub Packages.
+> 💡 Para publicar una nueva versión (maintainers): ejecuta `bash update.sh --bump patch|minor|major`, lo que genera un nuevo tag `vX.Y.Z` y dispara automáticamente el workflow de publicación a GitHub Packages. El modo de sincronización de `update.sh` está deprecado; usa `specboot update` para actualizar proyectos.
 
 ## Qué incluye el paquete
 

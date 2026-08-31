@@ -47,6 +47,21 @@
       "specs_applied": [
         "agents-bridge"
       ]
+    },
+    {
+      "change_name": "specboot-init",
+      "ticket_id": "TICKET-3.1",
+      "specs_applied": [
+        "specboot-init"
+      ]
+    },
+    {
+      "change_name": "specboot-update",
+      "ticket_id": "TICKET-3.2",
+      "archived_at": "2026-08-30T21:26:36Z",
+      "specs_applied": [
+        "specboot-update"
+      ]
     }
   ]
 }

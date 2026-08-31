@@ -88,6 +88,12 @@ do_sync() {
     return
   fi
 
+  echo "⚠️  AVISO: el modo de sincronización de update.sh está deprecado."
+  echo "    El camino canónico para actualizar un proyecto es 'specboot update'"
+  echo "    (dentro del specboot.sh que ya se publica en el paquete npm)."
+  echo "    update.sh solo se mantiene para 'bash update.sh --bump' (release de maintainers)."
+  echo ""
+
   echo "🔄 Specboot — Sync tooling"
   echo "Template: $TEMPLATE"
   echo "Target:   $TARGET"
