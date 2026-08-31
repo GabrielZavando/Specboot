@@ -78,6 +78,14 @@
       "specs_applied": [
         "specboot-workflows"
       ]
+    },
+    {
+      "change_name": "specboot-dogfooding",
+      "ticket_id": "TICKET-5.1",
+      "archived_at": "2026-08-31T00:05:00Z",
+      "specs_applied": [
+        "specboot-dogfooding"
+      ]
     }
   ]
 }
