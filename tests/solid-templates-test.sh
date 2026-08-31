@@ -88,17 +88,21 @@ for f in "eslintrc.backend.js" "eslintrc.frontend.js" "eslintrc.astro.js" ".depe
 done
 echo ""
 
-# ---- Check 7: ci.yml has conditioned 'solid-lint' job ----
-echo "→ Check 7: ci.yml has conditioned 'solid-lint' job"
+# ---- Check 7: ci.yml wires solid-lint via `make ci` (Makefile owns the target) ----
+echo "→ Check 7: ci.yml wires solid-lint via make ci + Makefile skip-guard"
 CI="$ROOT/.github/workflows/ci.yml"
 if [ -f "$CI" ]; then
-  if grep -q "^  solid-lint:" "$CI"; then PASS "job 'solid-lint' defined"; else FAIL "missing job 'solid-lint'"; fi
-  # The "only run SOLID lint when there is application code" guard used to live as a
-  # job-level `if: hashFiles('package.json') != ''`, but hashFiles() is NOT available
-  # in a job-level `if` (GitHub rejects the workflow as "Unrecognized function").
-  # The guard now lives in the Makefile (make solid-lint skips when no src/ or app/ exists).
-  # Validate both: the job exists AND the Makefile skip-guard is present.
-  if grep -qE "no application code \(src/ or app/\) found" Makefile; then
+  # SOLID enforcement is orchestrated by the project gate `make ci`, which runs the
+  # `solid-lint` Makefile target. A dedicated `solid-lint` *job* is intentionally
+  # avoided: it would duplicate `make ci` and require job-level hashFiles (invalid).
+  if grep -qE "make ci" "$CI"; then
+    PASS "ci.yml project-ci runs 'make ci' (includes solid-lint)"
+  else
+    FAIL "ci.yml does not run 'make ci' (SOLID gate missing)"
+  fi
+  # The "only run SOLID lint when there is application code" guard lives in the
+  # Makefile (make solid-lint skips when no src/ or app/ exists or non-app stack).
+  if grep -q "saltando análisis de app" Makefile; then
     PASS "solid-lint skip-guard present in Makefile (replaces job-level hashFiles)"
   else
     FAIL "Makefile missing solid-lint skip-guard (src/ or app/)"
@@ -117,10 +121,10 @@ else
 fi
 echo ""
 
-# ---- Check 9: ci.yml has deferred Python note ----
-echo "→ Check 9: ci.yml has deferred Python/Django note"
-if grep -q "import-linter" "$CI"; then PASS "Python deferred note mentions import-linter"; else FAIL "missing Python deferred note"; fi
-if grep -q "ruff" "$CI"; then PASS "Python deferred note mentions ruff"; else FAIL "missing ruff mention"; fi
+# ---- Check 9: Python/Django deferred note (ruff + import-linter) lives in Makefile solid-lint ----
+echo "→ Check 9: Python/Django deferred note (ruff + import-linter) in Makefile solid-lint"
+if grep -q "import-linter" Makefile; then PASS "Python deferred note mentions import-linter (Makefile solid-lint)"; else FAIL "missing Python deferred note (import-linter)"; fi
+if grep -q "ruff" Makefile; then PASS "Python deferred note mentions ruff (Makefile solid-lint)"; else FAIL "missing ruff mention"; fi
 echo ""
 
 # ---- Check 10: docs/ci-standards.md exists and references templates ----
