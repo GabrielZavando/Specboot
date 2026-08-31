@@ -408,6 +408,17 @@ secrets.DEPLOY_SSH_KEY
 proyecto: `make ci`). Para infraestructura específica (VPS, Docker, repo distinto) el
 proyecto usa variables de entorno de GitHub, no edita el YAML.
 
+## Desarrollar Specboot con Specboot (Dogfooding)
+
+El propio framework se desarrolla usando su flujo SDD. Para hacer un cambio en Specboot:
+
+1. Crea una rama `feature/ticket-X.Y-descripcion` desde `main`.
+2. Ejecuta el flujo: `/plan-change` → `/apply` → `/verify` → `/archive` → `/commit`.
+3. Valida con el script de dogfooding: `bash scripts/dogfood-check.sh` (corre `check-refs.sh` + `specboot.sh --ci`).
+4. Al cerrar una fase, haz rebase a `main`, push y un solo PR.
+
+El framework es su propio proyecto SDD: `AGENTS.md` es el puente que carga `docs/`, los agentes son prefabricados, y la actualización de archivos intocables se hace con `specboot update` (en proyectos consumidores; en el repo del framework es no-op porque target==source).
+
 ## Requisitos
 
 | Herramienta | Versión mínima |
