@@ -62,6 +62,14 @@
       "specs_applied": [
         "specboot-update"
       ]
+    },
+    {
+      "change_name": "specboot-makefile",
+      "ticket_id": "TICKET-4.1",
+      "archived_at": "2026-08-31T00:00:00Z",
+      "specs_applied": [
+        "specboot-makefile"
+      ]
     }
   ]
 }
