@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-08-31
+
+### Fixed
+
+- Desbloqueado el publish automático: `release.yml` falló con `You cannot publish over the previously published versions: 0.1.1` porque el merge a `main` no llevó bump de versión. `package.json` pasa de `0.1.1` a `0.1.2` (el workflow no hace bump automático por diseño: el mantenedor bumpa antes del merge).
+- `package.json` `bin`: `./specboot.sh` → `specboot.sh` (path pre-normalizado). Silencia el warning de npm en publish (`"bin[specboot]" script name ... was invalid and removed`), que solo normalizaba el path — la entrada CLI sobrevive en el tarball publicado.
+
 ## [0.1.1] - 2026-08-29
 
 ### Added

@@ -5,7 +5,7 @@ TBD - created by archiving change specboot-npm-publish. Update Purpose after arc
 ## Requirements
 ### Requirement: Package configuration
 
-The repository SHALL contain a `package.json` declaring the package name `@gabrielzavando/specboot`, an initial version `0.1.1`, the `publishConfig.registry` pointing to `https://npm.pkg.github.com`, a `bin.specboot` entry pointing to `./specboot.sh`, `scripts` (`check`, `validate`, `ci`), and a `files` allowlist that includes ONLY the following intocable framework assets:
+The repository SHALL contain a `package.json` declaring the package name `@gabrielzavando/specboot`, an initial version `0.1.2`, the `publishConfig.registry` pointing to `https://npm.pkg.github.com`, a `bin.specboot` entry pointing to `specboot.sh` (pre-normalized path, no `./` prefix), `scripts` (`check`, `validate`, `ci`), and a `files` allowlist that includes ONLY the following intocable framework assets:
 - `.opencode/commands`
 - `.opencode/agents`
 - `ai-specs`
@@ -32,6 +32,12 @@ while EXCLUDING internal repository state (`.git/`, `.github/` other than `workf
 - **When** running `npm pack --dry-run`
 - **Then** only the allowlisted framework files are included in the package
 - **And** internal repository files (`.git/`, `openspec/`, `tests/`, `node_modules/`, project `docs/`, `update.sh`) are excluded
+
+#### Scenario: bin entry survives publish normalization without warnings
+- **Given** the `package.json` declares `"bin": { "specboot": "specboot.sh" }`
+- **When** running `npm publish --dry-run`
+- **Then** no bin normalization warning is emitted
+- **And** the `bin.specboot` entry still points to the shipped `specboot.sh` script
 
 ### Requirement: Automated publication
 

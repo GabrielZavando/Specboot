@@ -1,9 +1,9 @@
 {
   "name": "@gabrielzavando/specboot",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "SDD development framework for OpenCode + OpenSpec: agents, commands, skills, and validation tools that enforce the Spec-Driven Development flow.",
   "license": "MIT",
-  "bin": { "specboot": "./specboot.sh" },
+  "bin": { "specboot": "specboot.sh" },
   "scripts": {
     "check": "bash check-refs.sh",
     "validate": "bash validate-specboot.sh",

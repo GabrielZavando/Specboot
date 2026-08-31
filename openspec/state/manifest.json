@@ -104,6 +104,14 @@
         "specboot-release",
         "workflow-node-upgrade"
       ]
+    },
+    {
+      "change_name": "fix-npm-publish-bin",
+      "ticket_id": "TICKET-6.2",
+      "archived_at": "2026-08-31T17:02:59Z",
+      "specs_applied": [
+        "npm-distribution"
+      ]
     }
   ]
 }
