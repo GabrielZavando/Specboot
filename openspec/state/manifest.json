@@ -86,6 +86,14 @@
       "specs_applied": [
         "specboot-dogfooding"
       ]
+    },
+    {
+      "change_name": "specboot-release",
+      "ticket_id": "TICKET-6.1",
+      "archived_at": "2026-08-31T05:03:35Z",
+      "specs_applied": [
+        "specboot-release"
+      ]
     }
   ]
 }
