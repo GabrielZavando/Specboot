@@ -94,6 +94,16 @@
       "specs_applied": [
         "specboot-release"
       ]
+    },
+    {
+      "change_name": "cleanup-publish-and-junk",
+      "ticket_id": "TICKET-CLEANUP",
+      "archived_at": "2026-08-31T16:29:49Z",
+      "specs_applied": [
+        "npm-distribution",
+        "specboot-release",
+        "workflow-node-upgrade"
+      ]
     }
   ]
 }

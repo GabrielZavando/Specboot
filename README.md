@@ -3,9 +3,9 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![OpenCode](https://img.shields.io/badge/OpenCode-ready-5B48E5)
 ![OpenSpec](https://img.shields.io/badge/OpenSpec-new%20change-22C55E)
-![Status](https://img.shields.io/badge/Status-Template_SDD-0EA5E9)
+![Status](https://img.shields.io/badge/Status-Framework_SDD-0EA5E9)
 
-Template boilerplate for **Spec-Driven Development (SDD)** using **OpenCode** + **OpenSpec**.
+SDD framework for **Spec-Driven Development (SDD)** using **OpenCode** + **OpenSpec**.
 
 ## ¿Qué es?
 
@@ -23,12 +23,11 @@ Incluye:
 ## Quick Start
 
 ```bash
-# 1. Copia el template a tu proyecto
-git clone https://github.com/GabrielZavando/Specboot.git mi-proyecto
-cd mi-proyecto
+# 1. Instala el framework como devDependency
+npm install --save-dev @gabrielzavando/specboot
 
-# 2. Ejecuta setup
-bash specboot.sh --init
+# 2. Inicializa tu proyecto (inyecta archivos del framework + .specboot.json + docs/)
+bash node_modules/@gabrielzavando/specboot/specboot.sh init
 
 # 3. Inicializa OpenSpec
 openspec init
@@ -53,6 +52,17 @@ opencode
 /archive TICKET-ID     # archiva el cambio
 /commit                # commits + PR
 ```
+
+> **Desarrollo del framework (maintainers):** si trabajas en el propio Specboot,
+> clona el repositorio y crea una rama feature:
+>
+> ```bash
+> git clone https://github.com/GabrielZavando/Specboot.git specboot
+> cd specboot
+> git checkout -b feature/mi-cambio
+> ```
+>
+> El ciclo SDD es el mismo (`/plan-change` → `/apply` → `/verify` → `/archive` → `/commit`).
 
 ## Instalación como paquete NPM
 
@@ -506,19 +516,22 @@ bash specboot.sh --help
 Specboot se versiona con **semver vía git tags** (ej. `v0.1.0`, `v0.2.0`). El historial
 de cambios vive en `CHANGELOG.md` (formato Keep a Changelog).
 
-- **Actualizar un proyecto ya creado** (sin tocar `docs/` personalizado):
+- **Actualizar un proyecto ya inicializado** (reemplaza archivos intocables, no toca `docs/` personalizado):
   ```bash
-  bash update.sh --template /ruta/a/nuevo/specboot
+  bash node_modules/@gabrielzavando/specboot/specboot.sh update
   ```
-  Sincroniza `ai-specs/`, `AGENTS.md`, `specboot.sh`, `check-refs.sh`, `Makefile`
-  y `templates/` (configs de CI SOLID/POO del Ticket 4).
-  Usa `--dry-run` para previsualizar.
+  `specboot update` es el flujo de actualización para consumidores: reemplaza los
+  archivos intocables del framework (backup incluido) y respeta tu `docs/` del proyecto.
 
-- **Cortar un release** (mantenedores):
+- **Cortar un release** (mantenedores del framework):
   ```bash
   bash update.sh --bump minor   # crea tag vX.Y.Z y entrada en CHANGELOG.md
   git push origin vX.Y.Z
   ```
+
+> **Nota:** `update.sh` es una **conveniencia de maintainer** del repo del framework y
+> **no se publica** en el paquete npm (no está en el allowlist `files`). Los consumidores
+> no lo reciben: su flujo es `specboot update`.
 
 ## FAQ
 
@@ -528,7 +541,7 @@ de cambios vive en `CHANGELOG.md` (formato Keep a Changelog).
 
 **¿Es solo OpenCode?** Sí. Este template es **OpenCode-only**: los agentes y skills viven en `ai-specs/` y se consumen vía ``file:...`` en `opencode.json`. No se crean symlinks ni configuraciones para Claude Code (`.claude/`) ni Cursor (`.cursor/`). Ver `docs/base-standards.md` §6.
 
-**¿Puedo usar esto con proyecto existente?** Sí. Copia el template y ejecuta los pasos de personalización.
+**¿Puedo usar esto con proyecto existente?** Sí. Instala el framework con `npm install --save-dev @gabrielzavando/specboot` y ejecuta `specboot init`; luego personaliza `docs/` (ver Quick Start).
 
 **¿Funciona en Windows?** Sí. `specboot.sh --ci`/`--init` validan la estructura y la integridad referencial sin crear symlinks (el template es OpenCode-only). `opencode.json` y los agentes/skills en `ai-specs/` se leen directamente, así que no hay requisito de symlinks ni de Developer Mode.
 
