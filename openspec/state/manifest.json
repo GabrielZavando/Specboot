@@ -70,6 +70,14 @@
       "specs_applied": [
         "specboot-makefile"
       ]
+    },
+    {
+      "change_name": "specboot-workflows",
+      "ticket_id": "TICKET-4.2",
+      "archived_at": "2026-08-31T00:00:00Z",
+      "specs_applied": [
+        "specboot-workflows"
+      ]
     }
   ]
 }
