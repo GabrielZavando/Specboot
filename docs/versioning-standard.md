@@ -101,6 +101,40 @@ comportamiento ante el salto de versión se define aquí:
 3. El release (Fase 7) debe hacer coincidir `package.json` con esa entrada y el dogfooding
    debe pasar por el flujo SDD antes de publicar.
 
+## Release automático
+
+El workflow `release.yml` publica `@gabrielzavando/specboot` a **GitHub Packages** al mergear
+a `main` (o al crear/editar un Release en GitHub). Antes de publicar, valida el framework
+completo:
+
+1. `bash check-refs.sh` — integridad referencial de `{file:...}`.
+2. `bash specboot.sh --ci` — framework self-check (estructura, schemas, integridad).
+3. `make ci` — CI gate del proyecto (`refs` + `solid-lint` + `lint` + `test` + `audit`).
+4. `tests/*-test.sh` — self-tests internos del framework (gated por `hashFiles` a nivel de
+   step, consumer-safe).
+
+Si alguna validación falla, **no se publica** (el job `publish` depende de `validate`
+vía `needs: validate`).
+
+**Triggers del workflow:**
+
+```yaml
+on:
+  push:
+    branches: [main]
+  release:
+    types: [published]
+```
+
+**Publicación:** `npm publish` a `https://npm.pkg.github.com` usando
+`NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}` con `permissions: packages: write`. Se ejecuta
+`npm pack --dry-run` antes de publicar.
+
+**Versionado:** el mantenedor incrementa `version` en `package.json` (SemVer, ver matriz de
+ruptura en §3) antes del merge. El release workflow **NO** hace bump automático; el
+`update.sh --bump` del mantenedor es sólo una conveniencia local y no es invocado por el
+workflow.
+
 ## 7. Relación con el contrato del framework
 
 Este estándar concreta, para el versionado, la frontera global intocable/del proyecto

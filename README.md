@@ -118,7 +118,12 @@ bash node_modules/@gabrielzavando/specboot/specboot.sh update --dry-run
 npm update @gabrielzavando/specboot
 ```
 
-> 💡 Para publicar una nueva versión (maintainers): ejecuta `bash update.sh --bump patch|minor|major`, lo que genera un nuevo tag `vX.Y.Z` y dispara automáticamente el workflow de publicación a GitHub Packages. El modo de sincronización de `update.sh` está deprecado; usa `specboot update` para actualizar proyectos.
+> 💡 Para publicar una nueva versión (maintainers): incrementa `version` en `package.json`
+> (SemVer) y mergea a `main`. El workflow `release.yml` valida el framework completo y publica
+> a GitHub Packages automáticamente. `bash update.sh --bump patch|minor|major` es una
+> conveniencia para el maintenedor (bump de versión + tag), pero el workflow se dispara por
+> push a `main` o Release `published` (no por el tag directamente). El modo de sincronización
+> de `update.sh` está deprecado; usa `specboot update` para actualizar proyectos.
 
 ## Qué incluye el paquete
 
@@ -202,8 +207,9 @@ paquete npm (quedan fuera de la allowlist `files`):
 │   └── package.ci.json             #   Snapshot de devDependencies
 │
 ├── .github/workflows/             # CI/CD
-│   ├── ci.yml                     #   Invoca make install/lint/test/build/audit/solid-lint/commitlint/template-integrity
-│   └── deploy.yml                 #   Deploy a staging/production
+│   ├── ci.yml                     #   Dos jobs: validate (dogfooding) + project-ci (make ci)
+│   ├── deploy.yml                 #   Deploy a staging/production (SSH+Docker gated)
+│   └── release.yml                #   Release: valida framework + publica a GitHub Packages
 │
 ├── AGENTS.md                      # NO EDITAR — instrucciones OpenCode
 ├── opencode.json                  # ⚙️ Sin campo "model": el modelo lo gestiona tu gestor (Omniroute/OpenCode)
@@ -339,7 +345,46 @@ configuración.
 
 - **`.github/workflows/ci.yml`**: Dos jobs — `validate` (framework self-check: `check-refs.sh` + `specboot.sh --ci` + self-tests del framework condicionales) y `project-ci` (gate del proyecto: `make ci`). El proyecto no edita este archivo.
 - **`.github/workflows/deploy.yml`**: Deploy genérico SSH+Docker gated por `vars.DEPLOY_ENABLED`; lee `vars.DOCKER_REPO`/`DEPLOY_HOST`/`DEPLOY_USER` y `secrets.DEPLOY_SSH_KEY`. Parametrizable sin editar el YAML.
+- **`.github/workflows/release.yml`**: Release automático — valida el framework completo y publica a GitHub Packages al mergear a `main` o al crear un Release. Ver [Publicación (release automático)](#publicación-release-automático).
 - **`.commitlintrc.json`**: Conventional Commits enforced
+
+## Publicación (release automático)
+
+Al mergear a `main`, el workflow `release.yml` valida y publica el paquete a GitHub Packages
+(@gabrielzavando/specboot en `https://npm.pkg.github.com`):
+
+```yaml
+# .github/workflows/release.yml (del framework, intocable)
+name: Release
+on:
+  push:
+    branches: [main]
+  release:
+    types: [published]
+permissions:
+  contents: read
+  packages: write
+jobs:
+  validate:
+    steps:
+      - bash check-refs.sh
+      - bash specboot.sh --ci
+      - make ci
+      - if: ${{ hashFiles('tests/*-test.sh') != '' }}  # self-tests (consumer-safe)
+  publish:
+    needs: validate
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'release' }}
+    steps:
+      - npm pack --dry-run
+      - npm publish  # NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+- **Validación previa**: `check-refs.sh` + `specboot.sh --ci` + `make ci` + `tests/*.sh`.
+  Si falla, no se publica (`publish` depende de `validate` vía `needs: validate`).
+- **Versionado**: el mantenedor incrementa `version` en `package.json` (SemVer) antes del
+  merge. El workflow NO hace bump automático. `update.sh --bump` es conveniencia del
+  mantenedor (bump + tag), no dispara el workflow directamente.
+- **Consumidor**: actualiza con `specboot update`. No edita `release.yml` (es intocable).
 
 ## Makefile del framework (parametrizado por `.specboot.json`)
 
