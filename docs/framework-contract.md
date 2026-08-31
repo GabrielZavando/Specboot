@@ -257,6 +257,35 @@ etc.) usa variables de entorno de GitHub + configuración propia del proyecto.
 el modo `--bump` y su modo de sincronización está deprecado. Ninguno de los dos debe
 ser editado a mano por el proyecto.
 
+## Workflows del framework
+
+Los workflows de GitHub Actions (`ci.yml`, `deploy.yml`) son **intocables**: el
+proyecto no los edita. Se parametrizan vía variables de entorno de GitHub (repo
+`vars` + `secrets`).
+
+- **`ci.yml`**: corre `make ci` (CI gate del proyecto). En el repo del framework
+  también corre `specboot.sh --ci` como dogfooding (job `validate`), y además
+  ejecuta los self-tests internos del framework (`tests/check-refs-test.sh`,
+  `tests/solid-templates-test.sh`, `tests/update-test.sh`) como un step
+  condicional (gated por `hashFiles('tests/...')` a nivel de step). En un proyecto
+  consumidor ese job es inofensivo y los self-tests se saltan limpiamente porque
+  `tests/` no se publica en el paquete npm.
+- **`deploy.yml`**: gated por `if: vars.DEPLOY_ENABLED == 'true'`. Lee
+  `vars.DOCKER_REPO`, `vars.DEPLOY_HOST`, `vars.DEPLOY_USER` y
+  `secrets.DEPLOY_SSH_KEY`. El proyecto declara su infraestructura en GitHub, no
+  editando el YAML. Los steps de build/SSH se condicionan además a la presencia de
+  un `Dockerfile` vía `hashFiles('Dockerfile')` en step-level `if` (nunca en job-level
+  `if`, que es inválido).
+
+**Customización:** el proyecto usa variables de entorno (GitHub vars/secrets) para
+adaptar el despliegue. Para infraestructura específica (VPS, Docker, repo distinto),
+se setea en GitHub, no en el archivo.
+
+**Relación con `update.sh`:** `update.sh` no toca workflows. `specboot update`
+reemplaza los workflows del framework como archivos intocables (archivo por archivo,
+nunca borra un workflow del proyecto). Ninguno de los dos debe ser editado a mano por
+el proyecto.
+
 ## Dogfooding
 
 Specboot se desarrolla con su **propio flujo SDD**. El framework no se codifica a mano fuera del ciclo: sus propias features (comandos, skills, frontera, reglas de versión) pasan por `/plan-change → /apply → /verify → /archive → /commit` exactamente como lo haría un proyecto hijo. Cualquier ampliación de la lista de archivos intocables o de los principios rectores debe modificar primero este contrato y luego implementarse, nunca al revés.

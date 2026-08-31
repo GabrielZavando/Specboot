@@ -337,8 +337,8 @@ configuración.
 
 ## CI/CD Incluido
 
-- **`.github/workflows/ci.yml`**: Invoca los targets del `Makefile` (`make lint`, `make test`, `make build`, `make audit`, `make commitlint`). Cada stack implementa esos targets; `ci.yml` solo los invoca.
-- **`.github/workflows/deploy.yml`**: Docker build, deploy a staging/producción, smoke tests, rollback
+- **`.github/workflows/ci.yml`**: Dos jobs — `validate` (framework self-check: `check-refs.sh` + `specboot.sh --ci` + self-tests del framework condicionales) y `project-ci` (gate del proyecto: `make ci`). El proyecto no edita este archivo.
+- **`.github/workflows/deploy.yml`**: Deploy genérico SSH+Docker gated por `vars.DEPLOY_ENABLED`; lee `vars.DOCKER_REPO`/`DEPLOY_HOST`/`DEPLOY_USER` y `secrets.DEPLOY_SSH_KEY`. Parametrizable sin editar el YAML.
 - **`.commitlintrc.json`**: Conventional Commits enforced
 
 ## Makefile del framework (parametrizado por `.specboot.json`)
@@ -383,6 +383,30 @@ make install       # instalar dependencias por servicio
 >
 > El proyecto **no edita el Makefile**: para infraestructura específica (VPS, Docker,
 > etc.) usa variables de entorno de GitHub Actions + configuración propia del proyecto.
+
+## Workflows del framework
+
+Los workflows son **intocables** y se parametrizan vía GitHub vars/secrets. El
+proyecto consumidor no los edita: solo declara su infraestructura en GitHub.
+
+```yaml
+# .github/workflows/deploy.yml (del framework, no editar)
+if: vars.DEPLOY_ENABLED == 'true'
+vars.DOCKER_REPO, vars.DEPLOY_HOST, vars.DEPLOY_USER
+secrets.DEPLOY_SSH_KEY
+```
+
+```bash
+# En GitHub repo del proyecto:
+# Settings → Secrets and variables → Actions
+#   Vars:  DEPLOY_ENABLED=true, DOCKER_REPO=..., DEPLOY_HOST=..., DEPLOY_USER=...
+#   Secrets: DEPLOY_SSH_KEY=***
+```
+
+`ci.yml` expone dos jobs: `validate` (dogfooding del framework: `check-refs.sh` +
+`specboot.sh --ci` + self-tests condicionales del framework) y `project-ci` (gate del
+proyecto: `make ci`). Para infraestructura específica (VPS, Docker, repo distinto) el
+proyecto usa variables de entorno de GitHub, no edita el YAML.
 
 ## Requisitos
 
