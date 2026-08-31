@@ -14,10 +14,10 @@ jobs:
     name: Framework self-check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: '24'
       - name: Install framework deps
         run: npm install
       - name: check-refs
@@ -25,20 +25,21 @@ jobs:
       - name: specboot ci (dogfooding)
         run: bash specboot.sh --ci
       - name: Run framework self-tests (dogfooding)
-        if: ${{ hashFiles('tests/check-refs-test.sh', 'tests/solid-templates-test.sh', 'tests/update-test.sh') != '' }}
+        if: ${{ hashFiles('tests/*-test.sh') != '' }}
         run: |
-          bash tests/check-refs-test.sh
-          bash tests/solid-templates-test.sh
-          bash tests/update-test.sh
+          for t in tests/*-test.sh; do
+            echo "→ running $t"
+            bash "$t"
+          done
 
   project-ci:
     name: Project CI gate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: '24'
       - name: Install framework deps
         run: npm install
       - name: make ci (refs + solid-lint + lint + test + audit)

@@ -9,6 +9,7 @@
 #   - has a `publish` job with needs: validate, npm publish, NODE_AUTH_TOKEN, packages: write
 #   - has NO hashFiles in job-level `if` (only at step level)
 #   - does NOT invoke update.sh --bump
+#   - uses actions/checkout@v5, actions/setup-node@v5, node-version: '24'
 #
 # Run: bash tests/release-workflow-test.sh
 # Exits 0 when all assertions pass, 1 otherwise.
@@ -149,6 +150,27 @@ if grep -q '(github.event_name == .push.' "$WORKFLOW" && grep -q 'github.event_n
   pass "publish if uses grouped parentheses for push-to-main OR release"
 else
   fail "publish if does not use explicit parentheses for precedence"
+fi
+
+# --- 8. Uses actions/checkout@v5 ---
+if grep -q 'actions/checkout@v5' "$WORKFLOW"; then
+  pass "uses actions/checkout@v5"
+else
+  fail "does not use actions/checkout@v5"
+fi
+
+# --- 8b. Uses actions/setup-node@v5 ---
+if grep -q 'actions/setup-node@v5' "$WORKFLOW"; then
+  pass "uses actions/setup-node@v5"
+else
+  fail "does not use actions/setup-node@v5"
+fi
+
+# --- 8c. Uses node-version: '24' ---
+if grep -q "node-version: '24'" "$WORKFLOW"; then
+  pass "uses node-version: '24'"
+else
+  fail "does not use node-version: '24'"
 fi
 
 echo ""

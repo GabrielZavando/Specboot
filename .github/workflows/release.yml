@@ -15,10 +15,10 @@ jobs:
     name: Framework self-check + tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: '24'
           registry-url: https://npm.pkg.github.com
       - name: Install deps
         run: npm install
@@ -42,10 +42,10 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'release' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: '24'
           registry-url: https://npm.pkg.github.com
       - name: Install deps
         run: npm install

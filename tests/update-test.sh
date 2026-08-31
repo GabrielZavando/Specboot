@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
-# TDD test for update.sh — sync tooling into a project and cut a version bump.
+# TDD test for update.sh — version bump tooling (maintainer-only mode).
+#
+# The sync mode of update.sh is DEPRECATED: the canonical update path for
+# consumer projects is `specboot update` (see specboot.sh). Per
+# cleanup-publish-and-junk (TICKET-CLEANUP, Fase G) this test therefore:
+#   1. Tests the current `--bump` mode as the primary behavior
+#      (maintainer release flow: tag + CHANGELOG entry).
+#   2. Keeps a light assertion that the deprecated sync mode prints its
+#      deprecation warning (no full sync behavior assertions — deprecated).
 #
 # Run: bash tests/update-test.sh
 
@@ -21,12 +29,13 @@ assert_exit() {
     echo "  ✗ $desc (expected exit $expected, got $actual)"; FAIL=$((FAIL + 1))
   fi
 }
-assert_eq() {
-  local desc="$1" expected="$2" actual="$3"
-  if [ "$expected" = "$actual" ]; then
+
+assert_contains() {
+  local desc="$1" file="$2" needle="$3"
+  if grep -q "$needle" "$file" 2>/dev/null; then
     echo "  ✓ $desc"; PASS=$((PASS + 1))
   else
-    echo "  ✗ $desc (expected '$expected', got '$actual')"; FAIL=$((FAIL + 1))
+    echo "  ✗ $desc (missing '$needle' in $file)"; FAIL=$((FAIL + 1))
   fi
 }
 
@@ -34,44 +43,15 @@ if [ ! -f "$SCRIPT" ]; then
   echo "  ✗ update.sh does not exist yet (RED)"; exit 1
 fi
 
-# ---------- Sync test ----------
-TEMPLATE="$(mktemp -d)"
-PROJECT="$(mktemp -d)"
-mkdir -p "$TEMPLATE/ai-specs/skills/demo" "$TEMPLATE/docs"
-mkdir -p "$PROJECT/ai-specs/skills/demo" "$PROJECT/docs"
-echo "new-agent"    > "$TEMPLATE/ai-specs/agents.md"
-echo "new-agents"   > "$TEMPLATE/AGENTS.md"
-echo "new-specboot" > "$TEMPLATE/specboot.sh"
-echo "new-checkrefs"> "$TEMPLATE/check-refs.sh"
-echo "new-makefile" > "$TEMPLATE/Makefile"
-echo "template-docs-do-not-sync" > "$TEMPLATE/docs/secret.md"
-echo "old-agent"    > "$PROJECT/ai-specs/agents.md"
-echo "old-agents"   > "$PROJECT/AGENTS.md"
-echo "old-specboot" > "$PROJECT/specboot.sh"
-echo "CUSTOM DOCS - keep me" > "$PROJECT/docs/base-standards.md"
-echo "marker"       > "$PROJECT/project-marker.txt"
-
-( cd "$PROJECT" && bash "$SCRIPT" --template "$TEMPLATE" --dry-run ) >/tmp/up-dry.out 2>&1
-assert_exit "sync dry-run exits 0" 0 $?
-
-( cd "$PROJECT" && bash "$SCRIPT" --template "$TEMPLATE" ) >/tmp/up.out 2>&1
-assert_exit "sync exits 0" 0 $?
-
-assert_eq "ai-specs synced"      "new-agent"    "$(cat "$PROJECT/ai-specs/agents.md")"
-assert_eq "AGENTS.md synced"     "new-agents"   "$(cat "$PROJECT/AGENTS.md")"
-assert_eq "specboot.sh synced"   "new-specboot" "$(cat "$PROJECT/specboot.sh")"
-assert_eq "check-refs.sh synced" "new-checkrefs" "$(cat "$PROJECT/check-refs.sh")"
-assert_eq "Makefile synced"      "new-makefile" "$(cat "$PROJECT/Makefile")"
-assert_eq "docs/ untouched"      "CUSTOM DOCS - keep me" "$(cat "$PROJECT/docs/base-standards.md")"
-assert_eq "project marker intact" "marker"     "$(cat "$PROJECT/project-marker.txt")"
-
-# ---------- Bump test ----------
+# ---------- Bump test (modo vigente) ----------
 REPO="$(mktemp -d)"
 ( cd "$REPO" && git init -q && git config user.email t@t.t && git config user.name t \
   && printf '# Changelog\n' > CHANGELOG.md \
   && printf '## [Unreleased]\n\n## [0.0.0] - 2000-01-01\n' >> CHANGELOG.md \
   && git add -A && git commit -qm init ) >/dev/null 2>&1
 
+# --template "$REPO" keeps the trailing sync a no-op (target == template),
+# so the bump behavior is tested hermetically.
 ( cd "$REPO" && bash "$SCRIPT" --template "$REPO" --bump minor ) >/tmp/up-bump.out 2>&1
 assert_exit "bump exits 0" 0 $?
 if git -C "$REPO" tag | grep -q "v0.1.0"; then
@@ -85,7 +65,17 @@ else
   echo "  ✗ CHANGELOG has 0.1.0"; FAIL=$((FAIL + 1))
 fi
 
-rm -rf "$TEMPLATE" "$PROJECT" "$REPO"
+# ---------- Deprecated sync mode: deprecation warning assertion ----------
+# Sync mode must announce it is deprecated (canonical path is `specboot update`).
+# --dry-run keeps the check read-only; empty temp target is enough because
+# sync_item under --dry-run only prints "would sync".
+PROJECT="$(mktemp -d)"
+( cd "$PROJECT" && bash "$SCRIPT" --template "$ROOT" --dry-run ) >/tmp/up-sync-deprecated.out 2>&1
+assert_exit "deprecated sync mode exits 0" 0 $?
+assert_contains "deprecated sync mode prints deprecation warning" \
+  /tmp/up-sync-deprecated.out "deprecado"
+
+rm -rf "$REPO" "$PROJECT"
 
 echo ""
 echo "TDD tests: $PASS passed, $FAIL failed"

@@ -259,23 +259,32 @@ ser editado a mano por el proyecto.
 
 ## Workflows del framework
 
-Los workflows de GitHub Actions (`ci.yml`, `deploy.yml`) son **intocables**: el
-proyecto no los edita. Se parametrizan vía variables de entorno de GitHub (repo
-`vars` + `secrets`).
+Los workflows de GitHub Actions (`ci.yml`, `deploy.yml`, `release.yml`) son
+**intocables**: el proyecto no los edita. Se parametrizan vía variables de entorno
+de GitHub (repo `vars` + `secrets`).
 
 - **`ci.yml`**: corre `make ci` (CI gate del proyecto). En el repo del framework
   también corre `specboot.sh --ci` como dogfooding (job `validate`), y además
-  ejecuta los self-tests internos del framework (`tests/check-refs-test.sh`,
-  `tests/solid-templates-test.sh`, `tests/update-test.sh`) como un step
-  condicional (gated por `hashFiles('tests/...')` a nivel de step). En un proyecto
-  consumidor ese job es inofensivo y los self-tests se saltan limpiamente porque
-  `tests/` no se publica en el paquete npm.
+  ejecuta todos los self-tests internos del framework (`tests/*-test.sh`) como un
+  step condicional (gated por `hashFiles('tests/*-test.sh')` a nivel de step), en
+  loop idéntico al de `release.yml`. En un proyecto consumidor ese job es
+  inofensivo y los self-tests se saltan limpiamente porque `tests/` no se publica
+  en el paquete npm.
 - **`deploy.yml`**: gated por `if: vars.DEPLOY_ENABLED == 'true'`. Lee
   `vars.DOCKER_REPO`, `vars.DEPLOY_HOST`, `vars.DEPLOY_USER` y
   `secrets.DEPLOY_SSH_KEY`. El proyecto declara su infraestructura en GitHub, no
   editando el YAML. Los steps de build/SSH se condicionan además a la presencia de
   un `Dockerfile` vía `hashFiles('Dockerfile')` en step-level `if` (nunca en job-level
   `if`, que es inválido).
+- **`release.yml`**: publica el paquete npm del framework a GitHub Packages.
+  Dispara en `push: branches: [main]` y en `release: types: [published]`. Tiene
+  dos jobs: `validate` (self-check completo: `check-refs.sh` + `specboot.sh --ci` +
+  `make ci` + `tests/*-test.sh`) y `publish` (`npm pack --dry-run` + `npm publish`,
+  con `needs: validate`, `permissions: packages: write` y
+  `NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}`). Si `validate` falla, no se
+  publica. `release.yml` **no invoca** `update.sh --bump`: el bump de versión es
+  responsabilidad del maintainer antes del merge (herramienta local, no publicada
+  en el paquete).
 
 **Customización:** el proyecto usa variables de entorno (GitHub vars/secrets) para
 adaptar el despliegue. Para infraestructura específica (VPS, Docker, repo distinto),
