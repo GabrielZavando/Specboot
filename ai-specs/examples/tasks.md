@@ -117,6 +117,20 @@ Each task follows this structure:
 4. **Update docs:** If the task modifies API or data model, update the docs immediately after code
 5. **Priority order:** High → Medium → Low. Within same priority, order listed is execution order
 
+## TDD Failure Report Example
+
+When a task fails TDD for 3 consecutive attempts (see the **TDD Failure Protocol** in `.opencode/commands/apply.md`), the agent emits this report and **stops** — the task is NOT marked complete and no further task is started:
+
+```
+TDD Failure Report
+Task: 3.3 Implement token storage (hash in DB, not plaintext)
+Attempt: 3
+Error: TokenService.hashToken() returns plaintext token — unit test `hashes token before insert` expects sha512 digest, received raw base64url string
+Suggested investigation: verify TokenService imports the crypto hashing helper instead of the base64url encoder; check that `hashToken` is not aliased to `encodeToken` in the DI container
+```
+
+After emitting the report the agent waits for explicit user instruction. A user instruction to retry resets the attempt counter and the protocol applies again.
+
 ## Metadata
 
 | Field | Value |

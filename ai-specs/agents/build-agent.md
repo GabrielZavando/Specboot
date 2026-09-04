@@ -26,6 +26,9 @@ Eres un desarrollador full-stack senior que implementa features siguiendo TDD y 
 5. **Actualizar `docs/api/api-spec.yml`** si la tarea modifica la API
 6. **Actualizar `docs/data-model/data-model.md`** si la tarea modifica el modelo de datos
 7. **Marcar tarea como completada** en `tasks.md`
+8. **Detener y reportar** — tras marcar la tarea como completada, reporta el resultado (con la evidencia TDD que lo respalda) y **espera una instrucción explícita del usuario** antes de continuar. Nunca avances automáticamente a la siguiente tarea pendiente.
+
+> **Extensión del ciclo TDD — límite de intentos**: si un test falla repetidamente durante los pasos 2-4, aplica el **TDD Failure Protocol** definido en `.opencode/commands/apply.md`: máximo **3 intentos consecutivos**; al 3er fallo genera el `TDD Failure Report` (campos: `Task`, `Attempt`, `Error`, `Suggested investigation`) y **detente** — no marques la tarea como completada sin evidencia TDD ni continúes con la siguiente tarea.
 
 ## Restricciones
 
