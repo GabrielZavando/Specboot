@@ -81,6 +81,22 @@ Examples:
 | PROJ-456: Agregar filtro de catálogo | `catalog-filter` |
 | PROJ-789: Exportar PDF de factura | `invoice-pdf-export` |
 
+### Step 4½ — Validación de coherencia de diseño (Opcional pero recomendado)
+
+Ejecutar validación preliminar antes de generar tareas, verificando consistencia con la arquitectura existente:
+
+1. **Verificar entidades** en `docs/data-model/data-model.md`:
+   - Cada tabla/entidad mencionada en los escenarios debe existir en el data model
+   - Si no → advertir y no generar tareas hasta clarificar
+
+2. **Verificar endpoints** en `docs/api/api-spec.yml`:
+   - Cada endpoint referenciado en scenarios.md debe existir en el API spec
+   - Si no → advertir y no generar tareas hasta clarificar
+
+3. **Documentar conflictos** en sección `Design Validation` del output:
+   - Conflictos críticos → detener generación, reportar al usuario
+   - Conflictos menores → anotar en `Design Validation` del output
+
 ### Step 5 — Generate Enriched Artifacts
 
 > ⚠️ Do NOT run `openspec new change` — that command does not exist in the installed CLI. The agent writes the artifact files directly. Use `openspec instructions <artifact>` to consult the expected artifact format if unsure.
@@ -99,16 +115,16 @@ Create the folder `openspec/changes/{derived-name}/` and write, enriched with th
 3. **`requirements.md`** — numbered requirements, each traceable to at least one scenario.
 
 4. **`tasks.md`** — tasks with subtasks, priority, layer, and estimate, using the project's layer nomenclature:
-    - Backend: `domain | application | infrastructure`
-    - Frontend: `smart | dumb`
-    - **Mono/multi-repo roots (`.specboot.json`):** if `.specboot.json` exists in the
-      project root, read its `services` glob (e.g. `["src", "services/*/src"]`) and its
-      `layers` map, and use those for the `Suggested Path` / `Test Path` and layer labels
-      instead of the single hardcoded `src/`. Each service is analyzed independently by
-      `make solid-lint` (see TICKET-C). If `.specboot.json` is absent, default to `src/`.
-    - If the enriched artifact declares a Diseño de Clases/Componentes, tasks must map to those classes/components — `/apply` will validate the implementation against that design.
-    - **Suggested Path**: `<service>/...` (implementation file; verify reads only this; replace `<service>` with each entry of `.specboot.json` `services`, or `src` by default)
-    - **Test Path**: `<service>/tests/...` or `tests/...` (test file; verify looks for matches here)
+     - Backend: `domain | application | infrastructure`
+     - Frontend: `smart | dumb`
+     - **Mono/multi-repo roots (`.specboot.json`):** if `.specboot.json` exists in the
+       project root, read its `services` glob (e.g. `["src", "services/*/src"]`) and its
+       `layers` map, and use those for the `Suggested Path` / `Test Path` and layer labels
+       instead of the single hardcoded `src/`. Each service is analyzed independently by
+       `make solid-lint` (see TICKET-C). If `.specboot.json` is absent, default to `src/`.
+     - If the enriched artifact declares a Diseño de Clases/Componentes, tasks must map to those classes/components — `/apply` will validate the implementation against that design.
+     - **Suggested Path**: `<service>/...` (implementation file; verify reads only this; replace `<service>` with each entry of `.specboot.json` `services`, or `src` by default) — **must be present in every task or marked "no aplica" explicitly**.
+     - **Test Path**: `<service>/tests/...` or `tests/...` (test file; verify looks for matches here) — **must be present in every task or marked "no aplica" explicitly**.
 
 ### Step 6 — Validate
 
@@ -119,6 +135,10 @@ Checklist (apply before reporting):
 - [ ] Happy path, error cases, and edge cases are covered
 - [ ] Requirements are numbered and traceable to scenarios
 - [ ] Every task has subtasks, priority, layer, and estimate
+- [ ] **Every task has `Suggested Path` or marked `no aplica` explicitly**
+- [ ] **Every task has `Test Path` or marked `no aplica` explicitly**
+- [ ] **Validación de diseño completada (Step 4½)**
+- [ ] **No hay conflictos críticos sin reportar**
 - [ ] Entities mentioned exist in `docs/data-model/data-model.md` (if loaded)
 - [ ] Endpoints mentioned exist in `docs/api/api-spec.yml` (if loaded)
 
@@ -151,6 +171,14 @@ If any check fails, regenerate the failing artifact with specific fix instructio
 
 ### Context loaded
 - [list of standards files actually read]
+
+### Design Validation
+
+- **Entities checked against data-model**: [list or "none"]
+- **API endpoints checked against api-spec.yml**: [list or "none"]
+- **Conflicts**: [list any, with severity: critical/minor/none]
+  - Critical: [blockers that prevent task generation]
+  - Minor: [suggestions or optional changes]
 
 ### Validation
 - Checklist: [N/6 passed]

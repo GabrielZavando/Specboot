@@ -128,6 +128,14 @@
       "specs_applied": [
         "plan-traceability"
       ]
+    },
+    {
+      "change_name": "path-design-validation",
+      "ticket_id": "M-201-202",
+      "archived_at": "2026-09-04T00:00:00Z",
+      "specs_applied": [
+        "path-design-validation"
+      ]
     }
   ]
 }
