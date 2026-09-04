@@ -112,6 +112,14 @@
       "specs_applied": [
         "npm-distribution"
       ]
+    },
+    {
+      "change_name": "phase0-reconciliation",
+      "ticket_id": "M-001+M-002",
+      "archived_at": "2026-09-03T20:55:53Z",
+      "specs_applied": [
+        "npm-distribution"
+      ]
     }
   ]
 }

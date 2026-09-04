@@ -88,7 +88,65 @@ Opción B — `.npmrc` global (`~/.npmrc`):
 //npm.pkg.github.com/:_authToken=ghp_xxx
 ```
 
-### Instalación en un proyecto consumidor
+### Autenticación para consumidores (CI)
+
+La sección anterior autentica tu **máquina local**. Para instalar el paquete desde **GitHub
+Actions** (CI), el repo consumidor necesita su propia autenticación. Cubrimos dos escenarios.
+
+#### Mismo owner / org con acceso concedido
+
+Si el repositorio consumidor tiene acceso concedido al paquete en
+*Package settings → Manage Actions access* del repo de Specboot, puedes usar el
+`GITHUB_TOKEN` que el runner proporciona automáticamente (sin crear ningún secret).
+
+```yaml
+# .github/workflows/ci.yml (fragmento)
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          registry-url: https://npm.pkg.github.com
+      - run: npm install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+#### Owner distinto / sin acceso concedido
+
+Si el repo consumidor es de un owner distinto o aún no tiene acceso concedido, requiere un
+**PAT con scope `read:packages`** guardado como secret del repo consumidor (p. ej. `NPM_TOKEN`),
+funcionando igual que la autenticación local documentada arriba.
+
+```yaml
+permissions:
+  contents: read
+  packages: read
+steps:
+  - uses: actions/setup-node@v5
+    with:
+      node-version: '24'
+      registry-url: https://npm.pkg.github.com
+  - run: npm install
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}   # PAT con read:packages
+```
+
+#### Troubleshooting (401 / 403)
+
+| Error | Causa típica | Solución |
+|-------|--------------|----------|
+| `401 Unauthorized` | Falta `NODE_AUTH_TOKEN` en el step de `npm install` | Añadir `NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}` (o tu secret PAT) al `env` del step |
+| `401 Unauthorized` | PAT sin el scope `read:packages` | Crear un PAT nuevo con ese scope (GitHub → Settings → Tokens) y actualizar el secret |
+| `403 Forbidden` | El repo consumidor no tiene acceso concedido al paquete | Gestionar el acceso en *Package settings → Manage Actions access* del repo de Specboot |
+
+#### Instalación en un proyecto consumidor
 
 ```bash
 npm install --save-dev @gabrielzavando/specboot
