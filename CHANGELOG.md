@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-04
+
+### Added
+
+- **M-101** — `enrich-us` ahora genera las secciones estratégicas *Estimación*, *Riesgo*, *Dependencias* y *Alternativas descartadas* en todo ticket enriquecido, para que `plan-change` dimensione y priorice las tareas con contexto (`ai-specs/skills/enrich-us/SKILL.md`, `ai-specs/examples/enrich-us-auth-reset.md`).
+- **M-102** — Convención de identificadores estables `SC-{NNN}` en todos los escenarios Gherkin generados por `enrich-us` y `plan-change`, y trazabilidad de evidencia de pruebas en `verify` por patrón `SC-{NNN}` (`ai-specs/skills/enrich-us/SKILL.md`, `ai-specs/skills/plan-change/SKILL.md`, `ai-specs/skills/verify/SKILL.md`, `ai-specs/examples/scenarios-example.md`).
+
 ## [0.1.2] - 2026-08-31
 
 ### Fixed
