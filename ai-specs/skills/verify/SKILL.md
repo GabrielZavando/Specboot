@@ -47,8 +47,9 @@ Leer **solo** los archivos listados en cada tarea bajo los campos `Suggested Pat
 
 ### 5c — Cobertura de escenarios por tests
 
-- Para cada escenario Gherkin en `scenarios.md`, verificar que al menos un test (por nombre o título) haga referencia o cubra ese escenario.
-- Escenario sin test → ⚠️ "sin evidencia ejecutable" en el reporte final, pero **no** marcar como ✅.
+- Para cada escenario Gherkin en `scenarios.md` (identificado con su ID `SC-{NNN}`), verificar que al menos un test (por nombre, comentarios o descripción) haga referencia explícita al patrón `SC-{NNN}` o cubra dicho escenario.
+- Mapear cada `SC-{NNN} → test → PASS/FAIL/UNTESTED`.
+- Escenario sin evidencia de test matching → ⚠️ "sin evidencia ejecutable" en el reporte final, pero **no** marcar como ✅.
 
 ### 5d — Smoke check de integración (opcional)
 
@@ -84,6 +85,10 @@ summary:
   completed: N
   failed: N
   untested: N
+scenarios:
+  - id: SC-001
+    status: PASS
+    evidence: "test_sc001_password_reset"
 details:
   - task: "2.1 Create PasswordResetRepository"
     status: PASS
