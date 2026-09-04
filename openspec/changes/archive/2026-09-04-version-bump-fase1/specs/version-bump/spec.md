@@ -1,8 +1,7 @@
 # version-bump Specification
 
-## Purpose
-TBD - created by archiving change npm-publish-bump-version. Update Purpose after archive.
-## Requirements
+## MODIFIED Requirements
+
 ### Requirement: Version matches git tag
 
 The `version` field in `package.json` SHALL equal the git tag (without the leading `v`) so that `npm publish` succeeds when triggered by the tag-based workflow. A `minor` framework change (added capability, no contract break) SHALL increment the MINOR component (`0.x.y` → `0.(x+1).0`), and the tagging/publish step MUST not attempt to republish an already-published version.
@@ -20,4 +19,3 @@ The `version` field in `package.json` SHALL equal the git tag (without the leadi
 - **When** a push to `main` triggers `npm publish` without a version bump
 - **Then** the publish fails with "You cannot publish over the previously published versions"
 - **And** the maintainer must bump MINOR for added-capability changes before merge
-
