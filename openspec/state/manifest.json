@@ -120,6 +120,14 @@
       "specs_applied": [
         "npm-distribution"
       ]
+    },
+    {
+      "change_name": "plan-traceability",
+      "ticket_id": "M-101-102",
+      "archived_at": "2026-09-04T00:00:00Z",
+      "specs_applied": [
+        "plan-traceability"
+      ]
     }
   ]
 }
