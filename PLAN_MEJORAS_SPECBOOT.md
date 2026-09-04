@@ -31,6 +31,7 @@ Cada ticket declara además:
 | v3 | M-302 acotado a lo que no existe aún, igual que se hizo con M-301 |
 | v3 | Añadida clasificación SemVer y dependencias explícitas a cada ticket |
 | v3.1 | M-001 y M-002 completados vía change `phase0-reconciliation` (marcados con `[x]`); sección "Autenticación para consumidores (CI)" documentada en `README.md` |
+| v3.2 | M-101 y M-102 completados vía change `plan-traceability` (marcados con `[x]`); plantillas y skills de `enrich-us`, `plan-change` y `verify` actualizados con metadatos y IDs `SC-{NNN}` |
 
 ---
 
@@ -135,7 +136,7 @@ Specboot inyecta un `ci.yml` a los consumidores — no existe tal inyección.
 
 # FASE 1 — Fortalecer planificación y trazabilidad
 
-## M-101 — Enriquecer `enrich-us` con estimación, riesgo y dependencias
+## [x] M-101 — Enriquecer `enrich-us` con estimación, riesgo y dependencias
 
 **Nivel SemVer:** `minor` (nueva capacidad, no rompe artefactos existentes)
 **Dependencias:** ninguna
@@ -182,7 +183,7 @@ Motivo del descarte:
 
 ---
 
-## M-102 — Añadir IDs estables a escenarios Gherkin
+## [x] M-102 — Añadir IDs estables a escenarios Gherkin
 
 **Nivel SemVer:** `minor`
 **Dependencias:** ninguna (pero M-402 depende de este)

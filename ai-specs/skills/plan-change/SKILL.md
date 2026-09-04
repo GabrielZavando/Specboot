@@ -90,8 +90,9 @@ Create the folder `openspec/changes/{derived-name}/` and write, enriched with th
 1. **`proposal.md`** — origin ticket ID, title, tag, summary and motivation.
 
 2. **`scenarios.md`** — Gherkin scenarios that:
-   - If an enriched artifact exists: map its Acceptance Criteria scenarios 1:1 (do not regenerate from scratch).
-   - Otherwise: derive from the title, covering happy path, error cases, and edge cases.
+   - Must assign or preserve a unique stable ID formatted as `### SC-{NNN}: [Scenario Title]` for every scenario (e.g., `### SC-001: Usuario recupera contraseña`).
+   - If an enriched artifact exists: map its Acceptance Criteria scenarios 1:1, preserving their `SC-{NNN}` IDs.
+   - Otherwise: derive from the title, covering happy path, error cases, and edge cases with sequential `SC-{NNN}` IDs.
    - Reference **real entities from `docs/data-model/data-model.md`** and **real endpoints from `docs/api/api-spec.yml`** when those files are loaded; never invent table or endpoint names.
    - Apply non-functional rules from the loaded standards (e.g. security policies like "no email enumeration" from `backend-standards.md`).
 
@@ -113,6 +114,7 @@ Create the folder `openspec/changes/{derived-name}/` and write, enriched with th
 
 Checklist (apply before reporting):
 
+- [ ] Every scenario carries a unique SC-{NNN} identifier in header format `### SC-{NNN}: Title`
 - [ ] Every scenario has Given/When/Then
 - [ ] Happy path, error cases, and edge cases are covered
 - [ ] Requirements are numbered and traceable to scenarios
