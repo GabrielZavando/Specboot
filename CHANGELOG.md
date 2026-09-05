@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-04
+
+### Added
+
+- **M-201/M-202** (Fase 2) — Convención de `Suggested Path` / `Test Path` en toda tarea de `tasks.md` (con defaults por `.specboot.json` `services`/`layers`) y paso de validación de coherencia de diseño en `plan-change` (sección `Design Validation`; conflictos críticos detienen la generación) (`ai-specs/skills/plan-change/SKILL.md`).
+- **M-301/M-302** (Fase 3) — Protocolo de fallo TDD: máximo 3 intentos consecutivos, `TDD Failure Report` (`Task`, `Attempt`, `Error`, `Suggested investigation`) y detención inmediata; detención explícita del agente tras completar cada tarea, esperando instrucción del usuario (`.opencode/commands/apply.md`, `ai-specs/agents/build-agent.md`).
+- **M-401** (Fase 4) — `/verify` persiste `openspec/state/verify-results.json` tras cada ejecución con esquema versionado (`schema_version: 1`, `status`, `evidence_mode`, mapeo de escenarios `SC-NNN`); `/commit` lo usa como gate informado suave (PASS omite la pregunta, PARTIAL/FAIL advierte, ausente mantiene la pregunta; staleness warn-only) y `archive` añade `verification: {status, timestamp, source}` a la entrada del manifest (`ai-specs/skills/verify/SKILL.md`, `ai-specs/skills/commit/SKILL.md`, `ai-specs/skills/archive/SKILL.md`).
+- **M-402** (Fase 4) — Convención de nombrado de tests con ID de escenario (`[SC-NNN]` en títulos JS/TS, `test_sc{NNN}_` en identificadores Python) documentada en los agentes generadores de tests, y prioridad de evidencia en `verify` Step 5c: match por nombre (fuerte) > mención textual (débil, nunca PASS) > UNTESTED (`ai-specs/agents/build-agent.md`, `ai-specs/agents/backend-developer.md`, `ai-specs/agents/frontend-developer.md`, `ai-specs/skills/verify/SKILL.md`).
+- **M-403** — Registrado en `PLAN_MEJORAS_SPECBOOT.md` como ticket `patch` (sincronizar permisos bash del subagente verify con su documentación; descubierto durante M-401). Pendiente de implementar.
+
+### Changed
+
+- Descripciones de `verify` actualizadas en `AGENTS.md`, `.opencode/agents/verify.md`, `.opencode/commands/verify.md`, `ai-specs/README.md` y `ai-specs/agents/verify-agent.md`: read-only sobre código y specs, con única excepción la escritura de evidencia en `openspec/state/verify-results.json` (incluye permiso `mkdir -p openspec/*` en el permission block del agente).
+- Self-test ejecutable del contrato de `verify-results.json`: `tests/verify-state-test.sh` valida el fixture canónico `ai-specs/examples/verify-results-example.json` (claves, enums, invariante `static → PARTIAL sin PASS`).
+- `.specboot.json` del repo sincronizado con la nueva versión (`frameworkVersion: 0.3.0`).
+
 ## [0.2.0] - 2026-09-04
 
 ### Added
