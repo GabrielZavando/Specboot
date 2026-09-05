@@ -49,7 +49,7 @@ Listar `openspec/changes/` y tomar el único cambio presente. Si hay varios, lis
   a otro change → imprimir *"⚠️ Sin veredicto adversarial vigente para este
   change. Considera ejecutar `/adversarial-review` antes de archivar."* y
   continuar (el archive **nunca se bloquea** por falta de evidencia adversarial;
-  el gate duro es M-901 en `/commit`).
+  el gate duro activo de `/commit` exige veredicto `SHIP` vigente).
 - Añadir una entrada al array `changes`:
   ```json
   {

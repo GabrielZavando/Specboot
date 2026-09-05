@@ -151,7 +151,7 @@ En la práctica:
 | `/apply TICKET-ID` | Implement tasks from OpenSpec artifacts (TDD) |
 | `/verify TICKET-ID` | Execute tests and verify the active change works (files per Suggested Path, traceability, delta-incremental), reporting a compact YAML summary and persisting the evidence to `openspec/state/verify-results.json`. Read-only over code and specs. Ticket ID taken from the active change in `openspec/changes/`. |
 | `/archive TICKET-ID` | Close the SDD cycle: pre-checks, preview of specs updated, `openspec archive`, append to manifest JSON, stage commit for `/commit`, cleanup. Token-light (no content reading). Ticket ID taken from the active change in `openspec/changes/`. |
-| `/commit` | Create conventional commits and pull request (token-light diff, commit plan approval, TICKET-ID auto-extracted from proposal.md, push/PR only after explicit confirmation. Reuses openspec/ staged by /archive). |
+| `/commit` | Create conventional commits and pull request with **hard evidence gates**: requires verify `PASS` + adversarial `SHIP` for the active change; otherwise blocks, offering to run the missing tool or the registered `--force` escape hatch (Gate-Bypass trailer). Token-light diff, commit plan approval, TICKET-ID auto-extracted from proposal.md, push/PR only after explicit confirmation. Reuses openspec/ staged by /archive. |
 | `/deploy` | **Optional**: Release to staging/production. Not every `/commit` triggers a `/deploy` — use only when the change is ready for release. |
 
 ### 5.3 Optional tools

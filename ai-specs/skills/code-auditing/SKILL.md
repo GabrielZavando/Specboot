@@ -138,7 +138,8 @@ Reglas:
 - `timestamp` en ISO-8601 (ej. `2026-09-05T15:00:00Z`).
 - El archivo queda trackeado en git (no gitignored): evidencia auditable en PRs.
 - Si falla la escritura → advertir pero no abortar (el reporte en pantalla ya se
-  emitió). El gate duro del veredicto es M-901 en `/commit`, no este archivo.
+  emitió). El gate duro del veredicto vive en `/commit` (activo desde M-901),
+  no en este archivo.
 
 ---
 **Eliminado**: la Fase 7 (OpenSpec Alignment) ha sido removida (cubre `/verify`). Esta skill ahora se enfoca únicamente en auditoría adversarial: robustez, seguridad, tradeoffs y diseño contextual.

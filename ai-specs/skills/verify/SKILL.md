@@ -168,10 +168,10 @@ Reglas:
 
 Consumidores de este archivo (no lo re-ejecutan):
 
-- `/commit` lo lee como **gate informado suave** (Step 2 de su skill): `PASS` vigente
-  omite la pregunta; `PARTIAL|FAIL` advierte; ausente o de otro change mantiene el
-  flujo actual de pregunta. El gate duro es M-901 (futuro, junto con
-  `adversarial-result.json` + `--force`).
+- `/commit` lo lee como **gate duro** (Step 2 de su skill): `PASS` vigente para el
+  change activo omite la pregunta; `PARTIAL|FAIL`, ausente, inválido o de otro
+  change bloquea y ofrece re-ejecutar `/verify`, abortar o usar `--force`
+  (bypass registrado como trailer `Gate-Bypass`).
 - `archive` copia `{status, timestamp, source}` al manifiesto (Step 5 de su skill).
 
 ## Stack Notes
