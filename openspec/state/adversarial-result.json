@@ -1,15 +1,9 @@
 {
   "schema_version": 1,
-  "change": "persist-adversarial-verdict",
-  "ticket_id": "M-501-502",
+  "change": "enforce-commit-gates",
+  "ticket_id": "M-901-903",
   "verdict": "SHIP",
-  "confidence": 0.8,
-  "timestamp": "2026-09-05T04:51:06Z",
-  "findings": {
-    "total": 4,
-    "critical": 0,
-    "warnings": 1,
-    "info": 3,
-    "discarded": 1
-  }
+  "confidence": 0.82,
+  "timestamp": "2026-09-05T22:10:00Z",
+  "findings": { "total": 8, "critical": 0, "warnings": 4, "info": 4, "discarded": 2 }
 }

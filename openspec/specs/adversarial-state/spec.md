@@ -54,26 +54,6 @@ The `archive` skill SHALL add an optional `adversarial: {verdict, timestamp, sou
 - **THEN** the `adversarial` field is omitted, a warning is printed and running `/adversarial-review` is suggested
 - **AND** the archive completes without error or block (the hard gate is M-901)
 
-### Requirement: commit skill MUST use the adversarial verdict as informed evidence
-The `commit` skill SHALL read `openspec/state/adversarial-result.json` as an informed soft gate: with `verdict: SHIP` for the active change it SHALL skip the manual confirmation and report the evidence; with `NO-SHIP` it SHALL warn and offer to re-run `/adversarial-review` or abort, never continuing silently; if the file is missing or its `change` field does not match the active change it SHALL keep the current confirmation flow. A staleness check (timestamp older than the last commit touching code) SHALL be warn-only. The hard gate remains M-901 (out of scope).
-
-#### Scenario: Commit skips the adversarial confirmation with a fresh SHIP
-- **GIVEN** `/commit` on the active change with `adversarial-result.json` reporting `verdict: SHIP` and a matching `change` field
-- **WHEN** commit executes its adversarial gateway
-- **THEN** it skips the manual audit confirmation and reports the found evidence (verdict and timestamp)
-
-#### Scenario: Commit warns on NO-SHIP
-- **GIVEN** `adversarial-result.json` with `verdict: NO-SHIP` for the active change
-- **WHEN** commit executes its adversarial gateway
-- **THEN** it warns about the recorded verdict and offers to re-run `/adversarial-review` or abort
-- **AND** it does not continue without an explicit user decision
-
-#### Scenario: Commit keeps the current flow when evidence is absent or foreign
-- **GIVEN** a missing `adversarial-result.json`, or one whose `change` field differs from the active change
-- **WHEN** commit executes its adversarial gateway
-- **THEN** it applies the current flow: asks the user to confirm the audit passed
-- **AND** a stale timestamp only produces a warn-only notice
-
 ### Requirement: Reviewer agent permissions and descriptions MUST match the persistence capability
 The permission block of `.opencode/agents/reviewer.md` SHALL include the scoped evidence-writing exception (`mkdir -p openspec/*` allowed and `cat` redirection for writing, mirroring the verify agent) while keeping `edit: deny` and all other bash denied. Descriptions in `AGENTS.md` (§5.3), `.opencode/commands/adversarial-review.md` and `ai-specs/README.md` SHALL declare: read-only over code, persists evidence under `openspec/state/`. Every command documented in the role SHALL have an allow pattern in the permission block, and vice versa (M-403 lesson).
 
@@ -83,4 +63,30 @@ The permission block of `.opencode/agents/reviewer.md` SHALL include the scoped 
 - **THEN** the permission block allows exactly the scoped evidence-writing commands and `edit` stays deny
 - **AND** no description claims absolute read-only: they state read-only over code with evidence persisted under `openspec/state/`
 - **AND** every documented bash command has a matching allow pattern in the permission block (and vice versa)
+
+### Requirement: commit skill MUST enforce the adversarial verdict as a hard gate
+The `commit` skill SHALL read `openspec/state/adversarial-result.json` as a hard gate: with `verdict: SHIP` for the reference change (the active change; when committing after `/archive`, the change just archived by its derived name) it SHALL skip the manual audit confirmation and report the evidence; with `NO-SHIP` it SHALL block, offering to re-run `/adversarial-review`, abort, or use `--force`; if the file is missing, invalid, or its `change` field does not match the reference change it SHALL block, offering to run `/adversarial-review`, abort, or use `--force` — the absence of an adversarial audit is no longer tolerated as optional. A staleness check (timestamp older than the last commit touching code) SHALL remain warn-only. The unified gate matrix, the `--force` registration and the `Gate-Bypass` trailer are specified in `commit-gates`.
+
+#### Scenario: Commit skips the audit confirmation with a fresh matching SHIP
+- **GIVEN** `adversarial-result.json` with `verdict: SHIP` and a matching `change` field
+- **WHEN** commit executes its adversarial gateway
+- **THEN** it skips the manual audit confirmation and reports the found evidence (verdict and timestamp)
+
+#### Scenario: Commit blocks on NO-SHIP
+- **GIVEN** `adversarial-result.json` with `verdict: NO-SHIP` for the reference change
+- **WHEN** commit executes its adversarial gateway
+- **THEN** it blocks and offers to re-run `/adversarial-review`, abort, or use `--force`
+- **AND** it does not continue without an explicit user decision
+
+#### Scenario: Commit blocks when the verdict is absent, invalid or foreign
+- **GIVEN** a missing or invalid `adversarial-result.json`, or one whose `change` field differs from the reference change
+- **WHEN** commit executes its adversarial gateway
+- **THEN** it blocks and offers to run `/adversarial-review`, abort, or use `--force`
+- **AND** the absence of an adversarial audit no longer keeps the previous optional flow: it blocks
+
+#### Scenario: Staleness check is warn-only
+- **GIVEN** a present, matching `adversarial-result.json` whose timestamp predates the last commit touching code
+- **WHEN** commit executes its adversarial gateway
+- **THEN** it prints a warning about possibly stale evidence
+- **AND** it does not block on staleness alone
 

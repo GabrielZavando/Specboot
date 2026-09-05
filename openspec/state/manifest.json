@@ -176,6 +176,27 @@
         "timestamp": "2026-09-05T04:51:06Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "enforce-commit-gates",
+      "ticket_id": "M-901-903",
+      "archived_at": "2026-09-05T21:35:22Z",
+      "specs_applied": [
+        "commit-gates",
+        "verification-state",
+        "adversarial-state",
+        "deploy-checklist"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-05T21:34:36Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-05T22:10:00Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }

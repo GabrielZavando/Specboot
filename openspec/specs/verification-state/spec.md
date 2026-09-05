@@ -30,32 +30,6 @@ The results file SHALL declare `evidence_mode: executable|static`. When verifica
 - **THEN** the global status is `PARTIAL` and `evidence_mode` is `static`
 - **AND** no scenario is marked `PASS` in the JSON
 
-### Requirement: commit skill MUST use verify results as an informed soft gate
-The `commit` skill SHALL read `openspec/state/verify-results.json` as an informed soft gate: with `status: PASS` for the active change it SHALL skip the verify question; with `PARTIAL` or `FAIL` it SHALL warn and offer to re-run or abort; if the file is missing or its `change` field does not match the active change it SHALL fall back to the current question flow. A staleness check (timestamp older than the last commit touching code) SHALL be warn-only. The hard gate remains M-901 (out of scope).
-
-#### Scenario: Commit skips the verify question with a fresh PASS
-- **GIVEN** `/commit` on the active change with `verify-results.json` reporting `status: PASS` and a matching `change` field
-- **WHEN** commit executes its verify gateway
-- **THEN** it skips the "did you run /verify?" question and reports the found evidence (status and timestamp)
-
-#### Scenario: Commit warns on PARTIAL or FAIL
-- **GIVEN** `verify-results.json` with `status: PARTIAL` or `FAIL` for the active change
-- **WHEN** commit executes its verify gateway
-- **THEN** it warns about the recorded status and offers to re-run `/verify` or abort
-- **AND** it does not continue without an explicit user decision
-
-#### Scenario: Commit falls back to the question when evidence is absent or foreign
-- **GIVEN** a missing `verify-results.json`, or one whose `change` field differs from the active change
-- **WHEN** commit executes its verify gateway
-- **THEN** it applies the current flow: asks the user whether `/verify` was executed
-- **AND** it does not continue without confirmation
-
-#### Scenario: Staleness check is warn-only
-- **GIVEN** a present `verify-results.json` whose timestamp predates the last commit touching code
-- **WHEN** commit executes its verify gateway
-- **THEN** it prints a warning about possibly stale evidence
-- **AND** it does not block on its own (the hard gate is M-901)
-
 ### Requirement: archive MUST reference verification in the manifest
 The `archive` skill SHALL add an optional `verification: {status, timestamp, source}` field to the manifest entry when `verify-results.json` exists, and SHALL omit it without blocking when the file is absent. Archive SHALL read only the summary (token-light, never the scenarios array).
 
@@ -70,4 +44,30 @@ The `archive` skill SHALL add an optional `verification: {status, timestamp, sou
 - **WHEN** archive generates the manifest entry
 - **THEN** the `verification` field is omitted
 - **AND** the archive completes without error or block
+
+### Requirement: commit skill MUST enforce verify results as a hard gate
+The `commit` skill SHALL read `openspec/state/verify-results.json` as a hard gate: with `status: PASS` for the reference change (the active change; when committing after `/archive`, the change just archived by its derived name) it SHALL skip the verify question and report the evidence; with `PARTIAL` or `FAIL` it SHALL block, offering to re-run `/verify`, abort, or use `--force`; if the file is missing, invalid, or its `change` field does not match the reference change it SHALL block, offering to run `/verify`, abort, or use `--force` — never a blind question. A staleness check (timestamp older than the last commit touching code) SHALL remain warn-only. The unified gate matrix, the `--force` registration and the `Gate-Bypass` trailer are specified in `commit-gates`.
+
+#### Scenario: Commit skips the verify question with a fresh matching PASS
+- **GIVEN** `verify-results.json` with `status: PASS` and a matching `change` field
+- **WHEN** commit executes its verify gateway
+- **THEN** it skips the "did you run /verify?" question and reports the found evidence (status and timestamp)
+
+#### Scenario: Commit blocks on PARTIAL or FAIL
+- **GIVEN** `verify-results.json` with `status: PARTIAL` or `FAIL` for the reference change
+- **WHEN** commit executes its verify gateway
+- **THEN** it blocks and offers to re-run `/verify`, abort, or use `--force`
+- **AND** it does not continue without an explicit user decision
+
+#### Scenario: Commit blocks when evidence is absent, invalid or foreign
+- **GIVEN** a missing or invalid `verify-results.json`, or one whose `change` field differs from the reference change
+- **WHEN** commit executes its verify gateway
+- **THEN** it blocks and offers to run `/verify`, abort, or use `--force`
+- **AND** it does not fall back to the pre-M-401 question flow
+
+#### Scenario: Staleness check is warn-only
+- **GIVEN** a present, matching `verify-results.json` whose timestamp predates the last commit touching code
+- **WHEN** commit executes its verify gateway
+- **THEN** it prints a warning about possibly stale evidence
+- **AND** it does not block on staleness alone
 
