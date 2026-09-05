@@ -1,5 +1,5 @@
 ---
-description: Verification agent — runs tests and checks traceability (read-only)
+description: Verification agent — runs tests, checks traceability, persists verify evidence (read-only over code)
 mode: primary
 permission:
   edit: deny
@@ -18,6 +18,7 @@ permission:
     "rg *": allow
     "ls *": allow
     "cat *": allow
+    "mkdir -p openspec/*": allow
     "*": deny
 ---
 

@@ -20,18 +20,37 @@ Obtener el cambio activo:
 
 ---
 
-## Step 2 — Gateway de verify (suave, sin estado persistido)
+## Step 2 — Gateway de verify (gate informado suave, con evidencia persistida)
 
-Dado que `/verify` no persiste `.verify-passed` (decisión previa), el gate es **suave**:
+Desde M-401, `/verify` persiste `openspec/state/verify-results.json` tras cada
+ejecución (Step 8 de su skill). Este paso usa esa evidencia como **gate informado
+suave**: reemplaza la pregunta a ciegas cuando hay evidencia válida, pero **no
+bloquea de forma dura** (el gate duro con `adversarial-result.json` + `--force`
+es M-901, futuro).
 
-1. Preguntar al usuario: **"¿Ejecutaste `/verify` y pasó para este cambio?"**
-2. Si el usuario responde **"no"**:
-   - Ofrecer: (a) re-ejecutar `/verify` ahora (subproceso), o (b) abortar.
-   - **No continuar sin confirmación.**
-3. Si el usuario indica que usó `/adversarial-review` → pedir confirmación de que pasó.
-4. Si no se usó `/adversarial-review` → continuar sin bloqueos.
-
-**Nota:** No depender de archivo `.verify-passed` (déjálo como decisión previa de `/verify`).
+1. Localizar `openspec/state/verify-results.json` (JSON pequeño — leerlo completo
+   es token-light; para extraer un campo puntual: `node -e "const d=require('./openspec/state/verify-results.json');console.log(d.status)"`).
+2. **Caso A — evidencia válida** (el archivo existe, es JSON válido y su campo
+   `change` coincide con el change activo del Step 1):
+   - **Chequeo de staleness (warn-only)**: si el `timestamp` del JSON es anterior
+     a la fecha del último commit (`git log -1 --format=%cI`), imprimir
+     `⚠️ Evidencia de verify posiblemente desactualizada (archivo: {timestamp})` y
+     continuar — no bloquea por sí solo.
+   - `status: "PASS"` → **omitir la pregunta** y reportar en una línea:
+     `✅ Evidencia de verify: PASS ({timestamp})`. Continuar a Step 3.
+   - `status: "PARTIAL"` o `"FAIL"` → imprimir
+     `⚠️ Evidencia de verify registrada: {status} ({timestamp})` (si además
+     `evidence_mode: "static"`, añadir: *evidencia débil — verificación estática,
+     sin tests ejecutables*) y ofrecer: (a) re-ejecutar `/verify` ahora
+     (subproceso), o (b) abortar. **No continuar sin decisión explícita.**
+3. **Caso B — sin evidencia utilizable** (el archivo no existe, es JSON inválido,
+   o su campo `change` no coincide con el change activo):
+   - Mantener el flujo previo a M-401: preguntar al usuario:
+     **"¿Ejecutaste `/verify` y pasó para este cambio?"**
+   - Si el usuario responde **"no"**: ofrecer (a) re-ejecutar `/verify` ahora
+     (subproceso), o (b) abortar. **No continuar sin confirmación.**
+4. Si el usuario indica que usó `/adversarial-review` → pedir confirmación de que
+   pasó. (Su veredicto persistido como gate es M-502, futuro.)
 
 ---
 

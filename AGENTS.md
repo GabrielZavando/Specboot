@@ -99,7 +99,7 @@ continuing.
 | `using-git-worktrees` | Parallel feature work during `/plan-change` |
 | `deploy` | Release to staging/production, via `/deploy` |
 | `onboarding` | A new developer is starting on the project |
-| `verify` | Verify the active change works (`/verify`). Read-only. |
+| `verify` | Verify the active change works (`/verify`). Read-only over code; persists verify evidence under `openspec/state/`. |
 
 ### 4.2 Optional skills (use only when needed)
 
@@ -149,7 +149,7 @@ En la práctica:
 | --- | --- |
 | `/plan-change TICKET-ID:"[tag] Título"` | Generate validated, context-enriched OpenSpec specs from a ticket. Tag is optional (`[backend\|frontend\|api\|docs\|fullstack]`) and drives selective standards loading; if omitted, the agent infers it and asks for confirmation. If `openspec/tickets/{TICKET-ID}-enriched.md` exists (from `/enrich-us`), it is used as the primary source. |
 | `/apply TICKET-ID` | Implement tasks from OpenSpec artifacts (TDD) |
-| `/verify TICKET-ID` | Execute tests and verify the active change works (files per Suggested Path, traceability, delta-incremental), reporting a compact YAML summary. Read-only agent. Ticket ID taken from the active change in `openspec/changes/`. |
+| `/verify TICKET-ID` | Execute tests and verify the active change works (files per Suggested Path, traceability, delta-incremental), reporting a compact YAML summary and persisting the evidence to `openspec/state/verify-results.json`. Read-only over code and specs. Ticket ID taken from the active change in `openspec/changes/`. |
 | `/archive TICKET-ID` | Close the SDD cycle: pre-checks, preview of specs updated, `openspec archive`, append to manifest JSON, stage commit for `/commit`, cleanup. Token-light (no content reading). Ticket ID taken from the active change in `openspec/changes/`. |
 | `/commit` | Create conventional commits and pull request (token-light diff, commit plan approval, TICKET-ID auto-extracted from proposal.md, push/PR only after explicit confirmation. Reuses openspec/ staged by /archive). |
 | `/deploy` | **Optional**: Release to staging/production. Not every `/commit` triggers a `/deploy` — use only when the change is ready for release. |

@@ -36,15 +36,28 @@ Listar `openspec/changes/` y tomar el único cambio presente. Si hay varios, lis
 
 - Crear/actualizar `openspec/state/manifest.json`.
 - Si el archivo no existe, inicializarlo como `{"changes": []}`.
+- **Evidencia de verificación (M-401)**: antes de construir la entrada, comprobar
+  si existe `openspec/state/verify-results.json` para el change activo. Si existe,
+  extraer **solo** `status` y `timestamp` (lectura token-light: dos campos puntuales,
+  **nunca** el array `scenarios` — ej. `node -e "const d=require('./openspec/state/verify-results.json');console.log(d.status, d.timestamp)"`). Si no existe, continuar
+  sin error ni bloqueo (el campo simplemente se omite).
 - Añadir una entrada al array `changes`:
   ```json
   {
     "change_name": "{derived-name}",
     "ticket_id": "{TICKET-ID from proposal.md}",
     "archived_at": "{ISO-8601 timestamp}",
-    "specs_applied": ["lista de specs fusionadas"]
+    "specs_applied": ["lista de specs fusionadas"],
+    "verification": {
+      "status": "{PASS|PARTIAL|FAIL — solo si verify-results.json existe}",
+      "timestamp": "{timestamp del verify-results.json}",
+      "source": "openspec/state/verify-results.json"
+    }
   }
   ```
+  El campo `verification` es **opcional**: se incluye solo cuando
+  `openspec/state/verify-results.json` existe y es JSON válido; si falta, la entrada
+  del manifest se genera sin él (el archive nunca se bloquea por falta de evidencia).
 - `archived_at` usar formato ISO-8601 (ej. `2026-08-25T14:30:00Z`). Si falla la escritura → advertir pero no abortar (el archive ya se completó).
 
 ## Step 6 — Preparar commit (no ejecutar)

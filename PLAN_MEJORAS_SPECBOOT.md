@@ -32,6 +32,16 @@ Cada ticket declara además:
 | v3 | Añadida clasificación SemVer y dependencias explícitas a cada ticket |
 | v3.1 | M-001 y M-002 completados vía change `phase0-reconciliation` (marcados con `[x]`); sección "Autenticación para consumidores (CI)" documentada en `README.md` |
 | v3.2 | M-101 y M-102 completados vía change `plan-traceability` (marcados con `[x]`); plantillas y skills de `enrich-us`, `plan-change` y `verify` actualizados con metadatos y IDs `SC-{NNN}` |
+| v3.3 | M-401 y M-402 completados vía change `persist-verify-results` (marcados con `[x]`); `verify` persiste `openspec/state/verify-results.json` (esquema versionado, autovalidado por `tests/verify-state-test.sh`); `/commit` usa gate informado suave y `archive` referencia la verificación en el manifest; convención de tests `SC-NNN` en agentes generadores; registrado M-403 (permisos pytest del subagente verify) |
+
+> **⚠️ Estrategia de rama — decisión del mantenedor (2026-09-05):** todas las fases
+> restantes de este plan se implementan en la **rama única**
+> `feature/plan-mejoras-specboot` (renombrada desde
+> `feature/m-201-202-path-design-validation`, que era herencia de la fase anterior).
+> **No crear una rama nueva por ticket ni por fase**: continuar fase tras fase sobre
+> esta misma rama. Push + PR + merge + tag y release con el paquete actualizado
+> **una sola vez**, cuando el plan completo esté implementado. Excepción: si se
+> detecta un fix urgente independiente del plan, evaluar rama aparte en ese momento.
 
 ---
 
@@ -361,7 +371,7 @@ la tarea como completada, reportar resultado y esperar nueva instrucción.
 
 # FASE 4 — Mejorar verificación y calidad
 
-## M-401 — Persistir resultados de verificación
+## [x] M-401 — Persistir resultados de verificación
 
 **Nivel SemVer:** `minor`
 **Dependencias:** M-102 (usa los IDs `SC-NNN` en el formato de salida)
@@ -404,7 +414,7 @@ que `/commit` pueda usar como gate.
 
 ---
 
-## M-402 — Mapeo explícito Scenario → Test
+## [x] M-402 — Mapeo explícito Scenario → Test
 
 **Nivel SemVer:** `minor`
 **Dependencias:** M-102
@@ -434,6 +444,40 @@ def test_sc001_user_password_reset():
 
 **Criterios de aceptación:**
 - Cobertura de escenarios medible y auditable vía el prefijo.
+
+---
+
+## M-403 — Sincronizar permisos bash del subagente verify con su documentación
+
+**Nivel SemVer:** `patch`
+**Dependencias:** M-401 (la excepción de escritura de evidencia documentada ahí
+comparte la misma superficie de permisos que este fix)
+
+**Estado:** Descubierto durante la implementación de M-401 (tarea 1.6 del change
+`persist-verify-results`): `ai-specs/agents/verify-agent.md` documenta `pytest`
+como bash permitido, pero el permission block de `.opencode/agents/verify.md` no
+incluye el patrón `"pytest *"` → cae en `"*": deny` y el subagente `verify` no
+puede ejecutar tests Python (Step 5b del skill `verify`) en proyectos Python.
+
+**Problema:** El rol documentado del subagente y su permission block están
+desincronizados: la documentación promete capacidades que los permisos niegan.
+
+**Propuesta:** Sincronizar ambos archivos y auditar el mismo patrón en los demás
+agentes con permission block (backend, frontend, reviewer, archive): todo comando
+documentado en la lista "Bash permitido" del rol debe existir como patrón allow en
+el permission block del agente, y viceversa.
+
+**Tareas:**
+
+| # | Tarea | Prioridad |
+|---|-------|-----------|
+| 1 | Añadir `"pytest *": allow` al permission block de `.opencode/agents/verify.md` | Alta |
+| 2 | Auditar sincronización rol↔permisos en los demás agentes y corregir las brechas encontradas | Media |
+
+**Criterios de aceptación:**
+- Verify puede ejecutar `pytest` en un proyecto Python vía el subagente.
+- Ninguna entrada de "Bash permitido" en un rol carece de su patrón allow en el
+  permission block correspondiente (y viceversa).
 
 ---
 
@@ -775,6 +819,7 @@ FASE 0 — Reconciliación (base para todo lo demás)
 FASE 4 — Verificación persistente (habilita los gates de Fase 9)
    M-401  Persistir verify-results
    M-402  Mapeo Scenario → Test
+   M-403  Permisos bash del subagente verify sincronizados (patch)
 
 FASE 1 — Planificación precisa
    M-101  Enriquecer enrich-us
