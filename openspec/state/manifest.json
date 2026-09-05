@@ -158,6 +158,24 @@
         "timestamp": "2026-09-05T02:11:31Z",
         "source": "openspec/state/verify-results.json"
       }
+    },
+    {
+      "change_name": "2026-09-05-persist-adversarial-verdict",
+      "ticket_id": "M-501-502",
+      "archived_at": "2026-09-05T15:59:04Z",
+      "specs_applied": [
+        "adversarial-state"
+      ],
+      "verification": {
+        "status": "PARTIAL",
+        "timestamp": "2026-09-05T04:43:32Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-05T04:51:06Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }

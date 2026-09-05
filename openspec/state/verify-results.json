@@ -1,28 +1,22 @@
 {
   "schema_version": 1,
-  "change": "persist-verify-results",
-  "ticket_id": "M-401-402",
+  "change": "persist-adversarial-verdict",
+  "ticket_id": "M-501-502",
   "status": "PARTIAL",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-05T02:11:31Z",
-  "tasks": {
-    "total": 11,
-    "passed": 3,
-    "failed": 0,
-    "untested": 8
-  },
+  "timestamp": "2026-09-05T04:43:32Z",
+  "tasks": { "total": 10, "passed": 2, "failed": 0, "untested": 8 },
   "scenarios": [
-    { "id": "SC-001", "test": "openspec/state/verify-results.json (persisted by this run)", "status": "PASS" },
+    { "id": "SC-001", "test": "untested", "status": "UNTESTED" },
     { "id": "SC-002", "test": "[SC-002] canonical fixture satisfies the schema_version 1 contract", "status": "PASS" },
-    { "id": "SC-003", "test": "[SC-003] rejects PASS scenario under static evidence (REQ-003)", "status": "PASS" },
-    { "id": "SC-004", "test": "untested", "status": "UNTESTED" },
-    { "id": "SC-005", "test": "untested", "status": "UNTESTED" },
+    { "id": "SC-003", "test": "untested", "status": "UNTESTED" },
+    { "id": "SC-004", "test": "[SC-004] findings.discarded counts refuted findings", "status": "PASS" },
+    { "id": "SC-005", "test": "[SC-005] accepts a NO-SHIP verdict document", "status": "PASS" },
     { "id": "SC-006", "test": "untested", "status": "UNTESTED" },
     { "id": "SC-007", "test": "untested", "status": "UNTESTED" },
     { "id": "SC-008", "test": "untested", "status": "UNTESTED" },
     { "id": "SC-009", "test": "untested", "status": "UNTESTED" },
     { "id": "SC-010", "test": "untested", "status": "UNTESTED" },
-    { "id": "SC-011", "test": "untested", "status": "UNTESTED" },
-    { "id": "SC-012", "test": "untested", "status": "UNTESTED" }
+    { "id": "SC-011", "test": "untested", "status": "UNTESTED" }
   ]
 }

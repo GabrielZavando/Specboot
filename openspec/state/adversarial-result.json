@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "change": "persist-adversarial-verdict",
+  "ticket_id": "M-501-502",
+  "verdict": "SHIP",
+  "confidence": 0.8,
+  "timestamp": "2026-09-05T04:51:06Z",
+  "findings": {
+    "total": 4,
+    "critical": 0,
+    "warnings": 1,
+    "info": 3,
+    "discarded": 1
+  }
+}
