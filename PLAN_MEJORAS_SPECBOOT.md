@@ -34,6 +34,7 @@ Cada ticket declara además:
 | v3.2 | M-101 y M-102 completados vía change `plan-traceability` (marcados con `[x]`); plantillas y skills de `enrich-us`, `plan-change` y `verify` actualizados con metadatos y IDs `SC-{NNN}` |
 | v3.3 | M-401 y M-402 completados vía change `persist-verify-results` (marcados con `[x]`); `verify` persiste `openspec/state/verify-results.json` (esquema versionado, autovalidado por `tests/verify-state-test.sh`); `/commit` usa gate informado suave y `archive` referencia la verificación en el manifest; convención de tests `SC-NNN` en agentes generadores; registrado M-403 (permisos pytest del subagente verify) |
 | v3.4 | M-501 y M-502 completados vía change `persist-adversarial-verdict` (marcados con `[x]`); `adversarial-review` formaliza la auto-refutación en protocolo de 4 pasos con anexo "Descartados" y persiste `openspec/state/adversarial-result.json` (esquema versionado, autovalidado por `tests/adversarial-state-test.sh`); `archive` referencia el veredicto en el manifest y `/commit` lo usa como gate informado suave (el gate duro sigue siendo M-901); permisos del subagente reviewer sincronizados con su rol (patrón M-403) |
+| v3.5 | M-901, M-902 y M-903 completados vía change `enforce-commit-gates` (marcados con `[x]`). **M-901**: `/commit` aplica **gates duros de evidencia** — verify `PASS` + adversarial `SHIP` del change activo (match por campo `change`, lectura token-light `node -e`); `PARTIAL/FAIL/NO-SHIP` o evidencia ausente/inválida/ajena bloquea sin pregunta a ciegas, ofreciendo ejecutar la herramienta faltante, abortar o `--force` (escape registrado como trailer `Gate-Bypass: --force (...)`; con gates verdes no se emite); staleness warn-only; self-test `tests/commit-gate-test.sh` (25 asserts `[SC-NNN]`) con fixtures de la matriz en `ai-specs/examples/commit-gate-fixtures/`; descripciones sincronizadas con el contrato (`AGENTS.md` §5.2, `verify`, `archive`, `code-auditing`, `.opencode/commands/commit.md`). **M-902**: cerrado como **"evaluado, sin acción"** — decisión: mantener el diseño 2 jobs / 1 archivo de `ci.yml` (jobs `validate` + `project-ci`), sin evidencia de fricción de consumidores (mantenedor 2026-09-05); `ci.yml` y `openspec/specs/specboot-workflows/spec.md` intactos, reabrir solo con evidencia nueva y change independiente; guard `tests/ci-evaluation-test.sh`. **M-903**: checklist mínimo obligatorio de deploy (6 ítems agnósticos: tests verdes, lint sin críticos, build, audit sin críticos, rollback definido, change archivado) con bloqueo antes del version bump; plantilla `docs/deploy-standards.md` incluye rollback y change archivado en su Pre-deploy Checklist; guard `tests/deploy-checklist-test.sh`; description de `/deploy` sincronizada. Bump `0.4.0` → `0.5.0` (minor con `### Breaking changes` en CHANGELOG: contrato de `/commit`; la auditoría adversarial deja de ser opcional). |
 
 > **⚠️ Estrategia de rama — decisión del mantenedor (2026-09-05):** todas las fases
 > restantes de este plan se implementan en la **rama única**
@@ -696,7 +697,7 @@ alcances distintos:
 
 # FASE 9 — Commit, release y arquitectura CI
 
-## M-901 — Gate duro de commit basado en evidencia
+## [x] M-901 — Gate duro de commit basado en evidencia
 
 **Nivel SemVer:** `major` (cambia el contrato de `/commit`: de gate blando a gate
 duro, puede bloquear flujos que hoy pasan)
@@ -731,7 +732,14 @@ gates duros antes de permitir el commit.
 
 ---
 
-## M-902 — Evaluar arquitectura CI: ¿un workflow con dos jobs, o dos workflows?
+## [x] M-902 — Evaluar arquitectura CI: ¿un workflow con dos jobs, o dos workflows?
+
+**Estado:** Cerrado como **"evaluado, sin acción"** (change `enforce-commit-gates`,
+2026-09-05): decisión: mantener el diseño 2 jobs / 1 archivo de `ci.yml` — sin
+evidencia de fricción de consumidores con el modelo actual (jobs `validate` +
+`project-ci`). `ci.yml` y `openspec/specs/specboot-workflows/spec.md` permanecen
+intactos; reabrir solo con evidencia nueva de un consumidor real y en su propio
+change (ver fila v3.5 del historial).
 
 **Nivel SemVer:** `major` si se decide migrar (cambia contrato de `specboot-workflows`);
 `n/a` si la evaluación concluye mantener el diseño actual.
@@ -786,7 +794,7 @@ este ticket se convierte en una **evaluación**, no en una migración decidida.
 
 ---
 
-## M-903 — Mejorar checklist de deploy
+## [x] M-903 — Mejorar checklist de deploy
 
 **Nivel SemVer:** `minor`
 **Dependencias:** ninguna

@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-09-05
+
+### Breaking changes
+
+- **M-901** (Fase 9) — `/commit` aplica ahora **gates duros de evidencia**: exige `openspec/state/verify-results.json` con `status: PASS` y `openspec/state/adversarial-result.json` con `verdict: SHIP`, ambos con campo `change` coincidente con el change activo. Con `PARTIAL`/`FAIL`/`NO-SHIP`, evidencia ausente, inválida o ajena **bloquea** el commit: ya no pregunta a ciegas ("¿ejecutaste `/verify`?") ni tolera la ausencia de auditoría adversarial como opcional; ofrece ejecutar la herramienta faltante, abortar, o usar `--force` (`ai-specs/skills/commit/SKILL.md`).
+
+### Migration
+
+- Antes de `/commit`, ejecuta `/verify` (objetivo `status: PASS` con evidencia ejecutable) y `/adversarial-review` (objetivo `verdict: SHIP`): sus JSON persistidos en `openspec/state/` son los gates que Step 2 del skill lee (token-light, `node -e`).
+- Si tu flujo commiteaba sin auditoría adversarial o con verify `PARTIAL`, ahora el commit bloquea: ejecuta la herramienta faltante o usa `--force` explícito — su uso queda registrado en el mensaje de cada commit con el trailer `Gate-Bypass: --force (verify=<estado>; adversarial=<veredicto>)`; con gates verdes el trailer no se emite.
+- El staleness de la evidencia sigue siendo warn-only: no bloquea por sí solo.
+
+### Added
+
+- **M-901** (Fase 9) — Gate duro de commit: Step 2 del skill `commit` reescrito como matriz de decisión sobre ambos archivos de estado (enums `PASS|PARTIAL|FAIL` / `SHIP|NO-SHIP` de `schema_version: 1`, match por campo `change`, lectura token-light), flag `--force` con trailer `Gate-Bypass` aplicado en Step 6, y self-test `tests/commit-gate-test.sh` (25 asserts `[SC-NNN]`) con los fixtures de la matriz en `ai-specs/examples/commit-gate-fixtures/` (`ai-specs/skills/commit/SKILL.md`).
+- **M-903** (Fase 9) — Checklist mínimo obligatorio de deploy: sección "Mandatory pre-deploy checklist" en el skill con 6 ítems agnósticos del proyecto (tests verdes, lint sin críticos, build exitoso, security audit sin críticos, rollback definido, change OpenSpec archivado) y regla de bloqueo (si alguno falla, el deploy **stops before the version bump** reportando los ítems fallidos); la plantilla `docs/deploy-standards.md` incluye "Rollback procedure defined" y "OpenSpec change archived" en su Pre-deploy Checklist; self-test `tests/deploy-checklist-test.sh` (`ai-specs/skills/deploy/SKILL.md`, `docs/deploy-standards.md`).
+
+### Changed
+
+- **M-902** (Fase 9) — Evaluación de arquitectura CI cerrada como "evaluado, sin acción": se mantiene el diseño 2 jobs / 1 archivo de `ci.yml` (jobs `validate` + `project-ci`) ante la ausencia de evidencia de fricción de consumidores; `ci.yml` y `openspec/specs/specboot-workflows/spec.md` permanecen intactos; guard ejecutable `tests/ci-evaluation-test.sh` (`PLAN_MEJORAS_SPECBOOT.md`).
+- Descripciones sincronizadas con el contrato del gate duro (lección M-403): `AGENTS.md` (§5.2, fila `/commit`), `.opencode/commands/commit.md`, nota de consumidor en `ai-specs/skills/verify/SKILL.md`, referencias al gate en `ai-specs/skills/archive/SKILL.md` y `ai-specs/skills/code-auditing/SKILL.md`; description de `.opencode/commands/deploy.md` declara el checklist mínimo obligatorio.
+- `.specboot.json` del repo sincronizado con la nueva versión (`frameworkVersion: 0.5.0`).
+
 ## [0.4.0] - 2026-09-05
 
 ### Added
