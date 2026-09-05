@@ -20,13 +20,14 @@ Obtener el cambio activo:
 
 ---
 
-## Step 2 — Gateway de verify (gate informado suave, con evidencia persistida)
+## Step 2 — Gateway de verify + adversarial (gates informados suaves, con evidencia persistida)
 
 Desde M-401, `/verify` persiste `openspec/state/verify-results.json` tras cada
-ejecución (Step 8 de su skill). Este paso usa esa evidencia como **gate informado
-suave**: reemplaza la pregunta a ciegas cuando hay evidencia válida, pero **no
-bloquea de forma dura** (el gate duro con `adversarial-result.json` + `--force`
-es M-901, futuro).
+ejecución (Step 8 de su skill); desde M-502, `/adversarial-review` persiste
+`openspec/state/adversarial-result.json` (Paso 7 de su skill). Este paso usa esas
+evidencias como **gates informados suaves**: reemplazan las preguntas a ciegas
+cuando hay evidencia vigente, pero **no bloquean de forma dura** (el gate duro
+con `--force` registrado es M-901, futuro).
 
 1. Localizar `openspec/state/verify-results.json` (JSON pequeño — leerlo completo
    es token-light; para extraer un campo puntual: `node -e "const d=require('./openspec/state/verify-results.json');console.log(d.status)"`).
@@ -49,8 +50,27 @@ es M-901, futuro).
      **"¿Ejecutaste `/verify` y pasó para este cambio?"**
    - Si el usuario responde **"no"**: ofrecer (a) re-ejecutar `/verify` ahora
      (subproceso), o (b) abortar. **No continuar sin confirmación.**
-4. Si el usuario indica que usó `/adversarial-review` → pedir confirmación de que
-   pasó. (Su veredicto persistido como gate es M-502, futuro.)
+4. **Gateway adversarial (M-502)**: tras el gateway de verify, aplicar la misma
+   lógica sobre `openspec/state/adversarial-result.json` (extracción token-light
+   de `verdict` y `timestamp`: `node -e "const d=require('./openspec/state/adversarial-result.json');console.log(d.verdict, d.timestamp)"`).
+   - **Caso A — veredicto vigente** (el archivo existe, es JSON válido y su
+     campo `change` coincide con el change activo del Step 1):
+     - **Chequeo de staleness (warn-only)**: si el `timestamp` del JSON es
+       anterior a la fecha del último commit (`git log -1 --format=%cI`),
+       imprimir `⚠️ Veredicto adversarial posiblemente desactualizado (archivo:
+       {timestamp})` y continuar — no bloquea por sí solo.
+     - `verdict: "SHIP"` → **omitir la confirmación manual** de la auditoría y
+       reportar en una línea: `✅ Veredicto adversarial: SHIP ({timestamp})`.
+     - `verdict: "NO-SHIP"` → imprimir `⚠️ Veredicto adversarial registrado:
+       NO-SHIP ({timestamp})` y ofrecer: (a) re-ejecutar `/adversarial-review`
+       ahora (subproceso), o (b) abortar. **No continuar sin decisión
+       explícita.**
+   - **Caso B — sin veredicto utilizable** (el archivo no existe, es JSON
+     inválido, o su campo `change` no coincide con el change activo):
+     - Mantener el flujo previo a M-502: si el usuario indica que usó
+       `/adversarial-review` → pedir confirmación de que pasó.
+     - La auditoría es **opcional**: la ausencia de evidencia adversarial no
+       bloquea ni exige pregunta (el gate duro es M-901).
 
 ---
 

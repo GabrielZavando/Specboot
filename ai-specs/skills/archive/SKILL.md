@@ -41,6 +41,15 @@ Listar `openspec/changes/` y tomar el único cambio presente. Si hay varios, lis
   extraer **solo** `status` y `timestamp` (lectura token-light: dos campos puntuales,
   **nunca** el array `scenarios` — ej. `node -e "const d=require('./openspec/state/verify-results.json');console.log(d.status, d.timestamp)"`). Si no existe, continuar
   sin error ni bloqueo (el campo simplemente se omite).
+- **Veredicto adversarial (M-502)**: comprobar también si existe
+  `openspec/state/adversarial-result.json`. Si existe, verificar que su campo
+  `change` coincida con el change activo y extraer **solo** `verdict` y
+  `timestamp` (lectura token-light, **nunca** el detalle de hallazgos — ej.
+  `node -e "const d=require('./openspec/state/adversarial-result.json');console.log(d.verdict, d.timestamp)"`). Si falta, es JSON inválido o corresponde
+  a otro change → imprimir *"⚠️ Sin veredicto adversarial vigente para este
+  change. Considera ejecutar `/adversarial-review` antes de archivar."* y
+  continuar (el archive **nunca se bloquea** por falta de evidencia adversarial;
+  el gate duro es M-901 en `/commit`).
 - Añadir una entrada al array `changes`:
   ```json
   {
@@ -52,12 +61,19 @@ Listar `openspec/changes/` y tomar el único cambio presente. Si hay varios, lis
       "status": "{PASS|PARTIAL|FAIL — solo si verify-results.json existe}",
       "timestamp": "{timestamp del verify-results.json}",
       "source": "openspec/state/verify-results.json"
+    },
+    "adversarial": {
+      "verdict": "{SHIP|NO-SHIP — solo si adversarial-result.json existe y change coincide}",
+      "timestamp": "{timestamp del adversarial-result.json}",
+      "source": "openspec/state/adversarial-result.json"
     }
   }
   ```
-  El campo `verification` es **opcional**: se incluye solo cuando
-  `openspec/state/verify-results.json` existe y es JSON válido; si falta, la entrada
-  del manifest se genera sin él (el archive nunca se bloquea por falta de evidencia).
+  Los campos `verification` y `adversarial` son **opcionales**: se incluyen solo
+  cuando su archivo de evidencia existe y es JSON válido (en el caso de
+  `adversarial`, además con el campo `change` coincidente); si falta alguno, la
+  entrada del manifest se genera sin él (el archive nunca se bloquea por falta
+  de evidencia).
 - `archived_at` usar formato ISO-8601 (ej. `2026-08-25T14:30:00Z`). Si falla la escritura → advertir pero no abortar (el archive ya se completó).
 
 ## Step 6 — Preparar commit (no ejecutar)

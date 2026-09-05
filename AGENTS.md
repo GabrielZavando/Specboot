@@ -159,7 +159,7 @@ En la práctica:
 | Command | Description | When to use |
 | --- | --- | --- |
 | `/enrich-us TICKET-ID` | Enrich a vague user story before planning | Only for poorly formed tickets without acceptance criteria |
-| `/adversarial-review` | Adversarial red-team code audit — runs eslint+dependency-cruiser+npm audit, emits SHIP/NO-SHIP verdict, complements /verify (does NOT re-check OpenSpec alignment). Read-only agent. Ticket ID taken from the active change in `openspec/changes/`. |
+| `/adversarial-review` | Adversarial red-team code audit — runs eslint+dependency-cruiser+npm audit, emits SHIP/NO-SHIP verdict, complements /verify (does NOT re-check OpenSpec alignment). Read-only over code; persists its verdict to `openspec/state/adversarial-result.json`. Ticket ID taken from the active change in `openspec/changes/`. |
 
 ### 5.4 Subagents (wired via {file:} references)
 
