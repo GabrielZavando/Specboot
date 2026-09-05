@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-05
+
+### Added
+
+- **M-501** (Fase 5) — Auto-refutación estructurada de hallazgos `CRITICAL` en `adversarial-review`: protocolo formal de 4 pasos (hipótesis de refutación → búsqueda de evidencia contradictoria en código/tests → decisión mantener/descartar con motivo → registro hallazgo+refutación) reemplazando la heurística de una línea, y anexo "Descartados" en el reporte (hallazgo original + refutación + motivo) fuera del veredicto, con contador `summary.discarded` alineado al JSON (`ai-specs/skills/code-auditing/SKILL.md`).
+- **M-502** (Fase 5) — `/adversarial-review` persiste `openspec/state/adversarial-result.json` tras cada auditoría (incluido NO-SHIP, last-run-wins, trackeado en git) con esquema versionado (`schema_version: 1`, `verdict: SHIP|NO-SHIP`, `confidence` 0.0–1.0, `timestamp` ISO-8601, `findings{total,critical,warnings,info,discarded}`); self-test ejecutable `tests/adversarial-state-test.sh` valida el fixture canónico `ai-specs/examples/adversarial-results-example.json` (`ai-specs/skills/code-auditing/SKILL.md`, `tests/adversarial-state-test.sh`).
+
+### Changed
+
+- `archive` añade el campo opcional `adversarial: {verdict, timestamp, source}` a la entrada del manifest cuando existe evidencia con `change` coincidente; si falta, es inválida o ajena → advierte y sugiere `/adversarial-review` sin bloquear (gate duro = M-901) (`ai-specs/skills/archive/SKILL.md`).
+- `commit` (Step 2) lee el veredicto como gate informado suave: `SHIP` vigente para el change activo omite la confirmación manual, `NO-SHIP` advierte y exige decisión explícita, ausente/ajeno mantiene el flujo previo; staleness warn-only (`ai-specs/skills/commit/SKILL.md`).
+- Permisos del subagente `reviewer` sincronizados con su rol (patrón M-403): añadidos `cat`, `ls` y `mkdir -p openspec/*` (única escritura = evidencia en `openspec/state/`, vía `cat` por redirección), eliminado `git log` sin uso documentado; descripciones actualizadas en `AGENTS.md`, `.opencode/commands/adversarial-review.md` y `ai-specs/README.md` ("read-only sobre código, persiste evidencia").
+- `.specboot.json` del repo sincronizado con la nueva versión (`frameworkVersion: 0.4.0`).
+
 ## [0.3.0] - 2026-09-04
 
 ### Added
