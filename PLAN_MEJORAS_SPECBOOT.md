@@ -33,6 +33,7 @@ Cada ticket declara además:
 | v3.1 | M-001 y M-002 completados vía change `phase0-reconciliation` (marcados con `[x]`); sección "Autenticación para consumidores (CI)" documentada en `README.md` |
 | v3.2 | M-101 y M-102 completados vía change `plan-traceability` (marcados con `[x]`); plantillas y skills de `enrich-us`, `plan-change` y `verify` actualizados con metadatos y IDs `SC-{NNN}` |
 | v3.3 | M-401 y M-402 completados vía change `persist-verify-results` (marcados con `[x]`); `verify` persiste `openspec/state/verify-results.json` (esquema versionado, autovalidado por `tests/verify-state-test.sh`); `/commit` usa gate informado suave y `archive` referencia la verificación en el manifest; convención de tests `SC-NNN` en agentes generadores; registrado M-403 (permisos pytest del subagente verify) |
+| v3.4 | M-501 y M-502 completados vía change `persist-adversarial-verdict` (marcados con `[x]`); `adversarial-review` formaliza la auto-refutación en protocolo de 4 pasos con anexo "Descartados" y persiste `openspec/state/adversarial-result.json` (esquema versionado, autovalidado por `tests/adversarial-state-test.sh`); `archive` referencia el veredicto en el manifest y `/commit` lo usa como gate informado suave (el gate duro sigue siendo M-901); permisos del subagente reviewer sincronizados con su rol (patrón M-403) |
 
 > **⚠️ Estrategia de rama — decisión del mantenedor (2026-09-05):** todas las fases
 > restantes de este plan se implementan en la **rama única**
@@ -483,7 +484,7 @@ el permission block del agente, y viceversa.
 
 # FASE 5 — Auditoría adversarial (extensión)
 
-## M-501 — Evolución de `adversarial-review` con auto-refutación estructurada
+## [x] M-501 — Evolución de `adversarial-review` con auto-refutación estructurada
 
 **Nivel SemVer:** `minor`
 **Dependencias:** ninguna
@@ -527,7 +528,7 @@ Hallazgo (severidad CRITICAL)
 
 ---
 
-## M-502 — Persistir el veredicto de `adversarial-review` como gate
+## [x] M-502 — Persistir el veredicto de `adversarial-review` como gate
 
 **Nivel SemVer:** `minor`
 **Dependencias:** M-501 (usa el formato de veredicto que ahí se formaliza), y es
