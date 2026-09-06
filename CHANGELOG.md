@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-09-07
+
+### Changed
+
+- **M-904** (Fase 10) — Semántica formal de staleness en `/commit`: git-based. La evidencia (`verify-results.json` / `adversarial-result.json`) es **stale** solo si existe un commit posterior a su `timestamp` que toca rutas de código (`src/`, `app/`, `tests/`, `ai-specs/`, `.opencode/`); commits que solo tocan `docs/`/`openspec/` ya no ensucian la evidencia. Sigue siendo **warn-only**: el warning ahora declara la regla aplicada y sugiere re-ejecutar la herramienta, y nunca bloquea por sí solo. Prevalencia **last-write-wins** documentada en los skills `commit`, `verify` y `code-auditing`: cada corrida sobrescribe el archivo de estado y el gate lee siempre la más reciente (`ai-specs/skills/commit/SKILL.md`).
+- **M-905** (Fase 10) — Gramática formal del trailer `Gate-Bypass` fijada en el Step 6 del skill `commit`: EBNF con orden fijo (`verify=` antes de `adversarial=`), separador exacto `; `, enums cerrados (`PASS|PARTIAL|FAIL|missing` / `SHIP|NO-SHIP|missing`) y regex canónica de parseo `^Gate-Bypass: --force \(verify=(PASS|PARTIAL|FAIL|missing); adversarial=(SHIP|NO-SHIP|missing)\)$` para tooling externo.
+
+### Added
+
+- El guard `tests/commit-gate-test.sh` pasa de 25 a 35 asserts: nuevos `[SC-001]`..`[SC-005]` que validan la semántica de staleness (rutas de código, warn-only con mensaje preciso, last-write-wins en los tres skills) y la gramática del trailer (la regex canónica matchea el ejemplo documentado y rechaza orden invertido y valores fuera del enum).
+
+### Docs
+
+- Seguimiento del plan: M-904 y M-905 marcados `[x]` con fila v3.8 en el historial (`PLAN_MEJORAS_SPECBOOT.md`); delta `## MODIFIED`/`## ADDED` consolidado en la spec `commit-gates`.
+
 ## [0.6.1] - 2026-09-06
 
 ### Fixed
