@@ -1,8 +1,7 @@
-# commit-gates Specification
+# commit-gates Specification — Delta (commit-gate-semantics)
 
-## Purpose
-TBD - created by archiving change enforce-commit-gates. Update Purpose after archive.
-## Requirements
+## MODIFIED Requirements
+
 ### Requirement: commit skill MUST enforce hard evidence gates before committing
 The `commit` skill SHALL treat `openspec/state/verify-results.json` and `openspec/state/adversarial-result.json` as hard gates and SHALL proceed only when verify reports `status: PASS` and adversarial reports `verdict: SHIP`, both with a `change` field matching the reference change — the active change, or, when committing after `/archive`, the change just archived (matched by its derived name, tolerating the `YYYY-MM-DD-` date prefix the CLI adds to the archive folder). With `PARTIAL`, `FAIL`, `NO-SHIP`, missing, invalid or foreign evidence it SHALL block and offer to run the missing tool, abort, or use `--force`; it SHALL NOT continue without an explicit user decision and SHALL NOT fall back to blind questions. Reading SHALL be token-light (summary fields only; `node -e`, never `jq`).
 
@@ -66,14 +65,7 @@ The field order is fixed (`verify` before `adversarial`), the separator is exact
 - **THEN** each commit message ends with a `Gate-Bypass` trailer conforming to the EBNF grammar (fixed order, closed enums) and matching the canonical regex
 - **AND** normal commits with passing gates carry no `Gate-Bypass` trailer
 
-### Requirement: Commit gate descriptions MUST stay synchronized with the contract
-Descriptions of `/commit` in `AGENTS.md` (§5.2), `.opencode/commands/commit.md`, the consumer note in `ai-specs/skills/verify/SKILL.md` and the hard-gate references in `ai-specs/skills/archive/SKILL.md` and `ai-specs/skills/code-auditing/SKILL.md` SHALL declare the hard gate contract (verify `PASS` + adversarial `SHIP`, `--force` registered) and SHALL NOT describe the hard gate as future work (M-403 lesson: documented role and actual contract never diverge).
-
-#### Scenario: No stale "future gate" wording remains
-- **GIVEN** the framework documentation after this change
-- **WHEN** the `/commit` descriptions are reviewed (including by the self-test)
-- **THEN** `AGENTS.md` §5.2 declares the hard evidence gates and the `--force` escape hatch
-- **AND** no file describes the commit hard gate as "M-901, futuro"
+## ADDED Requirements
 
 ### Requirement: Evidence state files follow last-write-wins
 Every `/verify` run SHALL overwrite `openspec/state/verify-results.json` and every `/adversarial-review` run SHALL overwrite `openspec/state/adversarial-result.json`; the `commit` gate SHALL always read the most recent run. This last-write-wins rule SHALL be documented in the `commit`, `verify` and `code-auditing` skills.
@@ -83,4 +75,3 @@ Every `/verify` run SHALL overwrite `openspec/state/verify-results.json` and eve
 - **WHEN** each run persists its state file
 - **THEN** each run overwrites the previous file and the `/commit` gate reads the most recent run
 - **AND** the rule is documented in all three skills
-

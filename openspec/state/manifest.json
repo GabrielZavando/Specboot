@@ -234,6 +234,24 @@
         "timestamp": "2026-09-06T15:29:43Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "commit-gate-semantics",
+      "ticket_id": "M-904-M-905",
+      "archived_at": "2026-09-06T18:23:49.211Z",
+      "specs_applied": [
+        "commit-gates/spec.md"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-06T17:27:21.283Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-06T17:52:28Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }
