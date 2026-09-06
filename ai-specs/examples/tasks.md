@@ -9,6 +9,34 @@
 
 ---
 
+## Mandatory Steps
+
+> Injected by `plan-change` from `docs/openspec-tasks-mandatory-steps.md` (single
+> source of truth, read at generation time). This checklist is **mandatory, not
+> suggested**, and applies to every implementation task executed via `/apply`.
+
+**Pre-implementation**
+
+- [ ] Active branch follows the project's current convention (e.g. `feature/*`,
+  `fix/*`); never work directly on the main branch
+- [ ] Clean git state: no uncommitted (or staged) changes before starting
+
+**During implementation**
+
+- [ ] New test fails before implementing (RED): write the `SC-NNN` scenario test
+  and watch it fail before writing production code
+- [ ] Module unit tests: run the touched module's tests while iterating
+  (RED-GREEN-REFACTOR), not only at the end
+
+**Post-implementation**
+
+- [ ] Run `verify`: change verification produces persistent evidence
+  (`openspec/state/verify-results.json`)
+- [ ] Run `adversarial-review`: the adversarial audit produces a persistent
+  verdict (`openspec/state/adversarial-result.json`)
+
+---
+
 ## Task Format
 
 Each task follows this structure:

@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-09-05
+
+### Added
+
+- **M-601** (Fase 6) — Mandatory steps: nuevo doc intocable `docs/openspec-tasks-mandatory-steps.md`, fuente única de verdad del checklist obligatorio de implementación (pre-implementación: rama activa según convención + estado git limpio; durante: test nuevo que falla antes de implementar (RED) + tests unitarios del módulo; post: ejecutar `verify` + ejecutar `adversarial-review`). El skill `plan-change` lo inyecta como sección `## Mandatory Steps` en todo `tasks.md` generado (leído en el momento de generación, sin copia hardcodeada en el skill) con check en su Step 6 de validación; referencia en `AGENTS.md` §2.3; distribución framework sincronizada en 5 puntos (`FRAMEWORK_ITEMS` + `UPDATE_ITEMS` en `specboot.sh`, allowlist `files` de `package.json`, árbol de `docs/docs-standard.md`, skeleton de `docs/framework-contract.md`); guard `tests/mandatory-steps-test.sh` (30 asserts `[SC-001]`..`[SC-007]`); ejemplo `ai-specs/examples/tasks.md` con la sección (`PLAN_MEJORAS_SPECBOOT.md` §Fase 6).
+
+### Fixed
+
+- **Bug latente de `specboot update`** — `replace_framework_files` salteaba TODOS los ítems `docs/` de `UPDATE_ITEMS[]` (patrón `docs/*` en el `case`): `specboot update` nunca reemplazó los 5 docs estándar, contradiciendo la spec archivada `specboot-update` ("MUST overwrite ... the 5 framework docs"). Fix: el `case` solo saltea árboles enteros (`docs`, `.github`) y los docs individuales se reemplazan; el doc de M-601 se agrega a `UPDATE_ITEMS` (conjunto de 6 docs intocables); assert de regresión `[SC-008]` en `tests/specboot-update-test.sh`; `allowedDocs` 5→6 en `tests/package-files-test.sh`; spec `specboot-update` enmendada a 6 docs vía delta `## MODIFIED` del change `inject-mandatory-steps` (`specboot.sh`, `tests/specboot-update-test.sh`, `tests/package-files-test.sh`).
+
+### Changed
+
+- Seguimiento del plan: M-601 marcado `[x]` con fila v3.6 en el historial; nueva sección **FASE 10 — Follow-ups de auditoría (patrón M-403)** con los tickets pendientes M-904 (W1 semántica de staleness), M-905 (W2 vocabulario del trailer `Gate-Bypass`), M-906 (W3 reconciliar SemVer declarado de M-901) y M-907 (W4 frase residual en spec archivada) (`PLAN_MEJORAS_SPECBOOT.md`).
+
 ## [0.5.0] - 2026-09-05
 
 ### Breaking changes

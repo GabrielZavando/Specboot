@@ -66,6 +66,17 @@ Loading rule:
 > `{file:...}` syntax from this bridge: `check-refs.sh` would fail on missing
 > files. Resolve them as **conditional prose**, not as includes.
 
+### 2.3 Mandatory steps (inyección en `tasks.md`)
+
+`docs/openspec-tasks-mandatory-steps.md` es contenido del framework (llega a
+todo proyecto vía `specboot init`/`update`) que el skill `plan-change`
+**inyecta como sección `## Mandatory Steps` en todo `tasks.md` generado**
+(leyéndolo en el momento de generación). No es carga por tag: su checklist
+obligatoria (pre-implementación, durante y post con `verify` +
+`adversarial-review`) aplica a toda tarea de implementación ejecutada vía
+`/apply` y viaja dentro del artefacto que el agente `build` ejecuta. Ese
+documento es la fuente única de verdad: no duplicar su contenido aquí.
+
 ## 3. Herramientas
 
 The integrity of this bridge (and the project as a whole) is enforced by two

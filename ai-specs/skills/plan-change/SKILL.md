@@ -124,7 +124,14 @@ Create the folder `openspec/changes/{derived-name}/` and write, enriched with th
        `make solid-lint` (see TICKET-C). If `.specboot.json` is absent, default to `src/`.
      - If the enriched artifact declares a Diseño de Clases/Componentes, tasks must map to those classes/components — `/apply` will validate the implementation against that design.
      - **Suggested Path**: `<service>/...` (implementation file; verify reads only this; replace `<service>` with each entry of `.specboot.json` `services`, or `src` by default) — **must be present in every task or marked "no aplica" explicitly**.
-     - **Test Path**: `<service>/tests/...` or `tests/...` (test file; verify looks for matches here) — **must be present in every task or marked "no aplica" explicitly**.
+      - **Test Path**: `<service>/tests/...` or `tests/...` (test file; verify looks for matches here) — **must be present in every task or marked "no aplica" explicitly**.
+      - **Mandatory Steps**: inject a `## Mandatory Steps` section into every
+        generated `tasks.md`, copying its content from
+        `docs/openspec-tasks-mandatory-steps.md` **read at generation time** —
+        never hardcode the steps into this skill (that document is the single
+        source of truth and may evolve). The injected checklist is mandatory,
+        not suggested; it covers the three phases defined in the document
+        (pre-implementation, during, post).
 
 ### Step 6 — Validate
 
@@ -137,6 +144,7 @@ Checklist (apply before reporting):
 - [ ] Every task has subtasks, priority, layer, and estimate
 - [ ] **Every task has `Suggested Path` or marked `no aplica` explicitly**
 - [ ] **Every task has `Test Path` or marked `no aplica` explicitly**
+- [ ] **tasks.md includes the `## Mandatory Steps` section** (injected per Step 5 from `docs/openspec-tasks-mandatory-steps.md`)
 - [ ] **Validación de diseño completada (Step 4½)**
 - [ ] **No hay conflictos críticos sin reportar**
 - [ ] Entities mentioned exist in `docs/data-model/data-model.md` (if loaded)
