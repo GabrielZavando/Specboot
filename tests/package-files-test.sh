@@ -23,7 +23,8 @@ process.stdin.on("data", d => (s += d)).on("end", () => {
     "docs/framework-contract.md",
     "docs/docs-standard.md",
     "docs/specboot-json-standard.md",
-    "docs/versioning-standard.md"
+    "docs/versioning-standard.md",
+    "docs/openspec-tasks-mandatory-steps.md"
   ]);
   const requiredDirPrefixes = [
     ".opencode/commands/",
