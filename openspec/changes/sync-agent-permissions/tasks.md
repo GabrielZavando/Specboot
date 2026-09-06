@@ -2,7 +2,7 @@
 
 ## 1. Guard de sincronización (TDD primero)
 
-- [ ] 1.1 Crear `tests/agent-permissions-test.sh` (RED): asserts con prefijo
+- [x] 1.1 Crear `tests/agent-permissions-test.sh` (RED): asserts con prefijo
       `[SC-NNN]` que validen el contrato de sincronía rol↔block —
       `[SC-001]` `"pytest *": allow` presente en `.opencode/agents/verify.md`,
       `[SC-002]` `npm run test` documentado en `ai-specs/agents/verify-agent.md`,
