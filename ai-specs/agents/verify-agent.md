@@ -14,7 +14,7 @@ El flujo completo de `/verify` (trazabilidad, contexto selectivo, detección de 
 - **Bash permitido** (lectura y ejecución de tests, más la escritura acotada de evidencia):
   - `openspec *` — validación de artefactos.
   - `git diff`, `git status`, `git log`, `git merge-base` — solo lectura.
-  - `npm test`, `npx vitest`, `npx jest` — tests Node.
+  - `npm test`, `npm run test`, `npx vitest`, `npx jest` — tests Node.
   - `pytest` — tests Python.
   - `rg`, `ls`, `cat` — búsqueda y lectura (la escritura de la evidencia se hace vía redirección de `cat`).
   - `mkdir -p openspec/*` — crear el directorio de estado para la evidencia (Step 8).

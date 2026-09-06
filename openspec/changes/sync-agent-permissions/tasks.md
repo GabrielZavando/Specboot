@@ -39,7 +39,7 @@
   - **Suggested Path**: .opencode/agents/verify.md
   - **Test Path**: tests/agent-permissions-test.sh
 
-- [ ] 2.2 Documentar `npm run test` en la lista "Bash permitido" de
+- [x] 2.2 Documentar `npm run test` en la lista "Bash permitido" de
       `ai-specs/agents/verify-agent.md`, junto a `npm test` (GREEN `[SC-002]`).
   - **Priority**: Medium
   - **Layer**: docs
