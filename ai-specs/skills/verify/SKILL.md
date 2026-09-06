@@ -131,8 +131,10 @@ Nada de narrativa larga, párrafos explicativos o metadata de debugging.
 
 Después de **cada** ejecución (incluyendo PASS, PARTIAL y FAIL), escribir
 `openspec/state/verify-results.json` (crear el directorio con `mkdir -p` si falta).
-El archivo queda **trackeado en git** (no gitignore) y refleja la última ejecución
-(*last-run-wins*). El esquema es versionado (`schema_version: 1`); el ejemplo
+El archivo queda **trackeado en git** (no gitignore). Prevalencia
+**last-write-wins**: cada ejecución **sobrescribe** el archivo anterior, así que el
+documento siempre refleja la **corrida más reciente** — el gate de `/commit` lee
+solo esa corrida (ver `commit/SKILL.md`, Step 2). El esquema es versionado (`schema_version: 1`); el ejemplo
 canónico vive en `ai-specs/examples/verify-results-example.json` y su contrato se
 autovalida con `bash tests/verify-state-test.sh`.
 

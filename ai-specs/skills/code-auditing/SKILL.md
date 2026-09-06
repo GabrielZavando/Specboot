@@ -104,8 +104,10 @@ discarded_findings:
 ## Paso 7 — Persistencia del veredicto
 
 Escribir `openspec/state/adversarial-result.json` al finalizar **cada** auditoría
-— incluidos veredictos NO-SHIP; *last-run-wins* (cada corrida sobrescribe el
-archivo). El esquema es versionado (`schema_version: 1`); el ejemplo canónico es
+— incluidos veredictos NO-SHIP. Prevalencia **last-write-wins**: cada corrida
+**sobrescribe** el archivo anterior, así que el archivo siempre refleja la
+**corrida más reciente** — el gate de `/commit` lee solo esa corrida (ver
+`commit/SKILL.md`, Step 2). El esquema es versionado (`schema_version: 1`); el ejemplo canónico es
 `ai-specs/examples/adversarial-results-example.json`, autovalidado por
 `tests/adversarial-state-test.sh`:
 

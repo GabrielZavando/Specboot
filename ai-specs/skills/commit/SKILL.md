@@ -45,13 +45,21 @@ puntuales: `node -e "const d=require('./openspec/state/verify-results.json');con
    tras `/archive`, el change recién archivado por su nombre derivado, tolerando
    el prefijo de fecha del CLI). Si no se puede resolver un change de referencia,
    ninguna evidencia es utilizable (el match falla por definición).
-2. **Chequeo de staleness (warn-only)**: si el `timestamp` de la evidencia es
-   anterior a la fecha del último commit (`git log -1 --format=%cI`), imprimir
-   `⚠️ Evidencia posiblemente desactualizada (archivo: {timestamp})` y continuar
-   — el staleness no bloquea por sí solo; lo que bloquea es la evidencia
-   negativa o su ausencia.
+2. **Chequeo de staleness (warn-only, git-based)**: la evidencia es **stale**
+   si existe al menos un commit posterior a su `timestamp` que toca alguna de
+   estas **rutas de código**: `src/`, `app/`, `tests/`, `ai-specs/`, `.opencode/`.
+   Los commits que solo tocan `docs/`, `openspec/` u otras rutas no-code
+   **no ensucian** la evidencia. Si hay staleness, imprimir
+   `⚠️ Evidencia posiblemente desactualizada: existe un commit de código posterior al timestamp de la evidencia ({timestamp}) — considera re-ejecutar la herramienta`
+   y continuar — el staleness no bloquea por sí solo; lo que bloquea es la
+   evidencia negativa o su ausencia.
 3. La auditoría adversarial **deja de ser opcional** en `/commit`: sin veredicto
    utilizable no hay commit (salvo `--force` registrado).
+4. **Prevalencia last-write-wins**: cada ejecución de `/verify` **sobrescribe**
+   `openspec/state/verify-results.json` y cada ejecución de
+   `/adversarial-review` **sobrescribe** `openspec/state/adversarial-result.json`;
+   este gateway siempre lee la **corrida más reciente**. No hay historial: la
+   corrida previa a una re-ejecución deja de existir como evidencia.
 
 ### 2a — Gateway de verify
 
@@ -158,6 +166,22 @@ Incluir `Closes #{TICKET-ID}` solo en el commit principal (no en todos).
   real observado en Step 2, ej.
   `Gate-Bypass: --force (verify=PARTIAL; adversarial=missing)`. Con gates
   verdes el trailer **no se emite**.
+
+  **Gramática formal (EBNF)** — el trailer es un contrato estable para
+  tooling externo; el orden de los campos es fijo (`verify` antes de
+  `adversarial`), el separador es exactamente `; ` y los enums son cerrados:
+
+  ```
+  gate-bypass       = "Gate-Bypass: --force (" verify-state "; " adversarial-state ")"
+  verify-state      = "verify=" ("PASS" | "PARTIAL" | "FAIL" | "missing")
+  adversarial-state = "adversarial=" ("SHIP" | "NO-SHIP" | "missing")
+  ```
+
+  **Regex canónica de parseo** (ancla de línea completa):
+
+  ```
+  ^Gate-Bypass: --force \(verify=(PASS|PARTIAL|FAIL|missing); adversarial=(SHIP|NO-SHIP|missing)\)$
+  ```
 
 Si el usuario no aprueba algún grupo → omitirlo y seguir con el resto.
 
