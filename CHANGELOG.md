@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-09-06
+
+### Fixed
+
+- **M-403** (Fase 4) — Sincronización de permisos de agentes: el permission block de `.opencode/agents/verify.md` incluye `"pytest *": allow` (el rol documentado lo prometía; el Step 5b del skill `verify` ya funciona en proyectos Python), y `ai-specs/agents/verify-agent.md` documenta `npm run test` (patrón del block que el rol no mencionaba). El permission block de `.opencode/agents/archive.md` cubre los comandos que su skill realmente ejecuta (Steps 2/3/5: `git status *`, `git diff`, `git log`, `node -e *`), y acota `rm` al cleanup documentado del Step 7 (`rm openspec/tickets/*`, en reemplazo de `rm -rf openspec/changes/*` — más amplio que lo documentado y que alcanzaba además `openspec/archive/`); el rol `archive-agent.md` deja de listar `git commit` en "Bash permitido" (la regla "Commit ownership" y el Step 6 lo prohíben) y documenta `node -e`. Criterio de resolución fijado en la nueva spec `agent-permissions`: el SKILL.md de cada skill es la fuente de verdad del comportamiento.
+
+### Added
+
+- Guard `tests/agent-permissions-test.sh` (25 asserts `[SC-001]`..`[SC-010]`) que protege la sincronía bidireccional rol↔permission block de los agentes restrictivos (`verify`, `reviewer`, `archive`, `plan`) y la preservación del fallback `"*": deny`.
+
 ## [0.6.0] - 2026-09-05
 
 ### Added

@@ -86,7 +86,7 @@
 
 ## 5. Cierre del change
 
-- [ ] 5.1 Bump de versión `0.6.0` → `0.6.1` y entrada `## [0.6.1]` en
+- [x] 5.1 Bump de versión `0.6.0` → `0.6.1` y entrada `## [0.6.1]` en
       CHANGELOG (patch: sincronización de permisos/documentación de agentes,
       sin breaking changes).
   - **Priority**: Medium
