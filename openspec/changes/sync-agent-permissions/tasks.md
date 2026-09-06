@@ -30,7 +30,7 @@
 
 ## 2. Fix verify (core de M-403)
 
-- [ ] 2.1 Añadir `"pytest *": allow` al permission block de
+- [x] 2.1 Añadir `"pytest *": allow` al permission block de
       `.opencode/agents/verify.md`, antes de la línea `"*": deny` (GREEN
       `[SC-001]`).
   - **Priority**: High
