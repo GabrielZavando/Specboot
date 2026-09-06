@@ -340,6 +340,75 @@ else
   bad "[SC-011] commit command description declares the gates"
 fi
 
+# --- E. Staleness semantics + Gate-Bypass grammar (M-904/M-905, change commit-gate-semantics) ---
+echo "Staleness semantics and Gate-Bypass grammar (SC-001..SC-005):"
+
+# SC-001: staleness is git-based, code-paths only
+if has_all "$SKILL" 'rutas de código' 'src/' 'app/' 'tests/' 'ai-specs/' '.opencode/'; then
+  ok "[SC-001] staleness defined by commits touching code paths"
+else
+  bad "[SC-001] staleness defined by commits touching code paths"
+fi
+
+if has_all "$SKILL" 'solo tocan' 'docs/' 'openspec/' 'no ensucian'; then
+  ok "[SC-001] docs/openspec-only commits do not stale the evidence"
+else
+  bad "[SC-001] docs/openspec-only commits do not stale the evidence"
+fi
+
+# SC-002: warn-only with a precise message declaring the rule
+if has_all "$SKILL" 'warn-only' 'commit de código posterior'; then
+  ok "[SC-002] staleness stays warn-only with a precise, rule-declaring warning"
+else
+  bad "[SC-002] staleness stays warn-only with a precise, rule-declaring warning"
+fi
+
+# SC-003: last-write-wins documented in the three skills
+LWW_FAIL=0
+for f in "$SKILL" "$ROOT/ai-specs/skills/verify/SKILL.md" "$ROOT/ai-specs/skills/code-auditing/SKILL.md"; do
+  if ! has_all "$f" 'sobrescribe' 'corrida más reciente'; then
+    LWW_FAIL=1
+  fi
+done
+if [ "$LWW_FAIL" -eq 0 ]; then
+  ok "[SC-003] last-write-wins documented in commit, verify and code-auditing skills"
+else
+  bad "[SC-003] last-write-wins documented in commit, verify and code-auditing skills"
+fi
+
+# SC-004: EBNF grammar + canonical regex documented in the commit skill
+if has_all "$SKILL" '"Gate-Bypass: --force ("' 'verify=" ("PASS" | "PARTIAL" | "FAIL" | "missing")' 'adversarial=" ("SHIP" | "NO-SHIP" | "missing")'; then
+  ok "[SC-004] Gate-Bypass EBNF grammar with closed enums documented"
+else
+  bad "[SC-004] Gate-Bypass EBNF grammar with closed enums documented"
+fi
+
+# SC-005: canonical regex documented AND functionally correct
+TRAILER_REGEX='^Gate-Bypass: --force \(verify=(PASS|PARTIAL|FAIL|missing); adversarial=(SHIP|NO-SHIP|missing)\)$'
+if grep -qF -- 'verify=(PASS|PARTIAL|FAIL|missing); adversarial=(SHIP|NO-SHIP|missing)' "$SKILL"; then
+  ok "[SC-005] canonical parsing regex documented in the commit skill"
+else
+  bad "[SC-005] canonical parsing regex documented in the commit skill"
+fi
+
+if echo 'Gate-Bypass: --force (verify=PARTIAL; adversarial=missing)' | grep -Eq "$TRAILER_REGEX"; then
+  ok "[SC-005] canonical regex matches the skill example"
+else
+  bad "[SC-005] canonical regex matches the skill example"
+fi
+
+if echo 'Gate-Bypass: --force (adversarial=missing; verify=PARTIAL)' | grep -Eq "$TRAILER_REGEX"; then
+  bad "[SC-005] canonical regex rejects inverted field order"
+else
+  ok "[SC-005] canonical regex rejects inverted field order"
+fi
+
+if echo 'Gate-Bypass: --force (verify=STALE; adversarial=SHIP)' | grep -Eq "$TRAILER_REGEX"; then
+  bad "[SC-005] canonical regex rejects out-of-enum values"
+else
+  ok "[SC-005] canonical regex rejects out-of-enum values"
+fi
+
 # --- Summary ---
 echo ""
 echo "Commit gate contract: $PASS passed, $FAIL failed"
