@@ -1,23 +1,19 @@
 {
   "schema_version": 1,
-  "change": "enforce-commit-gates",
-  "ticket_id": "M-901-903",
+  "change": "inject-mandatory-steps",
+  "ticket_id": "M-601",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-05T21:34:36Z",
-  "tasks": { "total": 13, "passed": 13, "failed": 0, "untested": 0 },
+  "timestamp": "2026-09-05T23:45:00Z",
+  "tasks": { "total": 9, "passed": 9, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-001", "test": "[SC-001] Step 2 declares the hard evidence gateway (gates duros)", "status": "PASS" },
-    { "id": "SC-002", "test": "[SC-002] blocks on PARTIAL/FAIL offering re-run, abort or --force", "status": "PASS" },
-    { "id": "SC-003", "test": "[SC-003] never falls back to the blind pre-M-401 question", "status": "PASS" },
-    { "id": "SC-004", "test": "[SC-004] blocks on NO-SHIP offering re-audit, abort or --force", "status": "PASS" },
-    { "id": "SC-005", "test": "[SC-005] adversarial absence/foreignness blocks (no longer optional)", "status": "PASS" },
-    { "id": "SC-006", "test": "[SC-006] registers the bypass with the Gate-Bypass trailer", "status": "PASS" },
-    { "id": "SC-007", "test": "[SC-007] staleness check is warn-only", "status": "PASS" },
-    { "id": "SC-008", "test": "[SC-008] ci.yml still declares the validate job (framework self-check)", "status": "PASS" },
-    { "id": "SC-009", "test": "[SC-009] blocking rule: deploy stops before the version bump when an item fails", "status": "PASS" },
-    { "id": "SC-010", "test": "[SC-010] template Pre-deploy Checklist includes rollback procedure defined", "status": "PASS" },
-    { "id": "SC-011", "test": "[SC-011] AGENTS.md /commit row declares hard gates + --force", "status": "PASS" },
-    { "id": "SC-012", "test": "[SC-012] post-archive commit resolves the reference change from the just-archived change", "status": "PASS" }
+    { "id": "SC-001", "test": "[SC-001] document exists", "status": "PASS" },
+    { "id": "SC-002", "test": "[SC-002] skill references the mandatory-steps document", "status": "PASS" },
+    { "id": "SC-003", "test": "[SC-003] Step 6 checklist validates the injected section", "status": "PASS" },
+    { "id": "SC-004", "test": "[SC-004] bridge §2 references the mandatory-steps document", "status": "PASS" },
+    { "id": "SC-005", "test": "[SC-005] FRAMEWORK_ITEMS includes the document (init/update injection)", "status": "PASS" },
+    { "id": "SC-006", "test": "[SC-006] M-601 marked completed", "status": "PASS" },
+    { "id": "SC-007", "test": "[SC-007] package.json declares 0.6.0", "status": "PASS" },
+    { "id": "SC-008", "test": "[SC-008] mandatory-steps doc replaced", "status": "PASS" }
   ]
 }

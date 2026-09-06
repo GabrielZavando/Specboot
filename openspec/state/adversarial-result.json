@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "change": "enforce-commit-gates",
-  "ticket_id": "M-901-903",
+  "change": "inject-mandatory-steps",
+  "ticket_id": "M-601",
   "verdict": "SHIP",
-  "confidence": 0.82,
-  "timestamp": "2026-09-05T22:10:00Z",
-  "findings": { "total": 8, "critical": 0, "warnings": 4, "info": 4, "discarded": 2 }
+  "confidence": 0.9,
+  "timestamp": "2026-09-06T00:15:00Z",
+  "findings": { "total": 3, "critical": 0, "warnings": 1, "info": 2, "discarded": 2 }
 }
