@@ -60,7 +60,7 @@
   - **Suggested Path**: .opencode/agents/archive.md
   - **Test Path**: tests/agent-permissions-test.sh
 
-- [ ] 3.2 Corregir `ai-specs/agents/archive-agent.md` (GREEN `[SC-005]`):
+- [x] 3.2 Corregir `ai-specs/agents/archive-agent.md` (GREEN `[SC-005]`):
       eliminar `git commit` de la lista "Bash permitido" (la regla "Commit
       ownership" y el Step 6 del skill lo prohíben), documentar `node -e`
       (lecturas token-light de la evidencia del Step 5).
