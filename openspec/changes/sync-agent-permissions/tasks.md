@@ -72,7 +72,7 @@
 
 ## 4. Auditoría de sincronía reviewer/plan
 
-- [ ] 4.1 Verificar vía guard que `.opencode/agents/reviewer.md` ↔
+- [x] 4.1 Verificar vía guard que `.opencode/agents/reviewer.md` ↔
       `ai-specs/skills/code-auditing/SKILL.md` y `.opencode/agents/plan.md` ↔
       `ai-specs/agents/plan-agent.md` están sincronizados (GREEN `[SC-006]`,
       `[SC-007]`, `[SC-008]`). Estado esperado: ya sincronizados (solo asserts).
