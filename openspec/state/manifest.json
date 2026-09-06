@@ -216,6 +216,24 @@
         "timestamp": "2026-09-06T00:15:00Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "sync-agent-permissions",
+      "ticket_id": "M-403",
+      "archived_at": "2026-09-06T15:35:00Z",
+      "specs_applied": [
+        "agent-permissions"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-06T15:11:08Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-06T15:29:43Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }

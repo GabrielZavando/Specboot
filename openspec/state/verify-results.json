@@ -1,19 +1,21 @@
 {
   "schema_version": 1,
-  "change": "inject-mandatory-steps",
-  "ticket_id": "M-601",
+  "change": "sync-agent-permissions",
+  "ticket_id": "M-403",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-05T23:45:00Z",
-  "tasks": { "total": 9, "passed": 9, "failed": 0, "untested": 0 },
+  "timestamp": "2026-09-06T15:11:08Z",
+  "tasks": { "total": 8, "passed": 8, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-001", "test": "[SC-001] document exists", "status": "PASS" },
-    { "id": "SC-002", "test": "[SC-002] skill references the mandatory-steps document", "status": "PASS" },
-    { "id": "SC-003", "test": "[SC-003] Step 6 checklist validates the injected section", "status": "PASS" },
-    { "id": "SC-004", "test": "[SC-004] bridge §2 references the mandatory-steps document", "status": "PASS" },
-    { "id": "SC-005", "test": "[SC-005] FRAMEWORK_ITEMS includes the document (init/update injection)", "status": "PASS" },
-    { "id": "SC-006", "test": "[SC-006] M-601 marked completed", "status": "PASS" },
-    { "id": "SC-007", "test": "[SC-007] package.json declares 0.6.0", "status": "PASS" },
-    { "id": "SC-008", "test": "[SC-008] mandatory-steps doc replaced", "status": "PASS" }
+    { "id": "SC-001", "test": "[SC-001] verify block allows pytest (role documents it)", "status": "PASS" },
+    { "id": "SC-002", "test": "[SC-002] verify role documents npm run test (block allows it)", "status": "PASS" },
+    { "id": "SC-003", "test": "[SC-003] archive block allows git status/diff/log/node -e (skill steps)", "status": "PASS" },
+    { "id": "SC-004", "test": "[SC-004] archive rm scoped to openspec/tickets cleanup", "status": "PASS" },
+    { "id": "SC-005", "test": "[SC-005] archive role no longer lists git commit and documents node -e", "status": "PASS" },
+    { "id": "SC-006", "test": "[SC-006] reviewer in sync with code-auditing skill", "status": "PASS" },
+    { "id": "SC-007", "test": "[SC-007] plan agent in sync with its role", "status": "PASS" },
+    { "id": "SC-008", "test": "[SC-008] deny fallback preserved in restrictive blocks", "status": "PASS" },
+    { "id": "SC-009", "test": "tests/agent-permissions-test.sh (25 asserts) executes green", "status": "PASS" },
+    { "id": "SC-010", "test": "[SC-010] M-403 marked completed in PLAN_MEJORAS_SPECBOOT.md (v3.7)", "status": "PASS" }
   ]
 }
