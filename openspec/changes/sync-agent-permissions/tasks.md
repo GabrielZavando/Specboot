@@ -49,7 +49,7 @@
 
 ## 3. Fix archive (brechas de la auditoría de planificación)
 
-- [ ] 3.1 Corregir el permission block de `.opencode/agents/archive.md`
+- [x] 3.1 Corregir el permission block de `.opencode/agents/archive.md`
       (GREEN `[SC-003]`, `[SC-004]`): añadir `"git status *": allow`,
       `"git diff": allow`, `"git diff *": allow`, `"git log": allow`,
       `"git log *": allow` y `"node -e *": allow`; reemplazar
