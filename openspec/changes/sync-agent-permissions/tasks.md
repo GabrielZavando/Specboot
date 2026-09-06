@@ -95,7 +95,7 @@
   - **Suggested Path**: package.json
   - **Test Path**: no aplica
 
-- [ ] 5.2 Marcar `[x]` M-403 en `PLAN_MEJORAS_SPECBOOT.md` y completar la fila
+- [x] 5.2 Marcar `[x]` M-403 en `PLAN_MEJORAS_SPECBOOT.md` y completar la fila
       de historial v3.7 con lo entregado por este change (GREEN `[SC-010]`).
   - **Priority**: Medium
   - **Layer**: docs

@@ -14,7 +14,8 @@
 #     framework-contract.md init skeleton, and it is NOT in REQUIRED_FILES
 #     (SC-005)
 #   - PLAN_MEJORAS_SPECBOOT.md marks M-601 [x], adds history row v3.6 and
-#     registers Fase 10 follow-ups M-904..M-907; M-403 stays pending (SC-006)
+#     registers Fase 10 follow-ups M-904..M-907; M-403 now marked completed
+#     (sync-agent-permissions) (SC-006)
 #   - Version 0.6.1 in package.json/.specboot.json (migrated pin: 0.6.0→0.6.1
 #     in the M-403 bump) and historical CHANGELOG entry ## [0.6.0] without
 #     Breaking changes (SC-007)
@@ -150,8 +151,8 @@ check SC-006 "history row v3.6 present" \
   grep -qF -- "| v3.6 |" "$PLAN"
 check SC-006 "Fase 10 registers follow-ups M-904..M-907" \
   has_all "$PLAN" "FASE 10 — Follow-ups de auditoría" "M-904" "M-905" "M-906" "M-907"
-check SC-006 "M-403 remains pending (unmarked)" \
-  grep -q "^## M-403" "$PLAN"
+check SC-006 "M-403 marked completed (sync-agent-permissions)" \
+  grep -qF -- "## [x] M-403" "$PLAN"
 
 # --- SC-007: version pins (0.6.1 after M-403 bump) + historical 0.6.0 notes ---
 echo "Version pins (SC-007):"

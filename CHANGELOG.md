@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Guard `tests/agent-permissions-test.sh` (25 asserts `[SC-001]`..`[SC-010]`) que protege la sincronía bidireccional rol↔permission block de los agentes restrictivos (`verify`, `reviewer`, `archive`, `plan`) y la preservación del fallback `"*": deny`.
 
+### Changed
+
+- Seguimiento del plan: M-403 marcado `[x]` con fila v3.7 en el historial (`PLAN_MEJORAS_SPECBOOT.md`).
+
 ## [0.6.0] - 2026-09-05
 
 ### Added
