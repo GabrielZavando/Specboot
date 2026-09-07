@@ -7,6 +7,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.4] - 2026-09-07
+
+### Fixed
+
+- **Consumer-mode CI (E401)** — el `ci.yml` distribuido (que `specboot update` reemplaza
+  archivo por archivo) no incluía el wiring de autenticación de GitHub Packages que el
+  propio README documenta (Vía A): faltaban `permissions: packages: read`,
+  `env: NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}` y
+  `registry-url: https://npm.pkg.github.com` en ambos jobs (`validate` + `project-ci`).
+  Todo consumidor que hiciera `specboot update` desde un `ci.yml` funcional quedaba con
+  CI roto (E401 en `npm install` sobre `npm.pkg.github.com`) — regresión recurrente,
+  porque cada update reinstalaba la versión rota. Fix: el wiring viaja dentro del
+  `ci.yml` intocable (inerte en dogfooding: el repo no instala dependencias de GitHub
+  Packages y su `GITHUB_TOKEN` puede leer sus propios paquetes; cada `specboot update`
+  reinstala el wiring correcto). Guard: `tests/consumer-ci-auth-test.sh` (10 asserts,
+  `[SC-004]` + contra-regresiones de jobs/`make ci`/v5/node 24/`hashFiles`).
+- **Consumer-mode `--version`** — `specboot.sh --version` devolvía en consumidores la
+  versión del **proyecto** (leía el `package.json` raíz del CWD) en vez de la del
+  framework, disparando el error duro irónico de `specboot.sh --ci`
+  ("frameworkVersion (0.6.3) es mayor que la versión instalada (0.1.0)") justo tras un
+  `specboot update` exitoso. Fix en el origen (contrato público `--version`): nuevo
+  helper `resolve_framework_version()` con precedencia consumer-safe
+  (`node_modules/@gabrielzavando/specboot` → `$SCRIPT_DIR`; inofensivo en dogfooding,
+  sin self-dependency), compartido por `show_version()` y por
+  `create_initial_specboot_json()` — esta última también escribía la versión del
+  proyecto como `frameworkVersion` en el `init` de un consumidor (tercera manifestación
+  de la misma causa raíz). Sub-bug incluido: `get_framework_version()` normaliza rutas
+  bare (`require('node_modules/...')` se interpretaba como bare specifier y fallaba en
+  silencio bajo `2>/dev/null`). Guard: `tests/version-resolution-test.sh` (13 asserts,
+  SC-001..SC-003 y SC-005..SC-007, con fixture consumer-like).
+- **`validate-specboot.sh`** — los mensajes de mismatch de la comparación de versiones
+  (error `declared > installed`, exit 1; warning `declared < installed`, exit 0)
+  incluyen ahora la sugerencia de verificar la instalación
+  (`npm ls @gabrielzavando/specboot`); los textos fijados por la spec ("versión más
+  nueva" / "framework desactualizado") se conservan como substrings.
+
+### Docs
+
+- README §"Autenticación para consumidores (CI)": nota de que el `ci.yml` distribuido
+  ya incluye el wiring Vía A out-of-the-box (las instrucciones manuales quedan para
+  workflows propios o owner sin acceso concedido); `docs/framework-contract.md`
+  §"Workflows del framework" documenta el wiring y su reinstalación por update.
+- Specs enmendadas vía deltas del change `fix-consumer-mode`: `specboot-workflows`
+  (wiring de autenticación como requisito `## ADDED` + requisito stale `node-version:
+  20` corregido a `'24'`, alineado con `workflow-node-upgrade`) y `specboot-json-standard`
+  (resolución consumer-safe de `--version`, normalización de rutas bare, helper
+  compartido para `init` y hint en mensajes de mismatch).
+
 ## [0.6.3] - 2026-09-07
 
 ### Fixed

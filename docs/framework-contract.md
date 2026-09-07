@@ -271,7 +271,13 @@ de GitHub (repo `vars` + `secrets`).
   step condicional (gated por `hashFiles('tests/*-test.sh')` a nivel de step), en
   loop idéntico al de `release.yml`. En un proyecto consumidor ese job es
   inofensivo y los self-tests se saltan limpiamente porque `tests/` no se publica
-  en el paquete npm.
+  en el paquete npm. El `ci.yml` incluye además el **wiring de autenticación de
+  GitHub Packages para consumidores** (`permissions: packages: read`, `env:
+  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}` y `registry-url:
+  https://npm.pkg.github.com` en ambos jobs): en dogfooding es inerte (el repo no
+  instala dependencias de GitHub Packages) y en consumidores evita el E401 de
+  `npm install` — y como el archivo es intocable-reemplazable, cada `specboot
+  update` reinstala el wiring correcto en vez de reintroducir la regresión.
 - **`deploy.yml`**: gated por `if: vars.DEPLOY_ENABLED == 'true'`. Lee
   `vars.DOCKER_REPO`, `vars.DEPLOY_HOST`, `vars.DEPLOY_USER` y
   `secrets.DEPLOY_SSH_KEY`. El proyecto declara su infraestructura en GitHub, no
