@@ -44,3 +44,26 @@
 - **Given** a consumer project whose root `package.json` declares version `9.9.9` and `node_modules/@gabrielzavando/specboot/package.json` declares the framework version
 - **When** `specboot init` creates `.specboot.json` in the project
 - **Then** `frameworkVersion` equals the framework version, not `9.9.9`
+
+### Requirement: Framework-version comparison
+`validate-specboot.sh` MUST compare `frameworkVersion` against the installed framework version, resolved (in order) from `specboot.sh --version`, `node_modules/@gabrielzavando/specboot/package.json`, or the repo's own `package.json`. If declared > installed → error "proyecto requiere versión más nueva del framework" + exit 1. If declared < installed → warning "framework desactualizado, corre specboot update" + exit 0. If equal → pass. In BOTH mismatch branches the message MUST additionally suggest verifying the installation (`npm ls @gabrielzavando/specboot`), since a mismatch in either direction can stem from a broken or partial install. Pre-release/build metadata in either version MUST be stripped before the numeric compare so it cannot cause an arithmetic error.
+
+#### Scenario: Declared version higher than installed
+- **Given** a consumer project whose `frameworkVersion` is greater than the installed framework
+- **When** `validate-specboot.sh` runs
+- **Then** it reports the "versión más nueva" error and exits 1
+
+#### Scenario: Declared version lower than installed
+- **Given** a project whose `frameworkVersion` is lower than the installed framework
+- **When** `validate-specboot.sh` runs
+- **Then** it warns "framework desactualizado" and exits 0
+
+#### Scenario: Pre-release version compares safely
+- **Given** a `frameworkVersion` with SemVer pre-release/build metadata (e.g. `1.2.3-rc.1`)
+- **When** `validate-specboot.sh` normalizes and compares it
+- **Then** the comparison succeeds without an arithmetic error and classifies the relationship correctly
+
+#### Scenario: Mismatch messages include the installation hint
+- **Given** a project whose declared `frameworkVersion` differs from the installed framework version (in either direction)
+- **When** `validate-specboot.sh` runs
+- **Then** the error (declared > installed, exit 1) and the warning (declared < installed, exit 0) both include the `npm ls @gabrielzavando/specboot` suggestion, with the pinned message texts intact

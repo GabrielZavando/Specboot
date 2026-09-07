@@ -64,14 +64,20 @@
 - **And** el comportamiento es consistente con la spec `specboot-init`
   ("`frameworkVersion` from the framework")
 
-### SC-007: Mensaje de error orientativo cuando installed < declared
+### SC-007: Mensajes de mismatch orientativos cuando hay discrepancia de versiones
 
-- **Given** un proyecto cuyo `frameworkVersion` declarado es menor que la versión
-  instalada del framework (p. ej. tras el fix, cuando el contrato `--version` ya no
-  enmascara el estado real)
-- **When** `validate-specboot.sh` compara ambas versiones y el resultado es "menor"
-- **Then** el warning incluye la sugerencia de verificar la instalación
-  (`npm ls @gabrielzavando/specboot`) además del aviso de correr `specboot update`
+- **Given** un proyecto cuyo `frameworkVersion` declarado difiere de la versión
+  instalada del framework (en cualquier dirección)
+- **When** `validate-specboot.sh` compara ambas versiones
+- **Then** en la rama `declared < installed` el warning incluye la sugerencia de
+  verificar la instalación (`npm ls @gabrielzavando/specboot`) y sale 0 (no
+  bloqueante)
+- **And** en la rama `declared > installed` el error incluye la misma sugerencia y
+  sale 1 (el caso irónico del ticket: el mensaje afirmaba "proyecto requiere
+  versión más nueva del framework" con una instalación que en realidad estaba al
+  día)
+- **And** ambos mensajes conservan como substrings los textos fijados por la spec
+  ("versión más nueva" / "framework desactualizado")
 
 ### SC-008: La spec specboot-workflows es coherente con el archivo
 

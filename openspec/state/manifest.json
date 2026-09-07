@@ -270,6 +270,25 @@
         "timestamp": "2026-09-07T01:47:00Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "fix-consumer-mode",
+      "ticket_id": "N/A (reporte upstream del mantenedor — análisis detallado de modo consumidor, 2026-09-07)",
+      "archived_at": "2026-09-07T19:57:33Z",
+      "specs_applied": [
+        "specboot-json-standard",
+        "specboot-workflows"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-07T19:48:50Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-07T19:58:30Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }

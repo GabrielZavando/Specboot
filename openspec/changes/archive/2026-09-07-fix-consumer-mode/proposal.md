@@ -72,8 +72,13 @@ a proyectos consumidores donde sus supuestos no se cumplen. En modo consumidor:
   `GITHUB_TOKEN` del repo puede leer sus propios paquetes). Conserva los contratos
   vigentes: 2 jobs, `make ci` en `project-ci`, actions v5 + node 24, `hashFiles`
   solo a nivel step.
-- **`validate-specboot.sh`**: mejora del mensaje de error cuando `installed < declared`,
-  sugiriendo verificar la instalación (`npm ls @gabrielzavando/specboot`).
+- **`validate-specboot.sh`**: mejora de los mensajes de mismatch de la comparación
+  de versiones (error `declared > installed` — el caso irónico del ticket — y
+  warning `declared < installed`), sugiriendo verificar la instalación
+  (`npm ls @gabrielzavando/specboot`); los textos fijados por la spec se conservan
+  como substrings. Enmienda de artefactos previa al código (base-standards §7):
+  la v1 de REQ-006/SC-007 las situaba solo en el warning; el ticket upstream las
+  concebía para el error — se cubren ambas ramas.
 - **Spec deltas** (artefactos primero, base-standards §7):
   - `specboot-json-standard` — delta `## MODIFIED` sobre "specboot.sh is
     self-validating": resolución consumer-safe de `--version`, normalización de rutas
@@ -143,8 +148,9 @@ a proyectos consumidores donde sus supuestos no se cumplen. En modo consumidor:
       consumer-like con `frameworkVersion` igual a la instalada (SC-005)
 - [ ] `specboot init` escribe el `frameworkVersion` del framework, no el del proyecto
       (SC-006)
-- [ ] El mensaje de error de `validate-specboot.sh` cuando `installed < declared`
-      sugiere verificar la instalación (SC-007)
+- [ ] Los mensajes de mismatch de `validate-specboot.sh` (warning `declared <
+      installed` y error `declared > installed`) sugieren verificar la
+      instalación (SC-007)
 - [ ] La spec `specboot-workflows` declara node `'24'` (coherente con el archivo y
       con `workflow-node-upgrade`) y el wiring de auth como requisito (SC-008)
 - [ ] `tests/version-resolution-test.sh` y `tests/consumer-ci-auth-test.sh` verdes con

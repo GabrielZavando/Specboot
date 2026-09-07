@@ -10,27 +10,27 @@
 
 Antes de escribir la primera línea de la tarea actual:
 
-- [ ] La **rama activa** sigue la convención vigente del proyecto (ej.
+- [x] La **rama activa** sigue la convención vigente del proyecto (ej.
   `feature/*`, `fix/*`); trabajar sobre ella, nunca directamente sobre la rama
   principal.
-- [ ] Estado **git limpio**: sin cambios sin commitear (ni staged) antes de
+- [x] Estado **git limpio**: sin cambios sin commitear (ni staged) antes de
   empezar; si hay trabajo en curso, resolverlo primero.
 
 ### Durante la implementación
 
-- [ ] **Test nuevo que falla antes de implementar (RED)**: escribir el test del
+- [x] **Test nuevo que falla antes de implementar (RED)**: escribir el test del
   escenario (`SC-NNN`) y verificar que falla antes de escribir código de
   producción.
-- [ ] Ejecutar los **tests unitarios del módulo** tocado mientras se itera
+- [x] Ejecutar los **tests unitarios del módulo** tocado mientras se itera
   (ciclo RED-GREEN-REFACTOR), no solo al final.
 
 ### Post-implementación
 
 Antes de dar la tarea por cerrada:
 
-- [ ] **Ejecutar `verify`**: la verificación del change corre y produce
+- [x] **Ejecutar `verify`**: la verificación del change corre y produce
   evidencia persistente (`openspec/state/verify-results.json`).
-- [ ] **Ejecutar `adversarial-review`**: la auditoría adversarial corre y
+- [x] **Ejecutar `adversarial-review`**: la auditoría adversarial corre y
   produce veredicto persistente (`openspec/state/adversarial-result.json`).
 
 > Ambos pasos post alimentan los gates duros de `/commit` (M-901): sin
@@ -38,7 +38,7 @@ Antes de dar la tarea por cerrada:
 
 ## 1. Resolución de versión consumer-safe (Bug 2 + 2b + 3 — TDD primero)
 
-- [ ] 1.1 Crear `tests/version-resolution-test.sh` (RED): fixture tmp (estilo
+- [x] 1.1 Crear `tests/version-resolution-test.sh` (RED): fixture tmp (estilo
       `specboot-update-test.sh`) con `package.json` raíz señuelo `9.9.9`,
       `node_modules/@gabrielzavando/specboot/package.json` (`0.6.4`) y copias de
       `specboot.sh` / `validate-specboot.sh`. Asserts con prefijo `[SC-NNN]`:
@@ -49,8 +49,10 @@ Antes de dar la tarea por cerrada:
       `[SC-005]` fixture con `.specboot.json` (`frameworkVersion: 0.6.4`) →
       `bash validate-specboot.sh` exit 0 con "coincide"; `[SC-006]`
       `create_initial_specboot_json "$tmp" 0` (vía source) → `frameworkVersion`
-      `0.6.4` (no `9.9.9`); `[SC-007]` el warning de `validate-specboot.sh` cuando
-      installed < declared menciona `npm ls @gabrielzavando/specboot`. Debe fallar
+      `0.6.4` (no `9.9.9`); `[SC-007]` los mensajes de mismatch de
+      `validate-specboot.sh` (warning `declared < installed` y error
+      `declared > installed`) mencionan `npm ls @gabrielzavando/specboot` y
+      conservan los textos fijados por la spec. Debe fallar
       (RED) antes de 1.2–1.3.
   - **Priority**: High
   - **Layer**: tests
@@ -58,7 +60,7 @@ Antes de dar la tarea por cerrada:
   - **Suggested Path**: tests/version-resolution-test.sh
   - **Test Path**: tests/version-resolution-test.sh
 
-- [ ] 1.2 Implementar la resolución consumer-safe en `specboot.sh` (GREEN):
+- [x] 1.2 Implementar la resolución consumer-safe en `specboot.sh` (GREEN):
       normalización de rutas bare en `get_framework_version` (`case`:
       `/*|./*` pasan; el resto se prefija `./`); nuevo helper
       `resolve_framework_version()` con precedencia
@@ -72,9 +74,13 @@ Antes de dar la tarea por cerrada:
   - **Suggested Path**: specboot.sh
   - **Test Path**: tests/version-resolution-test.sh
 
-- [ ] 1.3 Mejorar el mensaje de error de `validate-specboot.sh` (GREEN): en la
-      rama `installed < declared`, añadir la sugerencia de verificar la instalación
-      (`npm ls @gabrielzavando/specboot`) al warning existente.
+- [x] 1.3 Mejorar los mensajes de mismatch de `validate-specboot.sh` (GREEN):
+      en ambas ramas de la comparación — error `declared > installed` (el caso
+      irónico del ticket upstream) y warning `declared < installed` — añadir la
+      sugerencia de verificar la instalación (`npm ls @gabrielzavando/specboot`),
+      conservando como substrings los textos fijados por la spec ("versión más
+      nueva" / "framework desactualizado"). Enmienda previa de REQ-006/SC-007
+      (v1 las situaba solo en el warning) ya aplicada en los artefactos.
   - **Priority**: Medium
   - **Layer**: cli
   - **Estimate**: S
@@ -83,7 +89,7 @@ Antes de dar la tarea por cerrada:
 
 ## 2. Wiring de autenticación de consumidor en `ci.yml` (Bug 1 — TDD primero)
 
-- [ ] 2.1 Crear `tests/consumer-ci-auth-test.sh` (RED): guards grep sobre
+- [x] 2.1 Crear `tests/consumer-ci-auth-test.sh` (RED): guards grep sobre
       `.github/workflows/ci.yml` (estilo `release-workflow-test.sh`) con asserts
       `[SC-004]`: `packages: read` presente en `permissions` workflow-level;
       `NODE_AUTH_TOKEN` + `secrets.GITHUB_TOKEN` presentes en `env`;
@@ -96,7 +102,7 @@ Antes de dar la tarea por cerrada:
   - **Suggested Path**: tests/consumer-ci-auth-test.sh
   - **Test Path**: tests/consumer-ci-auth-test.sh
 
-- [ ] 2.2 Añadir el wiring a `.github/workflows/ci.yml` (GREEN): `permissions` +=
+- [x] 2.2 Añadir el wiring a `.github/workflows/ci.yml` (GREEN): `permissions` +=
       `packages: read`; `env` workflow-level
       `NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}`; ambos `actions/setup-node`
       con `registry-url: https://npm.pkg.github.com`. Conservar sin cambios: jobs
@@ -110,7 +116,7 @@ Antes de dar la tarea por cerrada:
 
 ## 3. Coherencia de docs, spec y versión
 
-- [ ] 3.1 Sincronizar docs (GREEN): `README.md` §"Autenticación para consumidores
+- [x] 3.1 Sincronizar docs (GREEN): `README.md` §"Autenticación para consumidores
       (CI)" — nota de que el `ci.yml` distribuido ya incluye el wiring Vía A (con
       `GITHUB_TOKEN` funciona out-of-the-box; owner distinto sigue documentado con
       PAT); `docs/framework-contract.md` §"Workflows del framework" — mención del
@@ -123,7 +129,7 @@ Antes de dar la tarea por cerrada:
   - **Test Path**: no aplica (los refs los valida `check-refs.sh`; sin assert
     dedicado — SC-004 cubre el wiring, SC-008 la spec)
 
-- [ ] 3.2 Bump de versión `0.6.3` → `0.6.4` (GREEN, spec `version-bump`: el
+- [x] 3.2 Bump de versión `0.6.3` → `0.6.4` (GREEN, spec `version-bump`: el
       mantenedor bumpa antes del merge): `package.json` `version`, `.specboot.json`
       `frameworkVersion` (dogfooding), entrada `## [0.6.4]` en `CHANGELOG.md` sin
       `### Breaking changes` (resumen de ambos fixes), y migración del pin de
@@ -137,7 +143,7 @@ Antes de dar la tarea por cerrada:
 
 ## 4. Verificación de cierre
 
-- [ ] 4.1 Suite completa verde: `bash check-refs.sh` (0 errores), `bash
+- [x] 4.1 Suite completa verde: `bash check-refs.sh` (0 errores), `bash
       specboot.sh --ci` (0 errores / 0 warnings), todos los `tests/*-test.sh` en
       verde (los nuevos `tests/version-resolution-test.sh` y
       `tests/consumer-ci-auth-test.sh` corren automáticamente en el loop de

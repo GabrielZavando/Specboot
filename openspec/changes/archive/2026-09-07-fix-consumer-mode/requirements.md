@@ -63,13 +63,21 @@
   consumidores recién actualizados (proxy determinista; el E401 real y el `--ci`
   completo se smookean post-release).
 
-## REQ-006: Mensaje de error orientativo en `validate-specboot.sh` (→ SC-007)
+## REQ-006: Mensajes de mismatch orientativos en `validate-specboot.sh` (→ SC-007)
 
-- **Descripción**: Cuando la comparación determina `installed < declared`, el warning
-  de `validate-specboot.sh` SHALL incluir además la sugerencia de verificar la
-  instalación (`npm ls @gabrielzavando/specboot`).
-- **Racional**: mejora adicional del ticket (aceptada por el mantenedor) — orienta el
-  diagnóstico exactamente en el escenario que dispara el error/warning.
+- **Descripción**: En ambas ramas de mismatch de la comparación de versiones, el
+  mensaje de `validate-specboot.sh` SHALL incluir además la sugerencia de verificar
+  la instalación (`npm ls @gabrielzavando/specboot`): en la rama de **error**
+  (`declared > installed`, exit 1) — el caso irónico del ticket upstream — y en la
+  rama de **warning** (`declared < installed`, exit 0). Los textos fijados por la
+  spec ("proyecto requiere versión más nueva del framework" / "framework
+  desactualizado, corre specboot update") SHALL permanecer intactos como substrings.
+- **Racional**: mejora adicional del ticket (aceptada por el mantenedor), concebida
+  para la rama de error (donde el mensaje afirmaba lo contrario de la realidad); en
+  sesión se amplió a ambas ramas de mismatch (una discrepancia en cualquier
+  dirección puede provenir de una instalación rota o parcial). Esta redacción
+  corrige la v1 de REQ-006/SC-007, que situaban la mejora solo en la rama de
+  warning (enmienda de artefactos previa al código, base-standards §7).
 
 ## REQ-007: Coherencia de la spec `specboot-workflows` con el archivo (→ SC-008)
 
