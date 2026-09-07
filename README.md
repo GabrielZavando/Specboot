@@ -93,6 +93,14 @@ Opción B — `.npmrc` global (`~/.npmrc`):
 La sección anterior autentica tu **máquina local**. Para instalar el paquete desde **GitHub
 Actions** (CI), el repo consumidor necesita su propia autenticación. Cubrimos dos escenarios.
 
+> **Nota (Specboot ≥ 0.6.4):** el `ci.yml` que el framework distribuye e inyecta
+> (`specboot init` / `specboot update`) **ya incluye el wiring de la Vía A** —
+> `permissions: packages: read`, `env: NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}`
+> y `registry-url` en ambos jobs — así que con el `ci.yml` del framework la
+> autenticación funciona out-of-the-box (mismo owner con acceso concedido). Las
+> instrucciones manuales de abajo aplican si usas un workflow propio, quitaste el
+> `ci.yml` del framework o tu owner no tiene acceso concedido (Vía B, con PAT).
+
 #### Mismo owner / org con acceso concedido
 
 Si el repositorio consumidor tiene acceso concedido al paquete en
