@@ -40,7 +40,7 @@ The audit report SHALL include a "Descartados" annex listing, for each refuted C
 - **AND** `findings.discarded` in the persisted JSON counts them
 
 ### Requirement: archive MUST reference the adversarial verdict in the manifest as an informed soft gate
-The `archive` skill SHALL add an optional `adversarial: {verdict, timestamp, source}` field to the manifest entry when `adversarial-result.json` exists with a matching `change` field, and SHALL omit it without blocking when the file is absent or foreign (warning and suggesting `/adversarial-review` instead). Archive SHALL read only the summary (token-light, never the findings detail). The hard gate remains M-901 (out of scope).
+The `archive` skill SHALL add an optional `adversarial: {verdict, timestamp, source}` field to the manifest entry when `adversarial-result.json` exists with a matching `change` field, and SHALL omit it without blocking when the file is absent or foreign (warning and suggesting `/adversarial-review` instead). Archive SHALL read only the summary (token-light, never the findings detail). Archive remains an informed soft gate; the hard gate on evidence is already implemented by the `commit` skill per the `commit-gates` specification.
 
 #### Scenario: Archive references the verdict in the manifest
 - **GIVEN** an archived change with an existing `adversarial-result.json` whose `change` field matches
@@ -52,7 +52,7 @@ The `archive` skill SHALL add an optional `adversarial: {verdict, timestamp, sou
 - **GIVEN** an archived change without `adversarial-result.json`, or one whose `change` field differs from the active change
 - **WHEN** archive generates the manifest entry
 - **THEN** the `adversarial` field is omitted, a warning is printed and running `/adversarial-review` is suggested
-- **AND** the archive completes without error or block (the hard gate is M-901)
+- **AND** the archive completes without error or block (archive is a soft gate; the hard gate is enforced by `/commit` per the `commit-gates` spec)
 
 ### Requirement: Reviewer agent permissions and descriptions MUST match the persistence capability
 The permission block of `.opencode/agents/reviewer.md` SHALL include the scoped evidence-writing exception (`mkdir -p openspec/*` allowed and `cat` redirection for writing, mirroring the verify agent) while keeping `edit: deny` and all other bash denied. Descriptions in `AGENTS.md` (§5.3), `.opencode/commands/adversarial-review.md` and `ai-specs/README.md` SHALL declare: read-only over code, persists evidence under `openspec/state/`. Every command documented in the role SHALL have an allow pattern in the permission block, and vice versa (M-403 lesson).

@@ -16,7 +16,7 @@
 #   - PLAN_MEJORAS_SPECBOOT.md marks M-601 [x], adds history row v3.6 and
 #     registers Fase 10 follow-ups M-904..M-907; M-403 now marked completed
 #     (sync-agent-permissions) (SC-006)
-#   - Version 0.6.2 in package.json/.specboot.json (migrated pin: 0.6.1→0.6.2
+#   - Version 0.6.3 in package.json/.specboot.json (migrated pin: 0.6.2→0.6.3
 #     in the M-904/M-905 bump) and historical CHANGELOG entry ## [0.6.0] without
 #     Breaking changes (SC-007)
 #
@@ -154,13 +154,13 @@ check SC-006 "Fase 10 registers follow-ups M-904..M-907" \
 check SC-006 "M-403 marked completed (sync-agent-permissions)" \
   grep -qF -- "## [x] M-403" "$PLAN"
 
-# --- SC-007: version pins (0.6.2 after M-904/M-905 bump) + historical 0.6.0 notes ---
+# --- SC-007: version pins (0.6.3 after M-906/M-907 bump) + historical 0.6.0 notes ---
 echo "Version pins (SC-007):"
 
-check SC-007 "package.json declares 0.6.2" \
-  grep -qF -- '"version": "0.6.2"' "$PKGJSON"
-check SC-007 ".specboot.json reflects frameworkVersion 0.6.2" \
-  grep -qF -- '"frameworkVersion": "0.6.2"' "$SPECBOOTJSON"
+check SC-007 "package.json declares 0.6.3" \
+  grep -qF -- '"version": "0.6.3"' "$PKGJSON"
+check SC-007 ".specboot.json reflects frameworkVersion 0.6.3" \
+  grep -qF -- '"frameworkVersion": "0.6.3"' "$SPECBOOTJSON"
 check SC-007 "CHANGELOG entry ## [0.6.0] present" \
   grep -q "^## \[0\.6\.0\]" "$CHANGELOG"
 

@@ -1,41 +1,16 @@
 {
   "schema_version": 1,
-  "change": "commit-gate-semantics",
-  "ticket_id": "M-904-M-905",
+  "change": "phase10-cleanup",
+  "ticket_id": "M-906-M-907",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-06T17:27:21.283Z",
-  "tasks": {
-    "total": 8,
-    "passed": 8,
-    "failed": 0,
-    "untested": 0
-  },
+  "timestamp": "2026-09-07T01:46:00Z",
+  "tasks": { "total": 4, "passed": 4, "failed": 0, "untested": 0 },
   "scenarios": [
-    {
-      "id": "SC-001",
-      "test": "[SC-001] staleness defined by commits touching code paths / docs-openspec do not stale",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-002",
-      "test": "[SC-002] staleness stays warn-only with a precise rule-declaring warning",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-003",
-      "test": "[SC-003] last-write-wins documented in commit, verify and code-auditing skills",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-004",
-      "test": "[SC-004] Gate-Bypass EBNF grammar with closed enums documented",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-005",
-      "test": "[SC-005] canonical regex documented, matches example, rejects inverted order and out-of-enum",
-      "status": "PASS"
-    }
+    { "id": "SC-001", "test": "marker assertions: 'Nota de reconciliación SemVer' present in PLAN M-901 section referencing 0.5.0 and versioning-standard §2", "status": "PASS" },
+    { "id": "SC-002", "test": "marker assertions: 'Majors durante 0.x' rule present in docs/versioning-standard.md §2 with M-901→0.5.0 example", "status": "PASS" },
+    { "id": "SC-003", "test": "tests/commit-gate-test.sh [SC-004] assert (guard covers the rewritten spec wording)", "status": "PASS" },
+    { "id": "SC-004", "test": "tests/commit-gate-test.sh [SC-004] adversarial-state spec no longer describes the hard gate as pending (RED→GREEN)", "status": "PASS" },
+    { "id": "SC-005", "test": "tests/mandatory-steps-test.sh [SC-007] version pins 0.6.3 + marker assertions (v3.9 row, [x] tickets, Fase 11 backlog, CHANGELOG ## [0.6.3])", "status": "PASS" }
   ]
 }

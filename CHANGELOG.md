@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.3] - 2026-09-07
+
+### Fixed
+
+- **M-907** (Fase 10) — Frase residual pre-gate-duro en la spec consolidada `adversarial-state`: las líneas que describían el hard gate como pendiente (`the hard gate remains M-901 (out of scope)` / `the hard gate is M-901`) se reescriben para declarar que archive permanece soft gate / warn-only y que el hard gate ya está implementado por el skill `commit` según la spec `commit-gates`. Guard anti-regresión: `tests/commit-gate-test.sh` añade el assert `[SC-004]` que falla si la frase residual vuelve a la spec (36 asserts en total).
+
+### Docs
+
+- **M-906** (Fase 10) — Reconciliación del nivel SemVer declarado de M-901: el roadmap lo clasificó `major` pero el release real fue `minor` `0.5.0` con `### Breaking changes` (válido en 0.x). Se añade nota de reconciliación en el ticket M-901 y `docs/versioning-standard.md` §2 fija la regla: mientras el framework esté en 0.x, un `major` del roadmap se releasa como `minor` con `### Breaking changes` (y `### Migration` si aplica); el `major` estricto solo existe desde `1.0.0`.
+- Seguimiento del plan: M-906 y M-907 marcados `[x]` con fila v3.9 en el historial y backlog de candidatos de una posible Fase 11 registrado (`PLAN_MEJORAS_SPECBOOT.md`). Fase 10 cerrada; roadmap completo implementado.
+
 ## [0.6.2] - 2026-09-07
 
 ### Changed

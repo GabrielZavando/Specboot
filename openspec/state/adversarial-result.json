@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "change": "commit-gate-semantics",
-  "ticket_id": "M-904-M-905",
+  "change": "phase10-cleanup",
+  "ticket_id": "M-906-M-907",
   "verdict": "SHIP",
-  "confidence": 0.85,
-  "timestamp": "2026-09-06T17:52:28Z",
+  "confidence": 0.9,
+  "timestamp": "2026-09-07T01:47:00Z",
   "findings": {
-    "total": 6,
+    "total": 2,
     "critical": 0,
-    "warnings": 2,
-    "info": 4,
-    "discarded": 4
+    "warnings": 0,
+    "info": 2,
+    "discarded": 0
   }
 }

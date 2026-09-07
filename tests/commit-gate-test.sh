@@ -409,6 +409,17 @@ else
   ok "[SC-005] canonical regex rejects out-of-enum values"
 fi
 
+# --- F. Residual pre-hard-gate wording in the consolidated spec (M-907, change phase10-cleanup) ---
+echo "Residual pre-gate-duro wording in openspec/specs/adversarial-state/spec.md:"
+
+ADV_STATE_SPEC="$ROOT/openspec/specs/adversarial-state/spec.md"
+
+if lacks_all "$ADV_STATE_SPEC" 'the hard gate remains M-901' 'the hard gate is M-901'; then
+  ok "[SC-004] adversarial-state spec no longer describes the hard gate as pending (M-901)"
+else
+  bad "[SC-004] adversarial-state spec no longer describes the hard gate as pending (M-901)"
+fi
+
 # --- Summary ---
 echo ""
 echo "Commit gate contract: $PASS passed, $FAIL failed"
