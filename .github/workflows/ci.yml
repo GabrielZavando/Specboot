@@ -8,6 +8,15 @@ on:
 
 permissions:
   contents: read
+  packages: read
+
+# Consumer auth for GitHub Packages (fix-consumer-mode / SC-004): setup-node's
+# registry-url writes ~/.npmrc with `_authToken=${NODE_AUTH_TOKEN}` on the
+# runner; without this env the consumer's `npm install` hits E401 on
+# npm.pkg.github.com. Inert in dogfooding: this repo installs no GitHub
+# Packages dependencies, and its own GITHUB_TOKEN can read its own packages.
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   validate:
@@ -18,6 +27,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '24'
+          registry-url: https://npm.pkg.github.com
       - name: Install framework deps
         run: npm install
       - name: check-refs
@@ -40,6 +50,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '24'
+          registry-url: https://npm.pkg.github.com
       - name: Install framework deps
         run: npm install
       - name: make ci (refs + solid-lint + lint + test + audit)
