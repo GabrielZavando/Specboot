@@ -124,3 +124,37 @@
 - [ ] Password requirements enforced client-side and server-side
 - [ ] `docs/api/api-spec.yml` updated with new endpoints
 - [ ] `docs/data-model/data-model.md` updated with user entity changes
+
+---
+
+## Path Convention Examples (M-201)
+
+> Examples of Suggested Path and Test Path in OpenSpec tasks.
+> Use these as templates when creating `openspec/<ticket>/tasks.md`.
+
+### SC-008: Task with explicit Suggested Path and Test Path
+
+- **Task**: Create `PasswordResetUseCase` in domain layer
+- **Layer**: domain
+- **Suggested Path**: `src/domain/use-cases/password-reset.use-case.ts`
+- **Test Path**: `src/domain/use-cases/__tests__/password-reset.use-case.spec.ts`
+- **Priority**: High
+- **Estimate**: S
+
+### SC-009: Task with Suggested Path from .specboot.json services
+
+- **Task**: Create `EmailValidator` service adapter
+- **Layer**: infrastructure
+- **Suggested Path**: `services/auth/src/infrastructure/adapters/email-validator.ts`
+- **Test Path**: `services/auth/src/infrastructure/adapters/__tests__/email-validator.spec.ts`
+- **Priority**: Medium
+- **Estimate**: S
+
+### SC-010: Task with no aplica for paths
+
+- **Task**: Update README documentation for API usage
+- **Layer**: docs
+- **Suggested Path**: no aplica
+- **Test Path**: no aplica
+- **Priority**: Low
+- **Estimate**: XS

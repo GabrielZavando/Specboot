@@ -1,6 +1,6 @@
 {
   "name": "@gabrielzavando/specboot",
-  "version": "0.2.0",
+  "version": "0.6.3",
   "description": "SDD development framework for OpenCode + OpenSpec: agents, commands, skills, and validation tools that enforce the Spec-Driven Development flow.",
   "license": "MIT",
   "bin": { "specboot": "specboot.sh" },
@@ -22,6 +22,7 @@
     "docs/docs-standard.md",
     "docs/specboot-json-standard.md",
     "docs/versioning-standard.md",
+    "docs/openspec-tasks-mandatory-steps.md",
     "opencode.json",
     "AGENTS.md",
     "Makefile",

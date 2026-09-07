@@ -10,6 +10,7 @@ la frontera global intocable/del proyecto.
 ```
 docs/
 ├── base-standards.md          # INTOCABLE (framework) — principios SDD/TDD/SOLID
+├── openspec-tasks-mandatory-steps.md  # INTOCABLE (framework) — checklist obligatoria inyectada por plan-change en todo tasks.md
 ├── project/                   # DEL PROYECTO
 │   ├── domain.md              # descripción del dominio
 │   ├── stack.md               # stack técnico
@@ -25,14 +26,17 @@ docs/
 └── documentation-standards.md# DEL PROYECTO
 ```
 
-> `base-standards.md` es el único archivo intocable de `docs/`: el framework lo inyecta
-> y el proyecto no debe editarlo. El resto es del proyecto y se personaliza por stack.
+> `base-standards.md` es el único archivo intocable de `docs/` de principios: el framework lo inyecta
+> y el proyecto no debe editarlo. `openspec-tasks-mandatory-steps.md` también es intocable (la
+> checklist obligatoria que `plan-change` inyecta en todo `tasks.md`). El resto es del proyecto y se
+> personaliza por stack.
 
 ## 2. Frontera intocable / del proyecto (para `docs/`)
 
 | Intocable (framework, inyectado) | Del proyecto (editado por el dev) |
 | --- | --- |
 | `docs/base-standards.md` | `docs/backend-standards.md` |
+| `docs/openspec-tasks-mandatory-steps.md` | |
 | | `docs/frontend-standards.md` |
 | | `docs/ci-standards.md` |
 | | `docs/deploy-standards.md` |
@@ -51,7 +55,7 @@ archivos son propiedad y responsabilidad del proyecto.
 El esquema de `.specboot.json` (incluido el campo `extraStandards` que apunta a `docs/`)
 se documenta en [`docs/specboot-json-standard.md`](specboot-json-standard.md).
 
-> **Nota de alcance**: `docs/framework-contract.md`, `docs/versioning-standard.md` y este `docs/docs-standard.md` también son documentos inyectados por el framework (se distribuyen con él y se actualizan vía el flujo SDD del propio Specboot, no por el dev del proyecto). En la frontera de `docs/` se marca `base-standards.md` como intocable porque es la plantilla de principios que el dev no debe alterar; `framework-contract.md`, `versioning-standard.md` y `docs-standard.md` se consideran parte del framework y se tratan como tales.
+> **Nota de alcance**: `docs/framework-contract.md`, `docs/versioning-standard.md` y este `docs/docs-standard.md` también son documentos inyectados por el framework (se distribuyen con él y se actualizan vía el flujo SDD del propio Specboot, no por el dev del proyecto). Igual que `docs/openspec-tasks-mandatory-steps.md` (la checklist obligatoria que `plan-change` inyecta en todo `tasks.md`, que llega a los consumidores vía `specboot init`/`update`). En la frontera de `docs/` se marca `base-standards.md` como intocable porque es la plantilla de principios que el dev no debe alterar; `framework-contract.md`, `versioning-standard.md` y `docs-standard.md` se consideran parte del framework y se tratan como tales.
 
 ## 3. Regla de carga dinámica del puente `AGENTS.md`
 

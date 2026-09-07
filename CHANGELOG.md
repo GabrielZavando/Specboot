@@ -7,6 +7,113 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.3] - 2026-09-07
+
+### Fixed
+
+- **M-907** (Fase 10) — Frase residual pre-gate-duro en la spec consolidada `adversarial-state`: las líneas que describían el hard gate como pendiente (`the hard gate remains M-901 (out of scope)` / `the hard gate is M-901`) se reescriben para declarar que archive permanece soft gate / warn-only y que el hard gate ya está implementado por el skill `commit` según la spec `commit-gates`. Guard anti-regresión: `tests/commit-gate-test.sh` añade el assert `[SC-004]` que falla si la frase residual vuelve a la spec (36 asserts en total).
+
+### Docs
+
+- **M-906** (Fase 10) — Reconciliación del nivel SemVer declarado de M-901: el roadmap lo clasificó `major` pero el release real fue `minor` `0.5.0` con `### Breaking changes` (válido en 0.x). Se añade nota de reconciliación en el ticket M-901 y `docs/versioning-standard.md` §2 fija la regla: mientras el framework esté en 0.x, un `major` del roadmap se releasa como `minor` con `### Breaking changes` (y `### Migration` si aplica); el `major` estricto solo existe desde `1.0.0`.
+- Seguimiento del plan: M-906 y M-907 marcados `[x]` con fila v3.9 en el historial y backlog de candidatos de una posible Fase 11 registrado (`PLAN_MEJORAS_SPECBOOT.md`). Fase 10 cerrada; roadmap completo implementado.
+
+## [0.6.2] - 2026-09-07
+
+### Changed
+
+- **M-904** (Fase 10) — Semántica formal de staleness en `/commit`: git-based. La evidencia (`verify-results.json` / `adversarial-result.json`) es **stale** solo si existe un commit posterior a su `timestamp` que toca rutas de código (`src/`, `app/`, `tests/`, `ai-specs/`, `.opencode/`); commits que solo tocan `docs/`/`openspec/` ya no ensucian la evidencia. Sigue siendo **warn-only**: el warning ahora declara la regla aplicada y sugiere re-ejecutar la herramienta, y nunca bloquea por sí solo. Prevalencia **last-write-wins** documentada en los skills `commit`, `verify` y `code-auditing`: cada corrida sobrescribe el archivo de estado y el gate lee siempre la más reciente (`ai-specs/skills/commit/SKILL.md`).
+- **M-905** (Fase 10) — Gramática formal del trailer `Gate-Bypass` fijada en el Step 6 del skill `commit`: EBNF con orden fijo (`verify=` antes de `adversarial=`), separador exacto `; `, enums cerrados (`PASS|PARTIAL|FAIL|missing` / `SHIP|NO-SHIP|missing`) y regex canónica de parseo `^Gate-Bypass: --force \(verify=(PASS|PARTIAL|FAIL|missing); adversarial=(SHIP|NO-SHIP|missing)\)$` para tooling externo.
+
+### Added
+
+- El guard `tests/commit-gate-test.sh` pasa de 25 a 35 asserts: nuevos `[SC-001]`..`[SC-005]` que validan la semántica de staleness (rutas de código, warn-only con mensaje preciso, last-write-wins en los tres skills) y la gramática del trailer (la regex canónica matchea el ejemplo documentado y rechaza orden invertido y valores fuera del enum).
+
+### Docs
+
+- Seguimiento del plan: M-904 y M-905 marcados `[x]` con fila v3.8 en el historial (`PLAN_MEJORAS_SPECBOOT.md`); delta `## MODIFIED`/`## ADDED` consolidado en la spec `commit-gates`.
+
+## [0.6.1] - 2026-09-06
+
+### Fixed
+
+- **M-403** (Fase 4) — Sincronización de permisos de agentes: el permission block de `.opencode/agents/verify.md` incluye `"pytest *": allow` (el rol documentado lo prometía; el Step 5b del skill `verify` ya funciona en proyectos Python), y `ai-specs/agents/verify-agent.md` documenta `npm run test` (patrón del block que el rol no mencionaba). El permission block de `.opencode/agents/archive.md` cubre los comandos que su skill realmente ejecuta (Steps 2/3/5: `git status *`, `git diff`, `git log`, `node -e *`), y acota `rm` al cleanup documentado del Step 7 (`rm openspec/tickets/*`, en reemplazo de `rm -rf openspec/changes/*` — más amplio que lo documentado y que alcanzaba además `openspec/archive/`); el rol `archive-agent.md` deja de listar `git commit` en "Bash permitido" (la regla "Commit ownership" y el Step 6 lo prohíben) y documenta `node -e`. Criterio de resolución fijado en la nueva spec `agent-permissions`: el SKILL.md de cada skill es la fuente de verdad del comportamiento.
+
+### Added
+
+- Guard `tests/agent-permissions-test.sh` (25 asserts `[SC-001]`..`[SC-010]`) que protege la sincronía bidireccional rol↔permission block de los agentes restrictivos (`verify`, `reviewer`, `archive`, `plan`) y la preservación del fallback `"*": deny`.
+
+### Changed
+
+- Seguimiento del plan: M-403 marcado `[x]` con fila v3.7 en el historial (`PLAN_MEJORAS_SPECBOOT.md`).
+
+## [0.6.0] - 2026-09-05
+
+### Added
+
+- **M-601** (Fase 6) — Mandatory steps: nuevo doc intocable `docs/openspec-tasks-mandatory-steps.md`, fuente única de verdad del checklist obligatorio de implementación (pre-implementación: rama activa según convención + estado git limpio; durante: test nuevo que falla antes de implementar (RED) + tests unitarios del módulo; post: ejecutar `verify` + ejecutar `adversarial-review`). El skill `plan-change` lo inyecta como sección `## Mandatory Steps` en todo `tasks.md` generado (leído en el momento de generación, sin copia hardcodeada en el skill) con check en su Step 6 de validación; referencia en `AGENTS.md` §2.3; distribución framework sincronizada en 5 puntos (`FRAMEWORK_ITEMS` + `UPDATE_ITEMS` en `specboot.sh`, allowlist `files` de `package.json`, árbol de `docs/docs-standard.md`, skeleton de `docs/framework-contract.md`); guard `tests/mandatory-steps-test.sh` (30 asserts `[SC-001]`..`[SC-007]`); ejemplo `ai-specs/examples/tasks.md` con la sección (`PLAN_MEJORAS_SPECBOOT.md` §Fase 6).
+
+### Fixed
+
+- **Bug latente de `specboot update`** — `replace_framework_files` salteaba TODOS los ítems `docs/` de `UPDATE_ITEMS[]` (patrón `docs/*` en el `case`): `specboot update` nunca reemplazó los 5 docs estándar, contradiciendo la spec archivada `specboot-update` ("MUST overwrite ... the 5 framework docs"). Fix: el `case` solo saltea árboles enteros (`docs`, `.github`) y los docs individuales se reemplazan; el doc de M-601 se agrega a `UPDATE_ITEMS` (conjunto de 6 docs intocables); assert de regresión `[SC-008]` en `tests/specboot-update-test.sh`; `allowedDocs` 5→6 en `tests/package-files-test.sh`; spec `specboot-update` enmendada a 6 docs vía delta `## MODIFIED` del change `inject-mandatory-steps` (`specboot.sh`, `tests/specboot-update-test.sh`, `tests/package-files-test.sh`).
+
+### Changed
+
+- Seguimiento del plan: M-601 marcado `[x]` con fila v3.6 en el historial; nueva sección **FASE 10 — Follow-ups de auditoría (patrón M-403)** con los tickets pendientes M-904 (W1 semántica de staleness), M-905 (W2 vocabulario del trailer `Gate-Bypass`), M-906 (W3 reconciliar SemVer declarado de M-901) y M-907 (W4 frase residual en spec archivada) (`PLAN_MEJORAS_SPECBOOT.md`).
+
+## [0.5.0] - 2026-09-05
+
+### Breaking changes
+
+- **M-901** (Fase 9) — `/commit` aplica ahora **gates duros de evidencia**: exige `openspec/state/verify-results.json` con `status: PASS` y `openspec/state/adversarial-result.json` con `verdict: SHIP`, ambos con campo `change` coincidente con el change activo. Con `PARTIAL`/`FAIL`/`NO-SHIP`, evidencia ausente, inválida o ajena **bloquea** el commit: ya no pregunta a ciegas ("¿ejecutaste `/verify`?") ni tolera la ausencia de auditoría adversarial como opcional; ofrece ejecutar la herramienta faltante, abortar, o usar `--force` (`ai-specs/skills/commit/SKILL.md`).
+
+### Migration
+
+- Antes de `/commit`, ejecuta `/verify` (objetivo `status: PASS` con evidencia ejecutable) y `/adversarial-review` (objetivo `verdict: SHIP`): sus JSON persistidos en `openspec/state/` son los gates que Step 2 del skill lee (token-light, `node -e`).
+- Si tu flujo commiteaba sin auditoría adversarial o con verify `PARTIAL`, ahora el commit bloquea: ejecuta la herramienta faltante o usa `--force` explícito — su uso queda registrado en el mensaje de cada commit con el trailer `Gate-Bypass: --force (verify=<estado>; adversarial=<veredicto>)`; con gates verdes el trailer no se emite.
+- El staleness de la evidencia sigue siendo warn-only: no bloquea por sí solo.
+
+### Added
+
+- **M-901** (Fase 9) — Gate duro de commit: Step 2 del skill `commit` reescrito como matriz de decisión sobre ambos archivos de estado (enums `PASS|PARTIAL|FAIL` / `SHIP|NO-SHIP` de `schema_version: 1`, match por campo `change`, lectura token-light), flag `--force` con trailer `Gate-Bypass` aplicado en Step 6, y self-test `tests/commit-gate-test.sh` (25 asserts `[SC-NNN]`) con los fixtures de la matriz en `ai-specs/examples/commit-gate-fixtures/` (`ai-specs/skills/commit/SKILL.md`).
+- **M-903** (Fase 9) — Checklist mínimo obligatorio de deploy: sección "Mandatory pre-deploy checklist" en el skill con 6 ítems agnósticos del proyecto (tests verdes, lint sin críticos, build exitoso, security audit sin críticos, rollback definido, change OpenSpec archivado) y regla de bloqueo (si alguno falla, el deploy **stops before the version bump** reportando los ítems fallidos); la plantilla `docs/deploy-standards.md` incluye "Rollback procedure defined" y "OpenSpec change archived" en su Pre-deploy Checklist; self-test `tests/deploy-checklist-test.sh` (`ai-specs/skills/deploy/SKILL.md`, `docs/deploy-standards.md`).
+
+### Changed
+
+- **M-902** (Fase 9) — Evaluación de arquitectura CI cerrada como "evaluado, sin acción": se mantiene el diseño 2 jobs / 1 archivo de `ci.yml` (jobs `validate` + `project-ci`) ante la ausencia de evidencia de fricción de consumidores; `ci.yml` y `openspec/specs/specboot-workflows/spec.md` permanecen intactos; guard ejecutable `tests/ci-evaluation-test.sh` (`PLAN_MEJORAS_SPECBOOT.md`).
+- Descripciones sincronizadas con el contrato del gate duro (lección M-403): `AGENTS.md` (§5.2, fila `/commit`), `.opencode/commands/commit.md`, nota de consumidor en `ai-specs/skills/verify/SKILL.md`, referencias al gate en `ai-specs/skills/archive/SKILL.md` y `ai-specs/skills/code-auditing/SKILL.md`; description de `.opencode/commands/deploy.md` declara el checklist mínimo obligatorio.
+- `.specboot.json` del repo sincronizado con la nueva versión (`frameworkVersion: 0.5.0`).
+
+## [0.4.0] - 2026-09-05
+
+### Added
+
+- **M-501** (Fase 5) — Auto-refutación estructurada de hallazgos `CRITICAL` en `adversarial-review`: protocolo formal de 4 pasos (hipótesis de refutación → búsqueda de evidencia contradictoria en código/tests → decisión mantener/descartar con motivo → registro hallazgo+refutación) reemplazando la heurística de una línea, y anexo "Descartados" en el reporte (hallazgo original + refutación + motivo) fuera del veredicto, con contador `summary.discarded` alineado al JSON (`ai-specs/skills/code-auditing/SKILL.md`).
+- **M-502** (Fase 5) — `/adversarial-review` persiste `openspec/state/adversarial-result.json` tras cada auditoría (incluido NO-SHIP, last-run-wins, trackeado en git) con esquema versionado (`schema_version: 1`, `verdict: SHIP|NO-SHIP`, `confidence` 0.0–1.0, `timestamp` ISO-8601, `findings{total,critical,warnings,info,discarded}`); self-test ejecutable `tests/adversarial-state-test.sh` valida el fixture canónico `ai-specs/examples/adversarial-results-example.json` (`ai-specs/skills/code-auditing/SKILL.md`, `tests/adversarial-state-test.sh`).
+
+### Changed
+
+- `archive` añade el campo opcional `adversarial: {verdict, timestamp, source}` a la entrada del manifest cuando existe evidencia con `change` coincidente; si falta, es inválida o ajena → advierte y sugiere `/adversarial-review` sin bloquear (gate duro = M-901) (`ai-specs/skills/archive/SKILL.md`).
+- `commit` (Step 2) lee el veredicto como gate informado suave: `SHIP` vigente para el change activo omite la confirmación manual, `NO-SHIP` advierte y exige decisión explícita, ausente/ajeno mantiene el flujo previo; staleness warn-only (`ai-specs/skills/commit/SKILL.md`).
+- Permisos del subagente `reviewer` sincronizados con su rol (patrón M-403): añadidos `cat`, `ls` y `mkdir -p openspec/*` (única escritura = evidencia en `openspec/state/`, vía `cat` por redirección), eliminado `git log` sin uso documentado; descripciones actualizadas en `AGENTS.md`, `.opencode/commands/adversarial-review.md` y `ai-specs/README.md` ("read-only sobre código, persiste evidencia").
+- `.specboot.json` del repo sincronizado con la nueva versión (`frameworkVersion: 0.4.0`).
+
+## [0.3.0] - 2026-09-04
+
+### Added
+
+- **M-201/M-202** (Fase 2) — Convención de `Suggested Path` / `Test Path` en toda tarea de `tasks.md` (con defaults por `.specboot.json` `services`/`layers`) y paso de validación de coherencia de diseño en `plan-change` (sección `Design Validation`; conflictos críticos detienen la generación) (`ai-specs/skills/plan-change/SKILL.md`).
+- **M-301/M-302** (Fase 3) — Protocolo de fallo TDD: máximo 3 intentos consecutivos, `TDD Failure Report` (`Task`, `Attempt`, `Error`, `Suggested investigation`) y detención inmediata; detención explícita del agente tras completar cada tarea, esperando instrucción del usuario (`.opencode/commands/apply.md`, `ai-specs/agents/build-agent.md`).
+- **M-401** (Fase 4) — `/verify` persiste `openspec/state/verify-results.json` tras cada ejecución con esquema versionado (`schema_version: 1`, `status`, `evidence_mode`, mapeo de escenarios `SC-NNN`); `/commit` lo usa como gate informado suave (PASS omite la pregunta, PARTIAL/FAIL advierte, ausente mantiene la pregunta; staleness warn-only) y `archive` añade `verification: {status, timestamp, source}` a la entrada del manifest (`ai-specs/skills/verify/SKILL.md`, `ai-specs/skills/commit/SKILL.md`, `ai-specs/skills/archive/SKILL.md`).
+- **M-402** (Fase 4) — Convención de nombrado de tests con ID de escenario (`[SC-NNN]` en títulos JS/TS, `test_sc{NNN}_` en identificadores Python) documentada en los agentes generadores de tests, y prioridad de evidencia en `verify` Step 5c: match por nombre (fuerte) > mención textual (débil, nunca PASS) > UNTESTED (`ai-specs/agents/build-agent.md`, `ai-specs/agents/backend-developer.md`, `ai-specs/agents/frontend-developer.md`, `ai-specs/skills/verify/SKILL.md`).
+- **M-403** — Registrado en `PLAN_MEJORAS_SPECBOOT.md` como ticket `patch` (sincronizar permisos bash del subagente verify con su documentación; descubierto durante M-401). Pendiente de implementar.
+
+### Changed
+
+- Descripciones de `verify` actualizadas en `AGENTS.md`, `.opencode/agents/verify.md`, `.opencode/commands/verify.md`, `ai-specs/README.md` y `ai-specs/agents/verify-agent.md`: read-only sobre código y specs, con única excepción la escritura de evidencia en `openspec/state/verify-results.json` (incluye permiso `mkdir -p openspec/*` en el permission block del agente).
+- Self-test ejecutable del contrato de `verify-results.json`: `tests/verify-state-test.sh` valida el fixture canónico `ai-specs/examples/verify-results-example.json` (claves, enums, invariante `static → PARTIAL sin PASS`).
+- `.specboot.json` del repo sincronizado con la nueva versión (`frameworkVersion: 0.3.0`).
+
 ## [0.2.0] - 2026-09-04
 
 ### Added

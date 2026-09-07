@@ -128,6 +128,148 @@
       "specs_applied": [
         "plan-traceability"
       ]
+    },
+    {
+      "change_name": "path-design-validation",
+      "ticket_id": "M-201-202",
+      "archived_at": "2026-09-04T00:00:00Z",
+      "specs_applied": [
+        "path-design-validation"
+      ]
+    },
+    {
+      "change_name": "tdd-failure-protocol",
+      "ticket_id": "M-301-302",
+      "archived_at": "2026-09-04T16:20:00Z",
+      "specs_applied": [
+        "tdd-failure-protocol"
+      ]
+    },
+    {
+      "change_name": "persist-verify-results",
+      "ticket_id": "M-401-402",
+      "archived_at": "2026-09-05T02:12:00Z",
+      "specs_applied": [
+        "plan-traceability",
+        "verification-state"
+      ],
+      "verification": {
+        "status": "PARTIAL",
+        "timestamp": "2026-09-05T02:11:31Z",
+        "source": "openspec/state/verify-results.json"
+      }
+    },
+    {
+      "change_name": "2026-09-05-persist-adversarial-verdict",
+      "ticket_id": "M-501-502",
+      "archived_at": "2026-09-05T15:59:04Z",
+      "specs_applied": [
+        "adversarial-state"
+      ],
+      "verification": {
+        "status": "PARTIAL",
+        "timestamp": "2026-09-05T04:43:32Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-05T04:51:06Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
+    },
+    {
+      "change_name": "enforce-commit-gates",
+      "ticket_id": "M-901-903",
+      "archived_at": "2026-09-05T21:35:22Z",
+      "specs_applied": [
+        "commit-gates",
+        "verification-state",
+        "adversarial-state",
+        "deploy-checklist"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-05T21:34:36Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-05T22:10:00Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
+    },
+    {
+      "change_name": "inject-mandatory-steps",
+      "ticket_id": "M-601",
+      "archived_at": "2026-09-06T00:20:00Z",
+      "specs_applied": [
+        "mandatory-steps",
+        "specboot-update"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-05T23:45:00Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-06T00:15:00Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
+    },
+    {
+      "change_name": "sync-agent-permissions",
+      "ticket_id": "M-403",
+      "archived_at": "2026-09-06T15:35:00Z",
+      "specs_applied": [
+        "agent-permissions"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-06T15:11:08Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-06T15:29:43Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
+    },
+    {
+      "change_name": "commit-gate-semantics",
+      "ticket_id": "M-904-M-905",
+      "archived_at": "2026-09-06T18:23:49.211Z",
+      "specs_applied": [
+        "commit-gates/spec.md"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-06T17:27:21.283Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-06T17:52:28Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
+    },
+    {
+      "change_name": "phase10-cleanup",
+      "ticket_id": "M-906-M-907",
+      "archived_at": "2026-09-07T02:06:00.792Z",
+      "specs_applied": [
+        "adversarial-state"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-07T01:46:00Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-07T01:47:00Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }

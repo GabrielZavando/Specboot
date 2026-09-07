@@ -14,6 +14,8 @@
 - Lint and typecheck without errors
 - Build succeeds
 - No security vulnerabilities (`npm audit` / `composer audit` / `pip-audit`)
+- Rollback procedure defined
+- OpenSpec change archived
 
 **Exit criteria:** every check passes. If any fails, fix it before proceeding.
 

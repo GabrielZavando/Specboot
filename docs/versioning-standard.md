@@ -23,6 +23,14 @@ Fase 4 (`specboot update`) y Fase 7 (release) implementan.
 - **Durante `0.x`**: se trata como "API no estable". Un cambio `minor` *puede* romper, pero
   se registra igual según la matriz de la sección 3. Al llegar a `1.0.0`, aplica SemVer
   estricto (todo `major` es ruptura garantizada; `minor`/`patch` nunca rompen).
+  - **Majors durante 0.x**: si el roadmap clasifica un ticket como `major`, en 0.x se
+    releasa como **`minor` con `### Breaking changes`** en el `CHANGELOG.md` (y
+    `### Migration` si aplica, según §6.1). El número `major` estricto (bump de la primera
+    cifra) solo existe desde `1.0.0`; no se fuerza un `1.0.0` anticipado para satisfacer la
+    clasificación del roadmap. La discrepancia se reconcilia con una nota en el ticket del
+    roadmap, no con un re-release. Ejemplo de referencia: **M-901** (gate duro de `/commit`,
+    clasificado `major` en el plan) se releasó como `minor` `0.5.0` con
+    `### Breaking changes` correctamente declarados.
 - Comparación: `validate-specboot.sh` (TICKET-0.3) ya compara `frameworkVersion` del
   proyecto contra la versión instalada. El significado de esa comparación es lo que define
   este documento.

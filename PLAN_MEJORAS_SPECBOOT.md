@@ -32,6 +32,22 @@ Cada ticket declara además:
 | v3 | Añadida clasificación SemVer y dependencias explícitas a cada ticket |
 | v3.1 | M-001 y M-002 completados vía change `phase0-reconciliation` (marcados con `[x]`); sección "Autenticación para consumidores (CI)" documentada en `README.md` |
 | v3.2 | M-101 y M-102 completados vía change `plan-traceability` (marcados con `[x]`); plantillas y skills de `enrich-us`, `plan-change` y `verify` actualizados con metadatos y IDs `SC-{NNN}` |
+| v3.3 | M-401 y M-402 completados vía change `persist-verify-results` (marcados con `[x]`); `verify` persiste `openspec/state/verify-results.json` (esquema versionado, autovalidado por `tests/verify-state-test.sh`); `/commit` usa gate informado suave y `archive` referencia la verificación en el manifest; convención de tests `SC-NNN` en agentes generadores; registrado M-403 (permisos pytest del subagente verify) |
+| v3.4 | M-501 y M-502 completados vía change `persist-adversarial-verdict` (marcados con `[x]`); `adversarial-review` formaliza la auto-refutación en protocolo de 4 pasos con anexo "Descartados" y persiste `openspec/state/adversarial-result.json` (esquema versionado, autovalidado por `tests/adversarial-state-test.sh`); `archive` referencia el veredicto en el manifest y `/commit` lo usa como gate informado suave (el gate duro llega con M-901, ya implementado en v3.5 — ver fila v3.9); permisos del subagente reviewer sincronizados con su rol (patrón M-403) |
+| v3.5 | M-901, M-902 y M-903 completados vía change `enforce-commit-gates` (marcados con `[x]`). **M-901**: `/commit` aplica **gates duros de evidencia** — verify `PASS` + adversarial `SHIP` del change activo (match por campo `change`, lectura token-light `node -e`); `PARTIAL/FAIL/NO-SHIP` o evidencia ausente/inválida/ajena bloquea sin pregunta a ciegas, ofreciendo ejecutar la herramienta faltante, abortar o `--force` (escape registrado como trailer `Gate-Bypass: --force (...)`; con gates verdes no se emite); staleness warn-only; self-test `tests/commit-gate-test.sh` (25 asserts `[SC-NNN]`) con fixtures de la matriz en `ai-specs/examples/commit-gate-fixtures/`; descripciones sincronizadas con el contrato (`AGENTS.md` §5.2, `verify`, `archive`, `code-auditing`, `.opencode/commands/commit.md`). **M-902**: cerrado como **"evaluado, sin acción"** — decisión: mantener el diseño 2 jobs / 1 archivo de `ci.yml` (jobs `validate` + `project-ci`), sin evidencia de fricción de consumidores (mantenedor 2026-09-05); `ci.yml` y `openspec/specs/specboot-workflows/spec.md` intactos, reabrir solo con evidencia nueva y change independiente; guard `tests/ci-evaluation-test.sh`. **M-903**: checklist mínimo obligatorio de deploy (6 ítems agnósticos: tests verdes, lint sin críticos, build, audit sin críticos, rollback definido, change archivado) con bloqueo antes del version bump; plantilla `docs/deploy-standards.md` incluye rollback y change archivado en su Pre-deploy Checklist; guard `tests/deploy-checklist-test.sh`; description de `/deploy` sincronizada. Bump `0.4.0` → `0.5.0` (minor con `### Breaking changes` en CHANGELOG: contrato de `/commit`; la auditoría adversarial deja de ser opcional). |
+| v3.6 | M-601 completado vía change `inject-mandatory-steps` (marcado con `[x]`). **M-601**: nuevo doc intocable `docs/openspec-tasks-mandatory-steps.md` — fuente única de verdad del checklist obligatorio (pre-implementación: rama según convención + git limpio; durante: test nuevo falla antes de implementar (RED) + tests unitarios del módulo; post: `verify` + `adversarial-review`) — inyectado por `plan-change` como sección `## Mandatory Steps` en todo `tasks.md` generado (leído en el momento de generación, sin copia hardcodeada en el skill) con check en su Step 6; referencia en `AGENTS.md` §2.3; distribución framework sincronizada en 5 puntos (`FRAMEWORK_ITEMS` + `UPDATE_ITEMS` en `specboot.sh`, allowlist `files` de `package.json`, árbol de `docs-standard.md`, skeleton de `framework-contract.md`); guard `tests/mandatory-steps-test.sh` (30 asserts `[SC-001]`..`[SC-007]`); ejemplo `ai-specs/examples/tasks.md` con la sección. **Fix de bug latente** (descubierto en el propio change, decisión del mantenedor): `specboot update` nunca reemplazaba los docs intocables (patrón `docs/*` del `case` en `replace_framework_files` los salteaba todos, contradiciendo la spec archivada `specboot-update`) — fix alineado con la spec, enmendada a 6 docs vía delta `## MODIFIED` del change; asserts de regresión `[SC-008]` en `tests/specboot-update-test.sh`; `allowedDocs` 5→6 en `tests/package-files-test.sh`. Sección **FASE 10** creada con los follow-ups de auditoría M-904..M-907 (W1–W4, pendientes). Bump `0.5.0` → `0.6.0` (minor, sin `### Breaking changes`). |
+| v3.7 | M-403 completado vía change `sync-agent-permissions` (marcado con `[x]`). **M-403**: sincronización bidireccional rol↔permission block de los 4 agentes restrictivos — verify: `"pytest *": allow` añadido (el rol lo documentaba y el Step 5b del skill caía en deny en proyectos Python) y el rol documenta `npm run test`; archive: patrones allow alineados con los pasos reales del skill (`git status *`, `git diff`, `git log`, `node -e *` para Steps 2/3/5), `rm` acotado al cleanup del Step 7 (`rm openspec/tickets/*`, reemplazando `rm -rf openspec/changes/*` que además alcanzaba `openspec/archive/`) y rol sin `git commit` prometido (regla "Commit ownership"); reviewer y plan auditados sin brechas; fallbacks `"*": deny` preservados; guard `tests/agent-permissions-test.sh` (25 asserts `[SC-001]`..`[SC-010]`); spec nueva `agent-permissions` (el SKILL.md de cada skill es la fuente de verdad del comportamiento). Bump `0.6.0` → `0.6.1` (patch, sin breaking changes); pin de versión de `tests/mandatory-steps-test.sh` migrado y su assert "M-403 pending" retirado. |
+| v3.8 | M-904 y M-905 completados vía change `commit-gate-semantics` (marcados con `[x]`). **M-904**: semántica formal de staleness en `/commit` — git-based: la evidencia es stale solo si existe un commit posterior a su `timestamp` que toca rutas de código (`src/`, `app/`, `tests/`, `ai-specs/`, `.opencode/`); commits solo de `docs/`/`openspec/` no ensucian; se mantiene warn-only con mensaje preciso que declara la regla y sugiere re-ejecutar; prevalencia **last-write-wins** documentada en `commit`, `verify` y `code-auditing` (cada corrida sobrescribe su archivo de estado y el gate lee la más reciente). **M-905**: gramática formal del trailer `Gate-Bypass` fijada en el skill `commit` (Step 6) — EBNF con orden fijo `verify` antes de `adversarial`, separador exacto `; ` y enums cerrados (`PASS|PARTIAL|FAIL|missing` / `SHIP|NO-SHIP|missing`), más regex canónica de parseo para tooling externo. Guard `tests/commit-gate-test.sh` extendido a 35 asserts (nuevos `[SC-001]`..`[SC-005]`, incluida validación funcional de la regex: matchea el ejemplo canónico y rechaza orden invertido y valores fuera del enum). Delta `## MODIFIED` + `## ADDED` sobre la spec `commit-gates`. Bump `0.6.1` → `0.6.2` (patch, sin breaking changes). |
+| v3.9 | M-906 y M-907 completados vía change `phase10-cleanup` (marcados con `[x]`); **Fase 10 cerrada y roadmap completo implementado**. **M-906**: reconciliación del SemVer declarado de M-901 — el roadmap lo clasificó `major` pero el release real fue `minor` `0.5.0` con `### Breaking changes` (válido en 0.x); se añadió nota de reconciliación en el ticket M-901 y `docs/versioning-standard.md` §2 fijó la regla "majors durante 0.x" (un `major` del roadmap se releasa como `minor` con `### Breaking changes`; el `major` estricto solo existe desde `1.0.0`). **M-907**: frase residual pre-gate-duro corregida en la spec viva `openspec/specs/adversarial-state/spec.md` ("the hard gate remains M-901" / "the hard gate is M-901" → archive permanece soft gate; el hard gate ya lo implementa `commit` según la spec `commit-gates`) con delta `## MODIFIED`; guard anti-regresión `[SC-004]` en `tests/commit-gate-test.sh` (36 asserts). Mención residual de la fila v3.4 corregida. Candidatos de la sesión M-904/M-905 registrados como backlog Fase 11 (sin implementar). Bump `0.6.2` → `0.6.3` (patch, sin breaking changes). |
+
+> **⚠️ Estrategia de rama — decisión del mantenedor (2026-09-05):** todas las fases
+> restantes de este plan se implementan en la **rama única**
+> `feature/plan-mejoras-specboot` (renombrada desde
+> `feature/m-201-202-path-design-validation`, que era herencia de la fase anterior).
+> **No crear una rama nueva por ticket ni por fase**: continuar fase tras fase sobre
+> esta misma rama. Push + PR + merge + tag y release con el paquete actualizado
+> **una sola vez**, cuando el plan completo esté implementado. Excepción: si se
+> detecta un fix urgente independiente del plan, evaluar rama aparte en ese momento.
 
 ---
 
@@ -361,7 +377,7 @@ la tarea como completada, reportar resultado y esperar nueva instrucción.
 
 # FASE 4 — Mejorar verificación y calidad
 
-## M-401 — Persistir resultados de verificación
+## [x] M-401 — Persistir resultados de verificación
 
 **Nivel SemVer:** `minor`
 **Dependencias:** M-102 (usa los IDs `SC-NNN` en el formato de salida)
@@ -404,7 +420,7 @@ que `/commit` pueda usar como gate.
 
 ---
 
-## M-402 — Mapeo explícito Scenario → Test
+## [x] M-402 — Mapeo explícito Scenario → Test
 
 **Nivel SemVer:** `minor`
 **Dependencias:** M-102
@@ -437,9 +453,43 @@ def test_sc001_user_password_reset():
 
 ---
 
+## [x] M-403 — Sincronizar permisos bash del subagente verify con su documentación
+
+**Nivel SemVer:** `patch`
+**Dependencias:** M-401 (la excepción de escritura de evidencia documentada ahí
+comparte la misma superficie de permisos que este fix)
+
+**Estado:** Descubierto durante la implementación de M-401 (tarea 1.6 del change
+`persist-verify-results`): `ai-specs/agents/verify-agent.md` documenta `pytest`
+como bash permitido, pero el permission block de `.opencode/agents/verify.md` no
+incluye el patrón `"pytest *"` → cae en `"*": deny` y el subagente `verify` no
+puede ejecutar tests Python (Step 5b del skill `verify`) en proyectos Python.
+
+**Problema:** El rol documentado del subagente y su permission block están
+desincronizados: la documentación promete capacidades que los permisos niegan.
+
+**Propuesta:** Sincronizar ambos archivos y auditar el mismo patrón en los demás
+agentes con permission block (backend, frontend, reviewer, archive): todo comando
+documentado en la lista "Bash permitido" del rol debe existir como patrón allow en
+el permission block del agente, y viceversa.
+
+**Tareas:**
+
+| # | Tarea | Prioridad |
+|---|-------|-----------|
+| 1 | Añadir `"pytest *": allow` al permission block de `.opencode/agents/verify.md` | Alta |
+| 2 | Auditar sincronización rol↔permisos en los demás agentes y corregir las brechas encontradas | Media |
+
+**Criterios de aceptación:**
+- Verify puede ejecutar `pytest` en un proyecto Python vía el subagente.
+- Ninguna entrada de "Bash permitido" en un rol carece de su patrón allow en el
+  permission block correspondiente (y viceversa).
+
+---
+
 # FASE 5 — Auditoría adversarial (extensión)
 
-## M-501 — Evolución de `adversarial-review` con auto-refutación estructurada
+## [x] M-501 — Evolución de `adversarial-review` con auto-refutación estructurada
 
 **Nivel SemVer:** `minor`
 **Dependencias:** ninguna
@@ -483,7 +533,7 @@ Hallazgo (severidad CRITICAL)
 
 ---
 
-## M-502 — Persistir el veredicto de `adversarial-review` como gate
+## [x] M-502 — Persistir el veredicto de `adversarial-review` como gate
 
 **Nivel SemVer:** `minor`
 **Dependencias:** M-501 (usa el formato de veredicto que ahí se formaliza), y es
@@ -525,7 +575,7 @@ verificar sin volver a ejecutar la auditoría completa.
 
 # FASE 6 — Pasos obligatorios de calidad
 
-## M-601 — Mandatory steps document
+## [x] M-601 — Mandatory steps document
 
 **Nivel SemVer:** `minor`
 **Dependencias:** ninguna
@@ -651,11 +701,17 @@ alcances distintos:
 
 # FASE 9 — Commit, release y arquitectura CI
 
-## M-901 — Gate duro de commit basado en evidencia
+## [x] M-901 — Gate duro de commit basado en evidencia
 
 **Nivel SemVer:** `major` (cambia el contrato de `/commit`: de gate blando a gate
 duro, puede bloquear flujos que hoy pasan)
 **Dependencias:** M-401 (`verify-results.json`), M-502 (`adversarial-result.json`)
+
+> **Nota de reconciliación SemVer (M-906):** el roadmap clasificó M-901 como
+> `major`, pero el release real fue `minor` `0.5.0` con `### Breaking changes`.
+> Esto es válido durante 0.x según `docs/versioning-standard.md` §2, que ahora
+> declara la regla explícita: un `major` del roadmap se releasa como `minor`
+> con `### Breaking changes` mientras el framework esté en 0.x.
 
 **Problema:** `/commit` usa un gate suave (pregunta al usuario si ejecutó verify).
 Depende de la honestidad del usuario.
@@ -686,7 +742,14 @@ gates duros antes de permitir el commit.
 
 ---
 
-## M-902 — Evaluar arquitectura CI: ¿un workflow con dos jobs, o dos workflows?
+## [x] M-902 — Evaluar arquitectura CI: ¿un workflow con dos jobs, o dos workflows?
+
+**Estado:** Cerrado como **"evaluado, sin acción"** (change `enforce-commit-gates`,
+2026-09-05): decisión: mantener el diseño 2 jobs / 1 archivo de `ci.yml` — sin
+evidencia de fricción de consumidores con el modelo actual (jobs `validate` +
+`project-ci`). `ci.yml` y `openspec/specs/specboot-workflows/spec.md` permanecen
+intactos; reabrir solo con evidencia nueva de un consumidor real y en su propio
+change (ver fila v3.5 del historial).
 
 **Nivel SemVer:** `major` si se decide migrar (cambia contrato de `specboot-workflows`);
 `n/a` si la evaluación concluye mantener el diseño actual.
@@ -741,7 +804,7 @@ este ticket se convierte en una **evaluación**, no en una migración decidida.
 
 ---
 
-## M-903 — Mejorar checklist de deploy
+## [x] M-903 — Mejorar checklist de deploy
 
 **Nivel SemVer:** `minor`
 **Dependencias:** ninguna
@@ -765,6 +828,82 @@ lint sin errores críticos, build exitoso, auditoría de seguridad sin críticos
 
 ---
 
+# FASE 10 — Follow-ups de auditoría (patrón M-403)
+
+**Objetivo:** Registrar los 4 warnings (W1–W4) que la auditoría adversarial del
+change `enforce-commit-gates` (M-901-903, 2026-09-05) dejó como candidatos a
+follow-up, siguiendo el **patrón M-403**: hallazgos descubiertos durante la
+implementación de otro ticket que merecen ticket propio. **Estado: pendientes** —
+registrados vía change `inject-mandatory-steps` (M-601), sin implementar en ese
+change. Al planificar cada uno, seguir el ciclo SDD normal
+(`/plan-change` → `/apply` → `/verify` → `/archive`).
+
+## [x] M-904 — W1: Definir la semántica de staleness de la evidencia
+
+**Nivel SemVer:** por definir al planificar (probable `patch`)
+**Dependencias:** ninguna
+
+**Problema:** El gate de `/commit` trata la vigencia temporal (staleness) de
+`verify-results.json` / `adversarial-result.json` como warn-only, pero la
+semántica de "stale" no está definida con precisión: no hay umbral temporal, ni
+regla de invalidación por cambios de código posteriores a la evidencia, ni qué
+corrida prevalece cuando hay varias del mismo change. La advertencia puede
+resultar ambigua u opaca.
+
+**Propuesta:** Definir la semántica exacta (umbral temporal y/o invalidación por
+referencia de commit), documentarla en los skills `commit`, `verify` y
+`code-auditing`, y ajustar `tests/commit-gate-test.sh` con asserts de la
+semántica definida.
+
+---
+
+## [x] M-905 — W2: Fijar el vocabulario del trailer `Gate-Bypass`
+
+**Nivel SemVer:** por definir al planificar (probable `patch`)
+**Dependencias:** ninguna
+
+**Problema:** El trailer `Gate-Bypass: --force (verify=<estado>;
+adversarial=<veredicto>)` usa un vocabulario ad-hoc: falta fijar la gramática
+formal del valor (tokens permitidos, orden, valores del enum) y su validación,
+para que herramientas de auditoría puedan parsearlo de forma estable.
+
+**Propuesta:** Especificar la gramática del trailer, documentarla en el skill
+`commit` y añadir asserts de parseo al guard `tests/commit-gate-test.sh`.
+
+---
+
+## [x] M-906 — W3: Reconciliar el nivel SemVer declarado de M-901
+
+**Nivel SemVer:** `patch` (solo documentación del roadmap)
+**Dependencias:** ninguna
+
+**Problema:** M-901 declara nivel `major` en este plan, pero su release se
+materializó como `minor` `0.5.0` con sección `### Breaking changes` (válido
+durante 0.x según `docs/versioning-standard.md` §2). El plan queda con una
+clasificación que no coincide con el release real; futuras lecturas del roadmap
+pueden confundirse.
+
+**Propuesta:** Añadir nota de reconciliación al ticket M-901 (o reclasificarlo
+según la matriz §3) y, si aplica, precisar en `docs/versioning-standard.md` cómo
+se registran los majors durante 0.x.
+
+---
+
+## [x] M-907 — W4: Corregir frase residual en spec archivada
+
+**Nivel SemVer:** `patch`
+**Dependencias:** ninguna
+
+**Problema:** Una frase residual quedó en una spec archivada
+(`openspec/specs/`) del change `enforce-commit-gates`: wording previo al gate
+duro que ya no refleja el contrato vigente. Las specs archivadas son la fuente
+de verdad consolidada; las frases residuales siembran contradicciones.
+
+**Propuesta:** Localizar la frase y corregirla vía change SDD propio (las specs
+archivadas no se editan ad-hoc), con guard que impida la regresión.
+
+---
+
 # Orden de implementación
 
 ```
@@ -775,6 +914,7 @@ FASE 0 — Reconciliación (base para todo lo demás)
 FASE 4 — Verificación persistente (habilita los gates de Fase 9)
    M-401  Persistir verify-results
    M-402  Mapeo Scenario → Test
+   M-403  Permisos bash del subagente verify sincronizados (patch)
 
 FASE 1 — Planificación precisa
    M-101  Enriquecer enrich-us
@@ -805,11 +945,42 @@ FASE 7 — Sync specs
 
 FASE 8 — Git para consumidores
    M-801  docs/consumer-git-workflow.md (sin tocar el estándar interno)
+
+FASE 10 — Follow-ups de auditoría (completada vía `phase10-cleanup`)
+   M-904  Semántica de staleness de la evidencia (W1) ✔
+   M-905  Vocabulario del trailer Gate-Bypass (W2) ✔
+   M-906  Reconciliar SemVer declarado de M-901 (W3) ✔
+   M-907  Frase residual en spec archivada (W4) ✔
 ```
 
 Nota: el orden respeta las dependencias declaradas en cada ticket (M-102 antes de
 M-401/M-402; M-401+M-502 antes de M-901). Fases 3, 2, 6, 7 y 8 no tienen dependencias
 cruzadas con el resto, por lo que su orden relativo es flexible.
+
+---
+
+# Backlog — Candidatos Fase 11 (registrados, no implementados)
+
+Surgidos de la auditoría adversarial del change `commit-gate-semantics`
+(M-904/M-905, 2026-09-06). Solo registro: planificar vía `/enrich-us` +
+`/plan-change` si se decide abordarlos.
+
+1. **W5 — Allowlist de rutas de código para staleness configurable.** La lista
+   (`src/`, `app/`, `tests/`, `ai-specs/`, `.opencode/`) es fija: proyectos
+   consumidores con `lib/`, `server/`, etc. nunca reciben staleness (falso
+   negativo, mitigado por ser warn-only). Candidato: hacerla configurable vía
+   `.specboot.json`.
+2. **Toil — Pin de versión en `tests/mandatory-steps-test.sh`.** Se migra a
+   mano en cada bump (0.6.0→0.6.1→0.6.2→0.6.3). Candidato: asertar
+   dinámicamente la existencia de `## [X.Y.Z]` en `CHANGELOG.md` a partir de
+   `package.json`.
+3. **Formato de proposal.** `openspec archive` advierte que falta
+   `## Why`/`## What Changes`: el template del skill `plan-change` no los
+   incluye. Candidato: alinear el template o silenciar el warning de forma
+   documentada.
+4. **Cómputo git del staleness sin comando canónico.** El guard aserta
+   marcadores documentales, no la ejecución git real: no hay comando canónico
+   documentado para el cómputo.
 
 ---
 
