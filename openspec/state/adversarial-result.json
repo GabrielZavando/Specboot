@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "change": "fix-consumer-mode",
-  "ticket_id": "N/A (reporte upstream del mantenedor — análisis de modo consumidor, 2026-09-07)",
+  "change": "plan-agent-git-permissions",
+  "ticket_id": "N/A (auditoría del mantenedor — análisis de permisos del agente plan, 2026-09-09)",
   "verdict": "SHIP",
-  "confidence": 0.93,
-  "timestamp": "2026-09-07T19:58:30Z",
+  "confidence": 0.9,
+  "timestamp": "2026-09-09T01:30:00Z",
   "findings": {
-    "total": 4,
+    "total": 2,
     "critical": 0,
     "warnings": 0,
-    "info": 4,
+    "info": 2,
     "discarded": 0
   }
 }

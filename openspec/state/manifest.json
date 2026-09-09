@@ -289,6 +289,24 @@
         "timestamp": "2026-09-07T19:58:30Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "plan-agent-git-permissions",
+      "ticket_id": "N/A (auditoría del mantenedor — análisis de permisos del agente plan, 2026-09-09)",
+      "archived_at": "2026-09-09T05:29:39.180Z",
+      "specs_applied": [
+        "agent-permissions"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-09T01:20:00Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-09T01:30:00Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }
