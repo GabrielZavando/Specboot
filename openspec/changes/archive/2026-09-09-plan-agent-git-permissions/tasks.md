@@ -55,6 +55,10 @@
       branch-create git; sin breaking changes). Racional: matriz de ruptura
       `docs/versioning-standard.md` §3 — se añade funcionalidad del framework sin
       romper nada → minor.
+      *Sub-fix post-archive:* migrar el version pin del guard SC-007 de
+      `tests/mandatory-steps-test.sh` de `0.6.4` → `0.7.0` (el self-test del
+      framework fallaba en CI al no coincidir con el bump). Commit
+      `chore(tests): migrate framework version pin to 0.7.0` (`1fab8f4`).
   - **Priority**: Medium
   - **Layer**: docs
   - **Estimate**: S
