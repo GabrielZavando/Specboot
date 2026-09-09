@@ -10,7 +10,8 @@
 #     scoped to the Step 7 tickets cleanup (SC-004) and no git commit promised
 #     in the role (SC-005)
 #   - reviewer and plan agents stay in bidirectional sync with their roles
-#     (SC-006, SC-007)
+#     (SC-006, SC-007); plan allows branch-creating git (per
+#     docs/git-workflow-standards.md) but never commit/push (SC-007)
 #   - every restrictive block keeps the "*": deny fallback (SC-008)
 #   - PLAN_MEJORAS_SPECBOOT.md marks M-403 [x] with history row v3.7 (SC-010)
 #
@@ -142,6 +143,14 @@ check SC-007 "plan block restricts edit to openspec artifacts" \
   has_all "$PLAN_AGENT" '"openspec/**": allow'
 check SC-007 "plan role documents the openspec-only contract" \
   has_all "$PLAN_ROLE" "openspec *" "openspec/**"
+check SC-007 "plan block allows branch-creating git for ticket branch" \
+  has_all "$PLAN_AGENT" '"git checkout *": allow' '"git switch *": allow' \
+          '"git branch *": allow' '"git status": allow'
+check SC-007 "plan role documents the git-acotado contract" \
+  has_all "$PLAN_ROLE" "git checkout" "git switch" "git branch" \
+          "git commit" "git push"
+check SC-007 "plan block does not allow git commit or push (ownership)" \
+  lacks_all "$PLAN_AGENT" '"git commit": allow' '"git push": allow'
 
 # --- SC-008: deny fallback preserved in every restrictive block ---
 echo "Deny fallbacks (SC-008):"
