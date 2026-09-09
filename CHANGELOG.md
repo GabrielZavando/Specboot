@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-09-09
+
+### Added
+
+- **Plan agent branch-create git (plan-agent-git-permissions)** — el agente `plan`
+  (que ejecuta `/plan-change`) podía escribir en `openspec/**` pero su permission block
+  de bash solo permitía `openspec *`, así que no podía crear la rama del ticket
+  `feature/ticket-X.Y-nombre-corto` que exige `docs/git-workflow-standards.md` §6.1.
+  Se añaden patrones bash allow de branch-create/read git (`git checkout`, `git switch`,
+  `git branch`, `git status`, `git log`, `git merge-base`) y se deniegan
+  explícitamente `git commit` y `git push` (ownership del commit en `/commit`; push solo
+  al cerrar un grupo de tickets). El rol `ai-specs/agents/plan-agent.md` documenta el
+  nuevo contrato bash. `minor` según la matriz de `docs/versioning-standard.md` §3
+  (se agrega funcionalidad sin romper contratos ni esquema obligatorio).
+
+### Security
+
+- **Menor privilegio preservado en `plan`**: la ampliación git del agente plan se acota
+  a branch-create/read; `git commit` y `git push` quedan denegados por el block y
+  declarados como prohibidos en el rol. El fallback `"*": deny` se conserva en bash y
+  edit, y un guard `tests/agent-permissions-test.sh` (SC-007) protege la capacidad
+  contra regresiones.
+
 ## [0.6.4] - 2026-09-07
 
 ### Fixed
