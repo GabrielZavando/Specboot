@@ -190,6 +190,18 @@ check SC-006 "commit block allows evidence/extraction helpers" \
         '"cat *": allow' '"mkdir -p openspec/*": allow'
 check SC-006 "commit block denies force push" \
   has_all "$COMMIT_AGENT" '"git push --force*": deny'
+
+# --- TICKET-AUDIT-2 (force-push-deny coverage, SC-005/SC-006) ---
+echo "Commit force-push coverage (SC-005):"
+
+check SC-005 "commit block denies mid-command force push" \
+  has_all "$COMMIT_AGENT" '"git push *--force*": deny'
+check SC-005 "commit block denies short-flag push" \
+  has_all "$COMMIT_AGENT" '"git push -f*": deny'
+check SC-005 "commit block denies trailing short-flag push" \
+  has_all "$COMMIT_AGENT" '"git push * -f": deny'
+check SC-006 "commit role documents the full deny set" \
+  has_all "$COMMIT_AGENT" "git push *--force*" "git push -f*" "git push * -f"
 check SC-006 "commit block keeps wildcard deny" \
   has_all "$COMMIT_AGENT" '"*": deny'
 

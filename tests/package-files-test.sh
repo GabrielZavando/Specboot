@@ -24,7 +24,11 @@ process.stdin.on("data", d => (s += d)).on("end", () => {
     "docs/docs-standard.md",
     "docs/specboot-json-standard.md",
     "docs/versioning-standard.md",
-    "docs/openspec-tasks-mandatory-steps.md"
+    "docs/openspec-tasks-mandatory-steps.md",
+    // sdd-cycle-hardening follow-up (TICKET-AUDIT-2, SC-001): the canonical
+    // TDD Failure Protocol doc is referenced by shipped apply.md/build-agent
+    // and MUST travel in the package — no dangling canonical references.
+    "docs/tdd-failure-protocol.md"
   ]);
   const requiredDirPrefixes = [
     ".opencode/commands/",
