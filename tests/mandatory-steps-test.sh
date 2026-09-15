@@ -156,13 +156,13 @@ check SC-006 "Fase 10 registers follow-ups M-904..M-907" \
 check SC-006 "M-403 marked completed (sync-agent-permissions)" \
   grep -qF -- "## [x] M-403" "$PLAN"
 
-# --- SC-007: version pins (0.7.0 after plan-agent-git-permissions minor bump) + historical 0.6.0 notes ---
+# --- SC-007: version pins must stay consistent (dynamic) + historical 0.6.0 notes ---
 echo "Version pins (SC-007):"
 
-check SC-007 "package.json declares 0.7.0" \
-  grep -qF -- '"version": "0.7.0"' "$PKGJSON"
-check SC-007 ".specboot.json reflects frameworkVersion 0.7.0" \
-  grep -qF -- '"frameworkVersion": "0.7.0"' "$SPECBOOTJSON"
+check SC-007 "package.json version matches .specboot.json frameworkVersion" \
+  bash -c '[ "$(node -e "console.log(require(\"./package.json\").version)")" = "$(node -e "console.log(require(\"./.specboot.json\").frameworkVersion)")" ]'
+check SC-007 "CHANGELOG has an entry for the current version" \
+  bash -c 'v=$(node -e "console.log(require(\"./package.json\").version)"); grep -q "^## \[$v\]" CHANGELOG.md'
 check SC-007 "CHANGELOG entry ## [0.6.0] present" \
   grep -q "^## \[0\.6\.0\]" "$CHANGELOG"
 

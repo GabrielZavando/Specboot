@@ -1,9 +1,11 @@
 {
   "name": "@gabrielzavando/specboot",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "SDD development framework for OpenCode + OpenSpec: agents, commands, skills, and validation tools that enforce the Spec-Driven Development flow.",
   "license": "MIT",
-  "bin": { "specboot": "specboot.sh" },
+  "bin": {
+    "specboot": "specboot.sh"
+  },
   "scripts": {
     "check": "bash check-refs.sh",
     "validate": "bash validate-specboot.sh",
@@ -30,8 +32,22 @@
     "LICENSE",
     "README.md"
   ],
-  "repository": { "type": "git", "url": "git+https://github.com/GabrielZavando/Specboot.git" },
-  "publishConfig": { "registry": "https://npm.pkg.github.com" },
-  "keywords": ["sdd", "openspec", "opencode", "framework", "spec-driven-development", "agents"],
-  "engines": { "node": ">=18" }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GabrielZavando/Specboot.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "keywords": [
+    "sdd",
+    "openspec",
+    "opencode",
+    "framework",
+    "spec-driven-development",
+    "agents"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
 }

@@ -1,17 +1,22 @@
 {
   "schema_version": 1,
-  "change": "plan-agent-git-permissions",
-  "ticket_id": "N/A (auditoría del mantenedor — análisis de permisos del agente plan, 2026-09-09)",
+  "change": "sdd-cycle-hardening",
+  "ticket_id": "TICKET-AUDIT-1",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-09T01:20:00Z",
-  "tasks": { "total": 3, "passed": 3, "failed": 0, "untested": 0 },
+  "timestamp": "2026-09-14T00:00:00Z",
+  "tasks": { "total": 10, "passed": 10, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-001", "test": "[SC-007] plan block allows branch-creating git for ticket branch", "status": "PASS" },
-    { "id": "SC-002", "test": "[SC-007] plan block allows branch-creating git for ticket branch", "status": "PASS" },
-    { "id": "SC-003", "test": "[SC-007] plan block does not allow git commit or push (ownership)", "status": "PASS" },
-    { "id": "SC-004", "test": "[SC-007] plan role documents the git-acotado contract", "status": "PASS" },
-    { "id": "SC-005", "test": "[SC-008] plan block keeps wildcard deny", "status": "PASS" },
-    { "id": "SC-006", "test": "tests/agent-permissions-test.sh (28/28 PASS)", "status": "PASS" }
+    { "id": "SC-001", "test": "plan-change Step 1½ branch creation (delta spec + skill)", "status": "PASS" },
+    { "id": "SC-002", "test": "plan-change Step 4½ sources enriched scenarios", "status": "PASS" },
+    { "id": "SC-003", "test": "grep guard: no jira/curl in enrich-us", "status": "PASS" },
+    { "id": "SC-004", "test": "grep: canonical docs/tdd-failure-protocol.md referenced, no duplication", "status": "PASS" },
+    { "id": "SC-005", "test": "tests/commit-gate-test.sh [SC-005] dedicated commit agent wiring", "status": "PASS" },
+    { "id": "SC-006", "test": "tests/agent-permissions-test.sh [SC-006] commit block + force-push deny", "status": "PASS" },
+    { "id": "SC-007", "test": "tests/adversarial-state-test.sh suite green; single {file:} injection", "status": "PASS" },
+    { "id": "SC-008", "test": "tests/agent-permissions-test.sh [SC-008] archive lacks CHANGELOG allow", "status": "PASS" },
+    { "id": "SC-009", "test": ".opencode/commands/apply.md Pre-flight Preconditions section", "status": "PASS" },
+    { "id": "SC-010", "test": "18/18 guard suite + specboot.sh --ci 0 errors", "status": "PASS" },
+    { "id": "SC-011", "test": "tests/agent-permissions-test.sh [SC-011] npm test bare allow", "status": "PASS" }
   ]
 }

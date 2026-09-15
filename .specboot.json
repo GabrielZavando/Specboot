@@ -1,7 +1,9 @@
 {
-  "frameworkVersion": "0.7.0",
+  "frameworkVersion": "0.8.0",
   "name": "specboot",
   "description": "SDD framework boilerplate (Specboot) — dogfooding its own schema",
-  "services": ["."],
+  "services": [
+    "."
+  ],
   "stack": "framework"
 }

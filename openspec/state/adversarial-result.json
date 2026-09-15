@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "change": "plan-agent-git-permissions",
-  "ticket_id": "N/A (auditoría del mantenedor — análisis de permisos del agente plan, 2026-09-09)",
+  "change": "sdd-cycle-hardening",
+  "ticket_id": "TICKET-AUDIT-1",
   "verdict": "SHIP",
-  "confidence": 0.9,
-  "timestamp": "2026-09-09T01:30:00Z",
+  "confidence": 0.85,
+  "timestamp": "2026-09-14T00:10:00Z",
   "findings": {
-    "total": 2,
+    "total": 3,
     "critical": 0,
-    "warnings": 0,
+    "warnings": 1,
     "info": 2,
     "discarded": 0
   }

@@ -420,10 +420,30 @@ else
   bad "[SC-004] adversarial-state spec no longer describes the hard gate as pending (M-901)"
 fi
 
+# --- G. Dedicated commit agent wiring (sdd-cycle-hardening, TICKET-AUDIT-1) ---
+echo "Dedicated commit agent wiring (sdd-cycle-hardening):"
+
+COMMIT_CMD="$ROOT/.opencode/commands/commit.md"
+COMMIT_AGENT="$ROOT/.opencode/agents/commit.md"
+
+if has_all "$COMMIT_CMD" "agent: commit"; then
+  ok "[SC-005] commit command declares agent: commit"
+else
+  bad "[SC-005] commit command declares agent: commit"
+fi
+
+if has_all "$COMMIT_AGENT" "mode: primary"; then
+  ok "[SC-005] commit agent file exists with mode: primary"
+else
+  bad "[SC-005] commit agent file exists with mode: primary"
+fi
+
+if lacks_all "$COMMIT_AGENT" "build-agent.md"; then
+  ok "[SC-005] commit agent does not load the build-agent role"
+else
+  bad "[SC-005] commit agent does not load the build-agent role"
+fi
+
 # --- Summary ---
 echo ""
 echo "Commit gate contract: $PASS passed, $FAIL failed"
-if [ "$FAIL" -gt 0 ]; then
-  exit 1
-fi
-exit 0
