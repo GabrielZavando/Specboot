@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-09-14
+
+### Added
+
+- **Dedicated `commit` agent (sdd-cycle-hardening)** — `/commit` ya no corre bajo el
+  agente `build` (permisos totales, rol ajeno cargado). Nuevo `.opencode/agents/commit.md`
+  con `edit: deny`, bash acotado a git/gh/node/ls/cat/mkdir, `git push --force`
+  estructuralmente denegado, y rol mínimo propio. El comando `commit.md` declara
+  `agent: commit`. Registrado en `AGENTS.md` §5.4 y `ai-specs/README.md`.
+- **plan-change crea la rama del ticket** — nuevo Step 1½ en `plan-change`:
+  verifica git limpio, crea `feature/ticket-X-nombre` desde HEAD según
+  `docs/git-workflow-standards.md`, confirma el nombre y pregunta antes de
+  reutilizar una rama existente. Cierra la brecha entre estándares/permisos
+  (ya habilitados) y el skill (que nunca la ordenaba).
+- **Pre-flight preconditions en `/apply`** — el comando verifica rama conforme a
+  la convención y git limpio antes de despachar tareas; aborta sugiriendo
+  `/plan-change` cuando falta la rama. Segundo cerrojo de la brecha anterior.
+- **`docs/tdd-failure-protocol.md` (fuente canónica)** — el TDD Failure Protocol
+  sale de `apply.md` y vive en un documento del framework, referenciado (sin
+  duplicar) desde `apply.md`, `build-agent.md` y `examples/tasks.md`.
+- **Verify permite `npm test` bare** — `"npm test": allow` añadido al block del
+  agente verify (antes solo `npm test *`).
+
+### Changed
+
+- **enrich-us sin Jira** — Step 1 describe la entrada como texto directo del
+  usuario; eliminado el bloque Jira MCP / `curl` a la API de Atlassian que los
+  permisos del agente `plan` ya denegaban (contenido muerto).
+- **Step 4½ de plan-change** — la validación de diseño referencia los escenarios
+  del artefacto enriquecido o derivados del título, no un `scenarios.md` aún
+  inexistente.
+- **`/adversarial-review` sin doble inyección** — el skill `code-auditing` se
+  inyecta una sola vez (vía el agente `reviewer.md`), eliminada del comando.
+- **Agente `archive` sin permiso huérfano** — `CHANGELOG.md` eliminado de su
+  edit allow (la skill no documenta escritura de changelog; se re-añade si el
+  skill lo documenta, regla M-403).
+
+### Tests
+
+- `tests/agent-permissions-test.sh` (+12 asserts) y `tests/commit-gate-test.sh`
+  (+3 asserts) escritos en RED antes de tocar agentes/comandos (TDD del propio
+  framework). Suite completa: 18 guards verdes, `specboot.sh --ci` 0 errores.
+
 ## [0.7.0] - 2026-09-09
 
 ### Added
