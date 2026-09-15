@@ -5,39 +5,22 @@ TBD - created by archiving change specboot-npm-publish. Update Purpose after arc
 ## Requirements
 ### Requirement: Package configuration
 
-The repository SHALL contain a `package.json` declaring the package name `@gabrielzavando/specboot`, an initial version `0.1.2`, the `publishConfig.registry` pointing to `https://npm.pkg.github.com`, a `bin.specboot` entry pointing to `specboot.sh` (pre-normalized path, no `./` prefix), `scripts` (`check`, `validate`, `ci`), and a `files` allowlist that includes ONLY the following intocable framework assets:
-- `.opencode/commands`
-- `.opencode/agents`
-- `ai-specs`
-- `check-refs.sh`
-- `specboot.sh`
-- `validate-specboot.sh`
-- `templates/ci`
-- `docs/base-standards.md`
-- `docs/framework-contract.md`
-- `docs/docs-standard.md`
-- `docs/specboot-json-standard.md`
-- `docs/versioning-standard.md`
-- `opencode.json`
-- `AGENTS.md`
-- `Makefile`
-- `.github/workflows`
-- `LICENSE`
-- `README.md`
+The package `files` allowlist MUST include the framework assets plus the
+**7 intocable framework docs**, adding `docs/tdd-failure-protocol.md` —
+the canonical TDD Failure Protocol referenced by `.opencode/commands/apply.md`,
+`ai-specs/agents/build-agent.md` and `ai-specs/examples/tasks.md`. A doc that
+is referenced as canonical by shipped framework files MUST be shipped.
 
-while EXCLUDING internal repository state (`.git/`, `.github/` other than `workflows`, `openspec/`, `tests/`, `node_modules/`, the project `docs/` tree, the standalone `update.sh`, `CHANGELOG.md`). The `description` MUST NOT contain the word "template" and `keywords` MUST reflect a framework (e.g. `sdd`, `openspec`, `opencode`, `framework`, `spec-driven-development`, `agents`).
+#### Scenario: tdd-failure-protocol.md is published
 
-#### Scenario: Package content validation
-- **Given** the `package.json` is configured with the `files` allowlist
-- **When** running `npm pack --dry-run`
-- **Then** only the allowlisted framework files are included in the package
-- **And** internal repository files (`.git/`, `openspec/`, `tests/`, `node_modules/`, project `docs/`, `update.sh`) are excluded
+- **WHEN** `npm pack` is run on the framework repository
+- **THEN** the tarball contains `docs/tdd-failure-protocol.md`
 
-#### Scenario: bin entry survives publish normalization without warnings
-- **Given** the `package.json` declares `"bin": { "specboot": "specboot.sh" }`
-- **When** running `npm publish --dry-run`
-- **Then** no bin normalization warning is emitted
-- **And** the `bin.specboot` entry still points to the shipped `specboot.sh` script
+#### Scenario: No dangling canonical references
+
+- **WHEN** a shipped file (commands, agents, examples) references
+  `docs/tdd-failure-protocol.md` as canonical source
+- **THEN** that document MUST be present in the shipped package
 
 ### Requirement: Automated publication
 
