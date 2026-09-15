@@ -63,6 +63,11 @@ assert_exists "docs skeleton api/api-spec.yml"    "$EMPTY/docs/api/api-spec.yml"
 assert_exists "docs skeleton data-model"           "$EMPTY/docs/data-model/data-model.md"
 assert_exists ".github copied"                     "$EMPTY/.github"
 
+# [SC-002, TICKET-AUDIT-2] init copies the 7 intocable framework docs,
+# including the canonical TDD Failure Protocol (referenced by apply.md).
+assert_exists "[SC-002] base-standards intocable"   "$EMPTY/docs/base-standards.md"
+assert_exists "[SC-002] tdd-failure-protocol intocable" "$EMPTY/docs/tdd-failure-protocol.md"
+
 # ---------- Test 2: guard — .specboot.json already exists ----------
 EXISTING="$(mktemp -d)"
 echo '{"frameworkVersion":"0.1.1","name":"x"}' > "$EXISTING/.specboot.json"

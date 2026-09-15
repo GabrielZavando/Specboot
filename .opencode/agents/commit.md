@@ -19,6 +19,9 @@ permission:
     "git push": allow
     "git push *": allow
     "git push --force*": deny
+    "git push *--force*": deny
+    "git push -f*": deny
+    "git push * -f": deny
     "gh *": allow
     "node -e *": allow
     "ls *": allow
@@ -52,6 +55,8 @@ improvises reglas aquí.
   `merge-base`, `branch`, `show-current`), escritura git acotada (`add`,
   `commit`, `push` — nunca `--force`), `gh *`, `node -e` (extracción token-light
   de evidencias), `ls`, `cat` y `mkdir -p openspec/*`. Todo lo demás: deny.
-- **Nunca** `git push --force` (denegado estructuralmente, no solo por texto).
+- **Nunca** force-push, en ninguna de sus formas: denegado estructuralmente
+  (`git push --force*`, `git push *--force*`, `git push -f*`, `git push * -f`),
+  no solo por texto.
 - El trailer `Gate-Bypass` solo se emite cuando el usuario forzó `--force`
   tras un gate bloqueado; con gates verdes no se emite.

@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-09-15
+
+### Fixed
+
+- **Distribución del protocolo TDD canónico (TICKET-AUDIT-2)** — `docs/tdd-failure-protocol.md`
+  (creado en 0.8.0 como fuente canónica, referenciado por `apply.md`, `build-agent.md` y
+  `examples/tasks.md`) no viajaba en el paquete: no estaba en `package.json → files` ni en
+  `FRAMEWORK_ITEMS`/`UPDATE_ITEMS` de `specboot.sh`. En proyectos consumidores la referencia
+  canónica quedaba rota. Añadido a los tres puntos de distribución; conjunto de docs
+  intocables 6 → 7, sincronizado en `docs/docs-standard.md`, `docs/framework-contract.md`
+  y en las specs `npm-distribution` / `specboot-update`.
+
+### Security
+
+- **Force-push totalmente denegado en el agente commit** — el deny `"git push --force*"`
+  solo cubría el flag como segundo token; `git push origin <branch> --force` y `git push -f`
+  caían en el allow genérico (WARNING del adversarial review de 0.8.0). Nuevos denies
+  `"git push *--force*": deny`, `"git push -f*": deny` y `"git push * -f": deny` (los
+  wildcards intermedios están soportados según la documentación oficial de OpenCode;
+  last-matching-rule-wins con denies después del allow). Rol del agente actualizado (M-403).
+
+### Tests
+
+- 6 asserts nuevos (RED primero): distribución del 7º doc en `package-files-test.sh`,
+  `specboot-init-test.sh` y `specboot-update-test.sh`; cobertura de force-push y espejo
+  documental en `agent-permissions-test.sh` (39 → 43 asserts).
+
 ## [0.8.0] - 2026-09-14
 
 ### Added

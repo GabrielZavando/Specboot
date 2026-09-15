@@ -326,6 +326,25 @@
         "timestamp": "2026-09-14T00:10:00Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "force-push-deny-and-doc-distribution",
+      "ticket_id": "TICKET-AUDIT-2",
+      "archived_at": "2026-09-15T14:45:51.125Z",
+      "specs_applied": [
+        "npm-distribution",
+        "specboot-update"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-15T14:05:17Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-15T00:30:00Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }

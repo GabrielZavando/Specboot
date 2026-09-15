@@ -68,6 +68,7 @@ make_template() {
   echo "FW-jsonstd"       > "$dir/docs/specboot-json-standard.md"
   echo "FW-verstd"        > "$dir/docs/versioning-standard.md"
   echo "FW-msteps"        > "$dir/docs/openspec-tasks-mandatory-steps.md"
+  echo "FW-tddproto"      > "$dir/docs/tdd-failure-protocol.md"
   echo "FW-command"       > "$dir/.opencode/commands/plan-change"
   echo "FW-agent"         > "$dir/.opencode/agents/backend.md"
   echo "FW-skill"         > "$dir/ai-specs/skills/demo/SKILL.md"
@@ -115,6 +116,7 @@ assert_eq "opencode.json replaced"       "FW-openode-json" "$(cat "$PROJ/opencod
 # legacy docs/* skip in replace_framework_files silently dropped ALL docs,
 # contradicting the archived specboot-update spec).
 assert_eq "[SC-008] mandatory-steps doc replaced" "FW-msteps" "$(cat "$PROJ/docs/openspec-tasks-mandatory-steps.md" 2>/dev/null || echo MISSING)"
+assert_eq "[SC-003] tdd-failure-protocol doc replaced (TICKET-AUDIT-2, 7 intocable docs)" "FW-tddproto" "$(cat "$PROJ/docs/tdd-failure-protocol.md" 2>/dev/null || echo MISSING)"
 assert_eq "[SC-008] base-standards doc replaced"  "FW-base"   "$(cat "$PROJ/docs/base-standards.md" 2>/dev/null || echo MISSING)"
 assert_eq "[SC-008] project docs untouched"       "CUSTOM BACKEND STANDARDS - keep me" "$(cat "$PROJ/docs/backend-standards.md")"
 assert_eq "frameworkVersion rewritten"   "0.2.0" "$(node -e "console.log(require('$PROJ/.specboot.json').frameworkVersion)" 2>/dev/null || grep -o '"frameworkVersion": *"[^"]*"' "$PROJ/.specboot.json" | sed 's/.*:"//;s/"//')"

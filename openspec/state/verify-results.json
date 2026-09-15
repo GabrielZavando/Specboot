@@ -1,22 +1,18 @@
 {
   "schema_version": 1,
-  "change": "sdd-cycle-hardening",
-  "ticket_id": "TICKET-AUDIT-1",
+  "change": "force-push-deny-and-doc-distribution",
+  "ticket_id": "TICKET-AUDIT-2",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-14T00:00:00Z",
-  "tasks": { "total": 10, "passed": 10, "failed": 0, "untested": 0 },
+  "timestamp": "2026-09-15T14:05:17Z",
+  "tasks": { "total": 7, "passed": 7, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-001", "test": "plan-change Step 1½ branch creation (delta spec + skill)", "status": "PASS" },
-    { "id": "SC-002", "test": "plan-change Step 4½ sources enriched scenarios", "status": "PASS" },
-    { "id": "SC-003", "test": "grep guard: no jira/curl in enrich-us", "status": "PASS" },
-    { "id": "SC-004", "test": "grep: canonical docs/tdd-failure-protocol.md referenced, no duplication", "status": "PASS" },
-    { "id": "SC-005", "test": "tests/commit-gate-test.sh [SC-005] dedicated commit agent wiring", "status": "PASS" },
-    { "id": "SC-006", "test": "tests/agent-permissions-test.sh [SC-006] commit block + force-push deny", "status": "PASS" },
-    { "id": "SC-007", "test": "tests/adversarial-state-test.sh suite green; single {file:} injection", "status": "PASS" },
-    { "id": "SC-008", "test": "tests/agent-permissions-test.sh [SC-008] archive lacks CHANGELOG allow", "status": "PASS" },
-    { "id": "SC-009", "test": ".opencode/commands/apply.md Pre-flight Preconditions section", "status": "PASS" },
-    { "id": "SC-010", "test": "18/18 guard suite + specboot.sh --ci 0 errors", "status": "PASS" },
-    { "id": "SC-011", "test": "tests/agent-permissions-test.sh [SC-011] npm test bare allow", "status": "PASS" }
+    { "id": "SC-001", "test": "tests/package-files-test.sh [allowedDocs 7 — tdd-failure-protocol.md]", "status": "PASS" },
+    { "id": "SC-002", "test": "tests/specboot-init-test.sh [SC-002] init copies tdd-failure-protocol.md", "status": "PASS" },
+    { "id": "SC-003", "test": "tests/specboot-update-test.sh [SC-003] update replaces tdd-failure-protocol.md", "status": "PASS" },
+    { "id": "SC-004", "test": "docs-standard/framework-contract 7 docs + openspec validate", "status": "PASS" },
+    { "id": "SC-005", "test": "tests/agent-permissions-test.sh [SC-005] x3 force-push denies", "status": "PASS" },
+    { "id": "SC-006", "test": "tests/agent-permissions-test.sh [SC-006] role documents deny set", "status": "PASS" },
+    { "id": "SC-007", "test": "18/18 guards + check-refs + specboot --ci 0 errors", "status": "PASS" }
   ]
 }
