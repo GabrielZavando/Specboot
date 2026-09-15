@@ -57,31 +57,17 @@ The verify role MUST also document `npm run test`, matching the existing
 
 ### Requirement: Archive agent permission block matches its skill steps
 
-The permission block of `.opencode/agents/archive.md` MUST allow the commands
-that the `archive` skill and its role document: `git status *`,
-`git diff`, `git diff *`, `git log`, `git log *`, and `node -e *` (token-light
-evidence reads of Step 5). The `rm` allow pattern MUST be scoped to
-`rm openspec/tickets/*` (Step 7 cleanup), and the pattern
-`rm -rf openspec/changes/*` MUST NOT exist. The role
-`ai-specs/agents/archive-agent.md` MUST NOT list `git commit` in its "Bash
-permitido" list (Commit ownership rule) and MUST document `node -e`.
+The permission block of `.opencode/agents/archive.md` MUST mirror exactly
+the commands and paths its skill and role document. `CHANGELOG.md` MUST NOT
+appear in the `edit` allow map while no archive skill step documents writing
+it; if a future skill step documents that write, the permission MUST be
+re-added in the same change that adds the step.
 
-#### Scenario: Token-light evidence reads are allowed
+#### Scenario: No orphaned edit permission
 
-- **WHEN** the archive agent executes the Step 5 `node -e` evidence reads
-- **THEN** the command matches an allow pattern in the permission block
-
-#### Scenario: rm is scoped to the documented cleanup
-
-- **WHEN** the archive agent runs the Step 7 cleanup
-- **THEN** only `rm openspec/tickets/*` is allowed
-- **AND** no rm pattern reaches `openspec/changes/` or `openspec/archive/`
-
-#### Scenario: git commit is neither promised nor allowed
-
-- **WHEN** the archive role list and permission block are audited
-- **THEN** `git commit` is absent from the role's "Bash permitido" list
-- **AND** the permission block contains no allow pattern for `git commit`
+- **WHEN** the archive agent's `edit` map is compared against the archive
+  skill steps
+- **THEN** every allowed path corresponds to a documented write
 
 ### Requirement: Deny fallback preserved in restrictive blocks
 
@@ -164,4 +150,60 @@ reverted or an unexpected commit/push allow is introduced.
 - **THEN** all SC-007 asserts pass
 - **AND** removing a branch-create allow pattern or adding an allow for `git commit`
   makes the guard fail
+
+### Requirement: Dedicated commit agent with minimal permissions
+
+The step `/commit` MUST run under a dedicated agent defined in
+`.opencode/agents/commit.md` with `mode: primary`. The agent MUST NOT load
+the build-agent role and MUST deny editing:
+
+- `edit: deny` for all paths.
+- Bash allow patterns limited to the commands the commit skill executes:
+  git read commands (`status`, `diff`, `log`, `fetch`, `merge-base`,
+  `branch`, `show-current`), `git add *`, `git commit *`, `git push *`,
+  `gh *`, `node -e *`, `ls *`, `cat *`, `mkdir -p openspec/*`.
+- `"git push --force*": deny` MUST precede the wildcard deny.
+- `"*": deny` as final fallback.
+
+The command `.opencode/commands/commit.md` MUST declare `agent: commit`
+in its frontmatter.
+
+#### Scenario: Commit command runs under the dedicated agent
+
+- **WHEN** the frontmatter of `.opencode/commands/commit.md` is inspected
+- **THEN** it declares `agent: commit`
+
+#### Scenario: Force push is structurally denied
+
+- **WHEN** any invocation under the commit agent attempts `git push --force`
+- **THEN** the permission block denies it before the wildcard fallback
+
+#### Scenario: No build role loaded in commit sessions
+
+- **WHEN** `.opencode/agents/commit.md` is inspected
+- **THEN** it does not reference `ai-specs/agents/build-agent.md`
+
+### Requirement: Verify agent allows bare npm test
+
+The permission block of `.opencode/agents/verify.md` MUST include
+`"npm test": allow` in addition to the existing `"npm test *": allow`,
+giving symmetric coverage for invocations with and without arguments.
+
+#### Scenario: Bare npm test is allowed
+
+- **WHEN** the verify agent runs `npm test` without arguments
+- **THEN** the permission block allows it instead of falling into `"*": deny`
+
+### Requirement: Apply verifies preconditions before dispatch
+
+The `.opencode/commands/apply.md` command MUST include a precondition
+section that, before dispatching any task, verifies the active branch
+matches the project convention (e.g. `feature/*`) and that git has no
+uncommitted or staged changes; on failure it MUST abort with an explicit
+message suggesting `/plan-change` when the branch is missing.
+
+#### Scenario: Dirty git state aborts apply
+
+- **WHEN** `/apply` starts with uncommitted changes
+- **THEN** it aborts listing the dirty files and dispatches no task
 
