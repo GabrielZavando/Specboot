@@ -29,6 +29,8 @@ VERIFY_ROLE="$ROOT/ai-specs/agents/verify-agent.md"
 ARCHIVE="$ROOT/.opencode/agents/archive.md"
 ARCHIVE_ROLE="$ROOT/ai-specs/agents/archive-agent.md"
 REVIEWER="$ROOT/.opencode/agents/reviewer.md"
+COMMIT_AGENT="$ROOT/.opencode/agents/commit.md"
+COMMIT_CMD="$ROOT/.opencode/commands/commit.md"
 AUDIT_SKILL="$ROOT/ai-specs/skills/code-auditing/SKILL.md"
 PLAN_AGENT="$ROOT/.opencode/agents/plan.md"
 PLAN_ROLE="$ROOT/ai-specs/agents/plan-agent.md"
@@ -167,6 +169,41 @@ check SC-010 "M-403 marked completed" \
   grep -qF -- "## [x] M-403" "$PLAN"
 check SC-010 "history row v3.7 present" \
   grep -qF -- "| v3.7 |" "$PLAN"
+
+# --- sdd-cycle-hardening (TICKET-AUDIT-1) ---
+# SC-005/SC-006: dedicated commit agent with minimal permissions
+echo "Commit agent dedicated + minimal permissions (SC-005/SC-006):"
+
+check SC-005 "commit agent file exists" test -f "$COMMIT_AGENT"
+check SC-005 "commit agent is primary" has_all "$COMMIT_AGENT" "mode: primary"
+check SC-005 "commit agent denies editing" has_all "$COMMIT_AGENT" "edit: deny"
+check SC-005 "commit agent does not load build-agent role" \
+  lacks_all "$COMMIT_AGENT" "build-agent.md"
+check SC-005 "commit command runs under the commit agent" \
+  has_all "$COMMIT_CMD" "agent: commit"
+check SC-006 "commit block allows scoped git/gh chains" \
+  has_all "$COMMIT_AGENT" '"git status' '"git diff' '"git log' \
+        '"git add *": allow' '"git commit *": allow' '"git push *": allow' \
+        '"git fetch' '"git merge-base' '"gh *": allow'
+check SC-006 "commit block allows evidence/extraction helpers" \
+  has_all "$COMMIT_AGENT" '"node -e *": allow' '"ls *": allow' \
+        '"cat *": allow' '"mkdir -p openspec/*": allow'
+check SC-006 "commit block denies force push" \
+  has_all "$COMMIT_AGENT" '"git push --force*": deny'
+check SC-006 "commit block keeps wildcard deny" \
+  has_all "$COMMIT_AGENT" '"*": deny'
+
+# SC-011: verify allows bare npm test
+echo "Verify bare npm test (SC-011):"
+
+check SC-011 "verify block allows npm test without args" \
+  has_all "$VERIFY" '"npm test": allow'
+
+# SC-008: archive has no orphaned CHANGELOG edit permission
+echo "Archive CHANGELOG permission removal (SC-008):"
+
+check SC-008 "archive block does not allow editing CHANGELOG.md" \
+  lacks_all "$ARCHIVE" '"CHANGELOG.md": allow'
 
 # --- Summary ---
 echo ""
