@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-09-15
+
+### Breaking changes
+
+- **Rename del agente de planificación: `plan` → `sdd-plan`**. El nombre `plan` colisiona
+  con el agente primario built-in de OpenCode, cuyo modo es read-only (plan mode): los
+  comandos `agent: plan` (`/plan-change`, `/enrich-us`, `/explain`) arrastraban la sesión
+  al modo plan e impedían escribir artefactos o correr tests. Ahora esos comandos declaran
+  `agent: sdd-plan`, que conserva exactamente los mismos permisos y rol. **Migración para
+  consumidores**: ejecutar `specboot update` (el reemplazo sin piedad de `.opencode/agents`
+  elimina el `plan.md` obsoleto e instala `sdd-plan.md`); si algún flujo propio mencionaba
+  `@plan` explícitamente, cambiarlo a `@sdd-plan`.
+
+### Added
+
+- **`release-bump.sh`** (raíz, distribuido con el paquete): bump atómico de versión —
+  actualiza `package.json` + `.specboot.json` en una sola operación, valida semver y exige
+  que el CHANGELOG tenga la sección destino (`## [X.Y.Z]`) antes de escribir; no crea tags
+  ni commits (eso pertenece a `/commit`). Documentado en `docs/versioning-standard.md` §6.1
+  como la única vía válida de bump (corrige el desfase 0.7.0→0.8.0 detectado en TICKET-AUDIT-1).
+- Guard nuevo `tests/release-bump-test.sh` (10 asserts SC-004/SC-005: happy path, semver
+  inválido, CHANGELOG ausente, sin git) y asserts del rename en `agent-permissions-test.sh`
+  (39 → 47 asserts): ningún comando puede declarar `agent: plan`; `sdd-plan` conserva el
+  contrato de permisos (M-403 mirror).
+
+### Tests
+
+- `tests/agent-permissions-test.sh`: 47/47 verde (rename validado).
+- `tests/release-bump-test.sh`: 10/10 verde.
+- `tests/package-files-test.sh`: `release-bump.sh` añadido a `requiredExact` (RED observado
+  antes de registrar, GREEN después).
+
 ## [0.8.1] - 2026-09-15
 
 ### Fixed
