@@ -345,6 +345,26 @@
         "timestamp": "2026-09-15T00:30:00Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "plan-rename-and-release-bump",
+      "ticket_id": "TICKET-AUDIT-3",
+      "archived_at": "2026-09-16T01:44:49.633Z",
+      "specs_applied": [
+        "agent-permissions",
+        "npm-distribution",
+        "specboot-update"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-16T01:12:26Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-16T00:36:35Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }

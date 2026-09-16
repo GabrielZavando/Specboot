@@ -5,22 +5,16 @@ TBD - created by archiving change specboot-npm-publish. Update Purpose after arc
 ## Requirements
 ### Requirement: Package configuration
 
-The package `files` allowlist MUST include the framework assets plus the
-**7 intocable framework docs**, adding `docs/tdd-failure-protocol.md` —
-the canonical TDD Failure Protocol referenced by `.opencode/commands/apply.md`,
-`ai-specs/agents/build-agent.md` and `ai-specs/examples/tasks.md`. A doc that
-is referenced as canonical by shipped framework files MUST be shipped.
+The package `files` allowlist MUST include the framework assets, the 7
+intocable framework docs (including `docs/tdd-failure-protocol.md`), and the
+new root script `release-bump.sh`, which performs atomic version bumps across
+`package.json` and `.specboot.json` (same distribution criterion as
+`check-refs.sh`).
 
-#### Scenario: tdd-failure-protocol.md is published
+#### Scenario: release-bump.sh is published
 
-- **WHEN** `npm pack` is run on the framework repository
-- **THEN** the tarball contains `docs/tdd-failure-protocol.md`
-
-#### Scenario: No dangling canonical references
-
-- **WHEN** a shipped file (commands, agents, examples) references
-  `docs/tdd-failure-protocol.md` as canonical source
-- **THEN** that document MUST be present in the shipped package
+- **WHEN** `npm pack` runs on the framework repository
+- **THEN** the tarball contains `release-bump.sh`
 
 ### Requirement: Automated publication
 
