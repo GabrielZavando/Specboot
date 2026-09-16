@@ -32,7 +32,9 @@ REVIEWER="$ROOT/.opencode/agents/reviewer.md"
 COMMIT_AGENT="$ROOT/.opencode/agents/commit.md"
 COMMIT_CMD="$ROOT/.opencode/commands/commit.md"
 AUDIT_SKILL="$ROOT/ai-specs/skills/code-auditing/SKILL.md"
-PLAN_AGENT="$ROOT/.opencode/agents/plan.md"
+# TICKET-AUDIT-3 (SC-001/SC-002): agent renamed plan → sdd-plan because
+# `plan` is a reserved OpenCode built-in name that forces read-only plan mode.
+PLAN_AGENT="$ROOT/.opencode/agents/sdd-plan.md"
 PLAN_ROLE="$ROOT/ai-specs/agents/plan-agent.md"
 PLAN="$ROOT/PLAN_MEJORAS_SPECBOOT.md"
 
@@ -216,6 +218,18 @@ echo "Archive CHANGELOG permission removal (SC-008):"
 
 check SC-008 "archive block does not allow editing CHANGELOG.md" \
   lacks_all "$ARCHIVE" '"CHANGELOG.md": allow'
+
+# --- TICKET-AUDIT-3: reserved-name collision resolved (SC-001/SC-002) ---
+echo "Reserved plan name removed (SC-001):"
+
+check SC-001 "no command declares agent: plan" \
+  bash -c '! grep -lE "^agent: plan$" "$1"/.opencode/commands/*.md 2>/dev/null | grep -q .' _ "$ROOT"
+check SC-001 "planning commands declare agent: sdd-plan" \
+  bash -c 'cd "$1" && grep -qF "agent: sdd-plan" .opencode/commands/plan-change.md && grep -qF "agent: sdd-plan" .opencode/commands/enrich-us.md && grep -qF "agent: sdd-plan" .opencode/commands/explain.md' _ "$ROOT"
+check SC-002 "sdd-plan keeps primary mode and openspec-only edit" \
+  has_all "$PLAN_AGENT" "mode: primary" '"openspec/**": allow'
+check SC-002 "sdd-plan keeps branch git and denies commit/push" \
+  has_all "$PLAN_AGENT" '"git branch *": allow' '"git push": deny' '"git commit": deny'
 
 # --- Summary ---
 echo ""

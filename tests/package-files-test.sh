@@ -41,6 +41,7 @@ process.stdin.on("data", d => (s += d)).on("end", () => {
     "check-refs.sh",
     "specboot.sh",
     "validate-specboot.sh",
+    "release-bump.sh",
     "opencode.json",
     "AGENTS.md",
     "Makefile",
