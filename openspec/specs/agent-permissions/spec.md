@@ -99,42 +99,22 @@ M-403) using asserts prefixed with `[SC-NNN]`, failing on any regression.
 
 ### Requirement: Plan agent can create the ticket branch via git
 
-The permission block of `.opencode/agents/plan.md` MUST include bash allow
-patterns for the branch-create/read git operations the `/plan-change` flow
-needs to create `feature/ticket-X.Y-nombre-corto` from HEAD per
-`docs/git-workflow-standards.md` §6.1: `git checkout`, `git switch`,
-`git branch`, `git status`, `git log`, and `git merge-base`. It MUST NOT
-include allow patterns for `git commit` or `git push` (commit ownership lives
-in `/commit`; push happens only when closing a ticket group per §6.3). The
-role `ai-specs/agents/plan-agent.md` MUST document these operations and the
-commit/push prohibition, keeping the `"*": deny` fallback in both bash and
-edit.
+The renamed `.opencode/agents/sdd-plan.md` MUST keep bash allow patterns for
+the branch-create/read git operations (`plan.md` was renamed because `plan`
+is a reserved OpenCode built-in agent name that forces the editor's read-only
+plan mode); the commands `plan-change.md`, `enrich-us.md` and `explain.md`
+MUST declare `agent: sdd-plan`, and no command may declare `agent: plan`.
 
-#### Scenario: Plan creates the ticket branch
+#### Scenario: Reserved name no longer used
 
-- **WHEN** the plan agent runs `/plan-change` and needs to create the ticket branch
-- **THEN** the permission block of `.opencode/agents/plan.md` contains the branch-create
-  allow patterns (`git checkout *`, `git switch *`, `git branch *`)
-- **AND** the branch creation does not fall through to the `"*": deny` fallback
+- **WHEN** the frontmatter of every file under `.opencode/commands/` is inspected
+- **THEN** none declares `agent: plan` and at least the three planning commands declare `agent: sdd-plan`
 
-#### Scenario: Plan reads git state required for the branch base
+#### Scenario: Renamed agent keeps its contract
 
-- **WHEN** the plan agent checks the repo status and base branch before creating
-  `feature/...` from HEAD
-- **THEN** `git status`, `git status *`, `git log *` and `git merge-base *` are allowed
-- **AND** each is documented in `ai-specs/agents/plan-agent.md`
-
-#### Scenario: Plan cannot commit or push
-
-- **WHEN** the plan agent attempts `git commit` or `git push`
-- **THEN** there is no allow pattern for either command
-- **AND** both fall through to the `"*": deny` fallback
-
-#### Scenario: Deny fallback preserved
-
-- **WHEN** the frontmatter of `.opencode/agents/plan.md` is inspected after the change
-- **THEN** the bash permission map ends in `"*": deny` and the edit map keeps
-  `"openspec/**": allow` + `"*": deny`
+- **WHEN** `.opencode/agents/sdd-plan.md` is inspected
+- **THEN** it keeps `mode: primary`, edit restricted to `openspec/**`,
+  branch-creating git allowances, and `git commit`/`git push` deny
 
 ### Requirement: Sync guard covers the plan git capability
 

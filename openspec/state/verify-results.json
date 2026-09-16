@@ -1,18 +1,21 @@
 {
   "schema_version": 1,
-  "change": "force-push-deny-and-doc-distribution",
-  "ticket_id": "TICKET-AUDIT-2",
+  "change": "plan-rename-and-release-bump",
+  "ticket_id": "TICKET-AUDIT-3",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-15T14:05:17Z",
+  "timestamp": "2026-09-16T01:12:26Z",
   "tasks": { "total": 7, "passed": 7, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-001", "test": "tests/package-files-test.sh [allowedDocs 7 — tdd-failure-protocol.md]", "status": "PASS" },
-    { "id": "SC-002", "test": "tests/specboot-init-test.sh [SC-002] init copies tdd-failure-protocol.md", "status": "PASS" },
-    { "id": "SC-003", "test": "tests/specboot-update-test.sh [SC-003] update replaces tdd-failure-protocol.md", "status": "PASS" },
-    { "id": "SC-004", "test": "docs-standard/framework-contract 7 docs + openspec validate", "status": "PASS" },
-    { "id": "SC-005", "test": "tests/agent-permissions-test.sh [SC-005] x3 force-push denies", "status": "PASS" },
-    { "id": "SC-006", "test": "tests/agent-permissions-test.sh [SC-006] role documents deny set", "status": "PASS" },
-    { "id": "SC-007", "test": "18/18 guards + check-refs + specboot --ci 0 errors", "status": "PASS" }
+    { "id": "SC-001", "test": "tests/agent-permissions-test.sh [SC-001] no agent: plan + sdd-plan wiring", "status": "PASS" },
+    { "id": "SC-002", "test": "tests/agent-permissions-test.sh [SC-002] sdd-plan contract preserved", "status": "PASS" },
+    { "id": "SC-003", "test": "session evidence: verify ran in build mode after rename", "status": "PASS" },
+    { "id": "SC-004", "test": "tests/release-bump-test.sh [SC-004] atomic sync", "status": "PASS" },
+    { "id": "SC-005", "test": "tests/release-bump-test.sh [SC-005] aborts without writes", "status": "PASS" },
+    { "id": "SC-006", "test": "package-files + init/update guards", "status": "PASS" },
+    { "id": "SC-007", "test": "CHANGELOG 0.9.0 breaking changes documented", "status": "PASS" },
+    { "id": "SC-008", "test": "19/19 guards + check-refs + specboot --ci 0 errors", "status": "PASS" },
+    { "id": "SC-009", "test": "tests/release-bump-test.sh [SC-009] parse-before-write", "status": "PASS" },
+    { "id": "SC-010", "test": "tests/release-bump-test.sh [SC-010] downgrade rejected", "status": "PASS" }
   ]
 }
