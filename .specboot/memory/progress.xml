@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<progress>
+  <completed-tasks>
+    <task id="M-701" title="Implementar /sync-specs" status="done">
+      <changed-paths>ai-specs/skills/sync-specs/SKILL.md, .opencode/commands/sync-specs.md, tests/sync-specs-test.sh, AGENTS.md, openspec/specs/sync-specs/spec.md, openspec/state/manifest.json</changed-paths>
+      <commands>bash tests/sync-specs-test.sh; openspec validate sync-specs; bash check-refs.sh; openspec archive sync-specs --yes</commands>
+      <risks>warnings del reviewer documentados (atomicidad rollback, token-light vs delta-apply) — backlog futuro</risks>
+    </task>
+  </completed-tasks>
+</progress>

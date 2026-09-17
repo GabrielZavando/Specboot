@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<active-context>
+  <project>zavando-specboot</project>
+  <branch>feature/m-701-sync-specs</branch>
+  <active-change id="M-701" name="sync-specs" status="archived-committed"/>
+  <last-completed-task id="4" label="/commit: 4 commits aprobados ejecutados (test/feat/chore(specs)/docs)"/>
+  <next-steps>
+    <step>Push a origin; crear PR (gh no disponible en la sesion — crear manualmente o reintentar)</step>
+    <step>Backlog pendiente del roadmap: M-801 (docs/consumer-git-workflow.md)</step>
+    <step>Follow-ups del reviewer de sync-specs: F1 token-light vs delta-apply; F2 rollback/atomicidad; F3 deteccion de divergencias; F4 assert ejecutable con fixtures</step>
+  </next-steps>
+  <blockers/>
+</active-context>

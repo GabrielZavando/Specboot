@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "change": "plan-rename-and-release-bump",
-  "ticket_id": "TICKET-AUDIT-3",
+  "change": "sync-specs",
+  "ticket_id": "M-701",
   "verdict": "SHIP",
-  "confidence": 0.82,
-  "timestamp": "2026-09-16T00:36:35Z",
-  "findings": { "total": 5, "critical": 0, "warnings": 2, "info": 3, "discarded": 0 }
+  "confidence": 0.75,
+  "timestamp": "2026-09-17T19:30:32Z",
+  "findings": { "total": 4, "critical": 0, "warnings": 2, "info": 2, "discarded": 0 }
 }
