@@ -1,21 +1,16 @@
 {
   "schema_version": 1,
-  "change": "plan-rename-and-release-bump",
-  "ticket_id": "TICKET-AUDIT-3",
+  "change": "sync-specs",
+  "ticket_id": "M-701",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-16T01:12:26Z",
-  "tasks": { "total": 7, "passed": 7, "failed": 0, "untested": 0 },
+  "timestamp": "2026-09-17T19:13:00Z",
+  "tasks": { "total": 5, "passed": 5, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-001", "test": "tests/agent-permissions-test.sh [SC-001] no agent: plan + sdd-plan wiring", "status": "PASS" },
-    { "id": "SC-002", "test": "tests/agent-permissions-test.sh [SC-002] sdd-plan contract preserved", "status": "PASS" },
-    { "id": "SC-003", "test": "session evidence: verify ran in build mode after rename", "status": "PASS" },
-    { "id": "SC-004", "test": "tests/release-bump-test.sh [SC-004] atomic sync", "status": "PASS" },
-    { "id": "SC-005", "test": "tests/release-bump-test.sh [SC-005] aborts without writes", "status": "PASS" },
-    { "id": "SC-006", "test": "package-files + init/update guards", "status": "PASS" },
-    { "id": "SC-007", "test": "CHANGELOG 0.9.0 breaking changes documented", "status": "PASS" },
-    { "id": "SC-008", "test": "19/19 guards + check-refs + specboot --ci 0 errors", "status": "PASS" },
-    { "id": "SC-009", "test": "tests/release-bump-test.sh [SC-009] parse-before-write", "status": "PASS" },
-    { "id": "SC-010", "test": "tests/release-bump-test.sh [SC-010] downgrade rejected", "status": "PASS" }
+    { "id": "SC-001", "test": "sync-specs-test.sh [SC-001] guard asserts (skill contract)", "status": "PASS" },
+    { "id": "SC-002", "test": "sync-specs-test.sh [SC-002] guard asserts (token-light + quantitative report)", "status": "PASS" },
+    { "id": "SC-003", "test": "sync-specs-test.sh [SC-003] guard assert (no active change no-op)", "status": "PASS" },
+    { "id": "SC-004", "test": "sync-specs-test.sh [SC-004] guard assert (idempotent re-run)", "status": "PASS" },
+    { "id": "SC-005", "test": "sync-specs-test.sh [SC-005] guard asserts (command registration + check-refs)", "status": "PASS" }
   ]
 }
