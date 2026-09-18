@@ -444,6 +444,27 @@ else
   bad "[SC-005] commit agent does not load the build-agent role"
 fi
 
+# --- H. Staleness configurable via .specboot.json (M-911, W5 — permissions-cycle-completion) ---
+echo "Staleness configurable via .specboot.json (W5):"
+
+if has_all "$SKILL" 'stalenessPaths' '.specboot.json' 'node -e'; then
+  ok "[SC-001] staleness paths configurable via .specboot.json (token-light read)"
+else
+  bad "[SC-001] staleness paths configurable via .specboot.json (token-light read)"
+fi
+
+if has_all "$SKILL" 'fallback' 'src/' 'app/' 'tests/' 'ai-specs/' '.opencode/'; then
+  ok "[SC-002] staleness falls back to the default list when absent"
+else
+  bad "[SC-002] staleness falls back to the default list when absent"
+fi
+
+if has_all "$SKILL" 'git log --format' 'date=iso'; then
+  ok "[SC-003] canonical git staleness command documented"
+else
+  bad "[SC-003] canonical git staleness command documented"
+fi
+
 # --- Summary ---
 echo ""
 echo "Commit gate contract: $PASS passed, $FAIL failed"
