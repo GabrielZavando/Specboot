@@ -37,6 +37,8 @@ openspec init
 #    - Edita docs/backend-standards.md y docs/frontend-standards.md
 #    - Edita docs/api/api-spec.yml con tus endpoints
 #    - Edita docs/data-model/data-model.md con tus entidades
+#    - (Opcional) docs/consumer-git-workflow.md: recomendación de flujo Git
+#      (GitHub Flow) para tu equipo — el estándar interno del framework es otro
 
 # 5. Verifica personalización
 bash specboot.sh --init
