@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-09-18
+
+### Changed
+
+- **Permisos del ciclo SDD sincronizados (M-911)** — el agente `archive` puede crear directorios de estado (`mkdir -p openspec/*`), el primario permite `bash check-refs.sh *` con argumentos, y los self-tests pasan a runner canónico `tests/run-all.sh` (elimina el patrón `for` que pedía confirmación).
+- **`tests/mandatory-steps-test.sh`** extendido a 114 asserts y `tests/agent-permissions-test.sh` a 77 asserts (cubren las inconsistencias corregidas).
+
+### Added
+
+- **W5: `stalenessPaths` configurable en `.specboot.json`** — array opcional de rutas de código para el staleness de `/commit`; si está presente se usa esa lista, si no el fallback default (`src`, `app`, `tests`, `ai-specs`, `.opencode`). Resuelve la mayor fragilidad del staleness detectada en M-908.
+- **Política de tagging documentada** en `docs/versioning-standard.md` — tag local por `release-bump.sh`, push tras mergear a `main`, GitHub Release manual con texto del CHANGELOG.
+- **`tests/release-bump-test.sh`** — nuevos asserts SC-001..SC-004 (tag tras bump, `update.sh` lee `package.json`, política documentada, backfill de tags históricos).
+
 ## [0.9.0] - 2026-09-15
 
 ### Breaking changes
