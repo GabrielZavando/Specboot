@@ -1,16 +1,46 @@
 {
   "schema_version": 1,
-  "change": "sync-specs",
-  "ticket_id": "M-701",
+  "change": "fix-agent-permissions",
+  "ticket_id": "M-908",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-17T19:13:00Z",
-  "tasks": { "total": 5, "passed": 5, "failed": 0, "untested": 0 },
+  "timestamp": "2026-09-18T00:44:32Z",
+  "tasks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "untested": 0
+  },
   "scenarios": [
-    { "id": "SC-001", "test": "sync-specs-test.sh [SC-001] guard asserts (skill contract)", "status": "PASS" },
-    { "id": "SC-002", "test": "sync-specs-test.sh [SC-002] guard asserts (token-light + quantitative report)", "status": "PASS" },
-    { "id": "SC-003", "test": "sync-specs-test.sh [SC-003] guard assert (no active change no-op)", "status": "PASS" },
-    { "id": "SC-004", "test": "sync-specs-test.sh [SC-004] guard assert (idempotent re-run)", "status": "PASS" },
-    { "id": "SC-005", "test": "sync-specs-test.sh [SC-005] guard asserts (command registration + check-refs)", "status": "PASS" }
+    {
+      "id": "SC-001",
+      "test": "agent-permissions-test.sh [SC-001] primary allowlist routine tooling (gh excluded)",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-002",
+      "test": "agent-permissions-test.sh [SC-002] destructive commands stay gated",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-003",
+      "test": "agent-permissions-test.sh [SC-003] sync-specs dedicated agent",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-004",
+      "test": "agent-permissions-test.sh [SC-004] verify framework dogfooding permissions",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-005",
+      "test": "agent-permissions-test.sh [SC-005] archive frictionless cleanup",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-006",
+      "test": "full verification suite (check-refs + specboot --ci + validate-specboot + all tests)",
+      "status": "PASS"
+    }
   ]
 }
