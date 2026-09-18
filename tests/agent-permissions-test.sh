@@ -37,6 +37,12 @@ AUDIT_SKILL="$ROOT/ai-specs/skills/code-auditing/SKILL.md"
 PLAN_AGENT="$ROOT/.opencode/agents/sdd-plan.md"
 PLAN_ROLE="$ROOT/ai-specs/agents/plan-agent.md"
 PLAN="$ROOT/PLAN_MEJORAS_SPECBOOT.md"
+# M-908 (change fix-agent-permissions): primary allowlist + sync-specs agent
+OCFG="$ROOT/opencode.json"
+SYNC_AGENT="$ROOT/.opencode/agents/sync-specs.md"
+SYNC_CMD="$ROOT/.opencode/commands/sync-specs.md"
+SYNC_SKILL="$ROOT/ai-specs/skills/sync-specs/SKILL.md"
+ARCHIVE_SKILL="$ROOT/ai-specs/skills/archive/SKILL.md"
 
 PASS=0
 FAIL=0
@@ -230,6 +236,63 @@ check SC-002 "sdd-plan keeps primary mode and openspec-only edit" \
   has_all "$PLAN_AGENT" "mode: primary" '"openspec/**": allow'
 check SC-002 "sdd-plan keeps branch git and denies commit/push" \
   has_all "$PLAN_AGENT" '"git branch *": allow' '"git push": deny' '"git commit": deny'
+
+# --- M-908 (fix-agent-permissions): primary allowlist covers routine tooling ---
+echo "Primary allowlist routine tooling (SC-001, M-908):"
+
+check SC-001 "opencode.json allows bash tests (framework guards)" \
+  has_all "$OCFG" '"bash tests/*": "allow"'
+check SC-001 "opencode.json allows bash scripts (dogfood-check)" \
+  has_all "$OCFG" '"bash scripts/*": "allow"'
+check SC-001 "opencode.json allows check-refs and specboot self-checks" \
+  has_all "$OCFG" '"bash check-refs.sh": "allow"' '"bash specboot.sh *": "allow"' \
+          '"bash validate-specboot.sh": "allow"'
+check SC-001 "opencode.json allows node, mkdir, date (evidence reads, dirs, timestamps)" \
+  has_all "$OCFG" '"node *": "allow"' '"mkdir *": "allow"' '"date *": "allow"'
+check SC-001 "opencode.json allows python3 (YAML checks)" \
+  has_all "$OCFG" '"python3 *": "allow"'
+check SC-001 "opencode.json keeps gh out of primary allowlist (unused in maintainer flow)" \
+  bash -c '! grep -qF "\"gh *\"" "$1"' _ "$OCFG"
+
+# --- M-908: destructive commands stay gated (SC-002) ---
+echo "Destructive commands stay gated (SC-002, M-908):"
+
+check SC-002 "opencode.json keeps rm -rf in ask" \
+  has_all "$OCFG" '"rm -rf *": "ask"'
+check SC-002 "opencode.json keeps unlisted commands in ask (fallback)" \
+  has_all "$OCFG" '"*": "ask"'
+
+# --- M-908: /sync-specs runs under its dedicated agent (SC-003) ---
+echo "sync-specs dedicated agent (SC-003, M-908):"
+
+check SC-003 "sync-specs agent file exists" test -f "$SYNC_AGENT"
+check SC-003 "sync-specs command declares agent: sync-specs" \
+  has_all "$SYNC_CMD" "agent: sync-specs"
+check SC-003 "sync-specs agent is primary with openspec-only edit" \
+  has_all "$SYNC_AGENT" "mode: primary" '"openspec/**": allow' '"*": deny'
+check SC-003 "sync-specs agent allows scoped read bash" \
+  has_all "$SYNC_AGENT" '"openspec *": allow' '"git status": allow' \
+          '"git diff": allow' '"ls *": allow' '"cat *": allow'
+check SC-003 "sync-specs agent denies commit/push (ownership)" \
+  lacks_all "$SYNC_AGENT" '"git commit": allow' '"git push": allow'
+
+# --- M-908: verify agent runs framework guards without delegating (SC-004) ---
+echo "Verify framework dogfooding permissions (SC-004, M-908):"
+
+check SC-004 "verify block allows bash tests and scripts (framework guards)" \
+  has_all "$VERIFY" '"bash tests/*": allow' '"bash scripts/*": allow'
+check SC-004 "verify block allows node -e and date (evidence + timestamps)" \
+  has_all "$VERIFY" '"node -e *": allow' '"date *": allow'
+check SC-004 "verify role documents bash tests dogfooding" \
+  has_all "$VERIFY_ROLE" "bash tests/"
+
+# --- M-908: archive cleanup + checkbox ticking without friction (SC-005) ---
+echo "Archive frictionless cleanup (SC-005, M-908):"
+
+check SC-005 "archive block allows rm -f openspec/tickets/* (silent cleanup)" \
+  has_all "$ARCHIVE" '"rm -f openspec/tickets/*": allow'
+check SC-005 "archive skill instructs checkbox ticking via edit tool" \
+  has_all "$ARCHIVE_SKILL" "edit tool"
 
 # --- Summary ---
 echo ""
