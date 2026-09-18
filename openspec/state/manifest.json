@@ -383,6 +383,24 @@
         "timestamp": "2026-09-17T19:30:32Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "fix-agent-permissions",
+      "ticket_id": "M-908",
+      "archived_at": "2026-09-18T01:03:27.486Z",
+      "specs_applied": [
+        "fix-agent-permissions"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-18T00:44:32Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-18T00:44:32Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }

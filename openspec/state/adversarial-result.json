@@ -1,9 +1,15 @@
 {
   "schema_version": 1,
-  "change": "sync-specs",
-  "ticket_id": "M-701",
+  "change": "fix-agent-permissions",
+  "ticket_id": "M-908",
   "verdict": "SHIP",
-  "confidence": 0.75,
-  "timestamp": "2026-09-17T19:30:32Z",
-  "findings": { "total": 4, "critical": 0, "warnings": 2, "info": 2, "discarded": 0 }
+  "confidence": 0.82,
+  "timestamp": "2026-09-18T00:44:32Z",
+  "findings": {
+    "total": 3,
+    "critical": 0,
+    "warnings": 1,
+    "info": 2,
+    "discarded": 0
+  }
 }
