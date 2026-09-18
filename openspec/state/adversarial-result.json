@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "change": "docs-followups",
-  "ticket_id": "M-801+M-910",
+  "change": "permissions-cycle-completion",
+  "ticket_id": "M-911",
   "verdict": "SHIP",
   "confidence": 0.85,
-  "timestamp": "2026-09-18T03:51:09Z",
+  "timestamp": "2026-09-18T17:41:11Z",
   "findings": {
     "total": 2,
     "critical": 0,
