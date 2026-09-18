@@ -39,6 +39,7 @@ Cada ticket declara además:
 | v3.7 | M-403 completado vía change `sync-agent-permissions` (marcado con `[x]`). **M-403**: sincronización bidireccional rol↔permission block de los 4 agentes restrictivos — verify: `"pytest *": allow` añadido (el rol lo documentaba y el Step 5b del skill caía en deny en proyectos Python) y el rol documenta `npm run test`; archive: patrones allow alineados con los pasos reales del skill (`git status *`, `git diff`, `git log`, `node -e *` para Steps 2/3/5), `rm` acotado al cleanup del Step 7 (`rm openspec/tickets/*`, reemplazando `rm -rf openspec/changes/*` que además alcanzaba `openspec/archive/`) y rol sin `git commit` prometido (regla "Commit ownership"); reviewer y plan auditados sin brechas; fallbacks `"*": deny` preservados; guard `tests/agent-permissions-test.sh` (25 asserts `[SC-001]`..`[SC-010]`); spec nueva `agent-permissions` (el SKILL.md de cada skill es la fuente de verdad del comportamiento). Bump `0.6.0` → `0.6.1` (patch, sin breaking changes); pin de versión de `tests/mandatory-steps-test.sh` migrado y su assert "M-403 pending" retirado. |
 | v3.8 | M-904 y M-905 completados vía change `commit-gate-semantics` (marcados con `[x]`). **M-904**: semántica formal de staleness en `/commit` — git-based: la evidencia es stale solo si existe un commit posterior a su `timestamp` que toca rutas de código (`src/`, `app/`, `tests/`, `ai-specs/`, `.opencode/`); commits solo de `docs/`/`openspec/` no ensucian; se mantiene warn-only con mensaje preciso que declara la regla y sugiere re-ejecutar; prevalencia **last-write-wins** documentada en `commit`, `verify` y `code-auditing` (cada corrida sobrescribe su archivo de estado y el gate lee la más reciente). **M-905**: gramática formal del trailer `Gate-Bypass` fijada en el skill `commit` (Step 6) — EBNF con orden fijo `verify` antes de `adversarial`, separador exacto `; ` y enums cerrados (`PASS|PARTIAL|FAIL|missing` / `SHIP|NO-SHIP|missing`), más regex canónica de parseo para tooling externo. Guard `tests/commit-gate-test.sh` extendido a 35 asserts (nuevos `[SC-001]`..`[SC-005]`, incluida validación funcional de la regex: matchea el ejemplo canónico y rechaza orden invertido y valores fuera del enum). Delta `## MODIFIED` + `## ADDED` sobre la spec `commit-gates`. Bump `0.6.1` → `0.6.2` (patch, sin breaking changes). |
 | v3.9 | M-906 y M-907 completados vía change `phase10-cleanup` (marcados con `[x]`); **Fase 10 cerrada y roadmap completo implementado**. **M-906**: reconciliación del SemVer declarado de M-901 — el roadmap lo clasificó `major` pero el release real fue `minor` `0.5.0` con `### Breaking changes` (válido en 0.x); se añadió nota de reconciliación en el ticket M-901 y `docs/versioning-standard.md` §2 fijó la regla "majors durante 0.x" (un `major` del roadmap se releasa como `minor` con `### Breaking changes`; el `major` estricto solo existe desde `1.0.0`). **M-907**: frase residual pre-gate-duro corregida en la spec viva `openspec/specs/adversarial-state/spec.md` ("the hard gate remains M-901" / "the hard gate is M-901" → archive permanece soft gate; el hard gate ya lo implementa `commit` según la spec `commit-gates`) con delta `## MODIFIED`; guard anti-regresión `[SC-004]` en `tests/commit-gate-test.sh` (36 asserts). Mención residual de la fila v3.4 corregida. Candidatos de la sesión M-904/M-905 registrados como backlog Fase 11 (sin implementar). Bump `0.6.2` → `0.6.3` (patch, sin breaking changes). |
+| v3.10 | **Ciclo M-701 + M-908 + M-909 completado** (ramas acumulativas `feature/m-701-sync-specs` → `feature/m-908-agent-permissions` → `feature/m-909-cycle-hygiene`). **M-701**: `/sync-specs` implementado vía change `sync-specs` (skill token-light, agente dedicado, guard de 15 asserts) — Fase 7 cerrada. **M-908**: fricción de permisos del ciclo SDD eliminada vía change `fix-agent-permissions` (allowlist del primario con tooling de rutina, agente dedicado `sync-specs`, sync rol↔permisos verify/archive, guard de 65 asserts); `gh *` excluido de la allowlist del primario por decisión del mantenedor (no usa gh; los PRs viven en el agente commit). **M-909** (este change): tick del Mandatory Steps movido a su dueño canónico `/apply` (archive queda defensivo, sin dependencia de `--yes`), roadmap reconciliado con la realidad (M-701/M-908 registrados) y template de proposal con `## Why`/`## What Changes` (elimina el warning de `openspec archive`; cierra el ítem 3 del backlog Fase 11; el ítem 2 del backlog — toil del pin — ya estaba resuelto por asserts dinámicos). Registrado F-harness (degradación de tool calls del entorno) como investigación aparte, fuera del roadmap de código. |
 
 > **⚠️ Estrategia de rama — decisión del mantenedor (2026-09-05):** todas las fases
 > restantes de este plan se implementan en la **rama única**
@@ -606,10 +607,22 @@ automáticamente por `plan-change` en todo `tasks.md` generado.
 
 # FASE 7 — Sincronización de especificaciones
 
-## M-701 — Implementar `/sync-specs`
+## [x] M-701 — Implementar `/sync-specs`
 
 **Nivel SemVer:** `minor`
 **Dependencias:** ninguna
+
+> **Completado vía change `sync-specs`** (archivado 2026-09-17, rama
+> `feature/m-701-sync-specs`, marcado con `[x]`): skill
+> `ai-specs/skills/sync-specs/SKILL.md` (token-light, único change activo,
+> MODIFIED-sobre-inexistente = ADDED, idempotencia, nunca toca el manifest),
+> comando `.opencode/commands/sync-specs.md` con **agente dedicado**
+> (`.opencode/agents/sync-specs.md`, añadido en el change `fix-agent-permissions`
+> — ver M-908) y guard `tests/sync-specs-test.sh` (15 asserts). Nota: la tarea 3
+> original decía "registrar el comando en `opencode.json`", pero los comandos
+> OpenCode se autodescubren desde `.opencode/commands/` — el registro real fue
+> el frontmatter `agent:` + las tablas de `AGENTS.md`. Evidencia: verify `PASS`,
+> adversarial `SHIP` (manifest, entrada 31).
 
 **Problema:** Las specs principales (`openspec/specs/`) solo se actualizan al
 archivar un cambio. Si el cambio es largo, quedan desactualizadas mientras tanto.
@@ -901,6 +914,27 @@ de verdad consolidada; las frases residuales siembran contradicciones.
 
 **Propuesta:** Localizar la frase y corregirla vía change SDD propio (las specs
 archivadas no se editan ad-hoc), con guard que impida la regresión.
+
+---
+
+## [x] M-908 — Sincronizar permisos de agentes con el ciclo SDD
+
+**Nivel SemVer:** `minor`
+**Dependencias:** M-701 (el hallazgo se descubrió ejecutando su ciclo — patrón M-403)
+
+> **Completado vía change `fix-agent-permissions`** (archivado 2026-09-18, rama
+> `feature/m-908-agent-permissions`, marcado con `[x]`): allowlist del primario
+> ampliada con el tooling de rutina del ciclo (`bash tests/*`, `bash scripts/*`,
+> `bash check-refs.sh`, `bash specboot.sh *`, `bash validate-specboot.sh`,
+> `node *`, `mkdir *`, `date *`, `python3 *`; destructivos en ask; `gh *` fuera
+> por decisión del mantenedor — no usa gh en su flujo), agente dedicado
+> `sync-specs` + frontmatter `agent:`, sync rol↔permisos de `verify`
+> (`bash tests/*`, `bash scripts/*`, `node -e *`, `date *`) y `archive`
+> (`rm -f openspec/tickets/*` + tick de Mandatory Steps vía edit tool), guard
+> `tests/agent-permissions-test.sh` extendido a 65 asserts. Evidencia: verify
+> `PASS`, adversarial `SHIP` 0.82 (manifest, entrada 32). Follow-ups
+> registrados: trust model node/python3 (warning documentado) y wildcard de
+> `check-refs.sh` con args (info).
 
 ---
 
