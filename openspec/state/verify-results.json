@@ -1,40 +1,40 @@
 {
   "schema_version": 1,
-  "change": "fix-agent-permissions",
-  "ticket_id": "M-908",
+  "change": "cycle-hygiene",
+  "ticket_id": "M-909",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-18T00:44:32Z",
+  "timestamp": "2026-09-18T01:45:04Z",
   "tasks": {
-    "total": 5,
-    "passed": 5,
+    "total": 6,
+    "passed": 6,
     "failed": 0,
     "untested": 0
   },
   "scenarios": [
     {
       "id": "SC-001",
-      "test": "agent-permissions-test.sh [SC-001] primary allowlist routine tooling (gh excluded)",
+      "test": "mandatory-steps-test.sh [SC-001] build agent owns the Mandatory Steps tick",
       "status": "PASS"
     },
     {
       "id": "SC-002",
-      "test": "agent-permissions-test.sh [SC-002] destructive commands stay gated",
+      "test": "mandatory-steps-test.sh [SC-002] archive declares /apply as canonical tick owner",
       "status": "PASS"
     },
     {
       "id": "SC-003",
-      "test": "agent-permissions-test.sh [SC-003] sync-specs dedicated agent",
+      "test": "mandatory-steps-test.sh [SC-003] roadmap records M-701+M-908+history row",
       "status": "PASS"
     },
     {
       "id": "SC-004",
-      "test": "agent-permissions-test.sh [SC-004] verify framework dogfooding permissions",
+      "test": "plan-proposal-test.sh [SC-004] proposal template Why/What Changes",
       "status": "PASS"
     },
     {
       "id": "SC-005",
-      "test": "agent-permissions-test.sh [SC-005] archive frictionless cleanup",
+      "test": "mandatory-steps-test.sh + plan-proposal-test.sh guards green",
       "status": "PASS"
     },
     {
