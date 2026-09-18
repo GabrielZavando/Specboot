@@ -141,12 +141,21 @@ tokens_ok=0
 for tok in "tag local" "GitHub Release"; do grep -qi "$tok" "$VS" || tokens_ok=1; done
 [ "$tokens_ok" -eq 0 ] && ok "[SC-003] tagging policy documented" || bad "[SC-003] tagging policy documented" "missing policy tokens"
 
-# SC-004: backfilled historical tags exist locally (executed in this change)
+# SC-004: backfilled historical tags exist on the REMOTE (local checkouts in
+# CI do not fetch tags — the backfill's contract is about origin, not the local clone)
 missing=""
-for v in v0.6.4 v0.7.0 v0.8.0 v0.8.1 v0.9.0; do
-  git rev-parse -q --verify "refs/tags/$v" >/dev/null 2>&1 || missing="$missing $v"
-done
-[ -z "$missing" ] && ok "[SC-004] backfilled tags exist (v0.6.4..v0.9.0)" || bad "[SC-004] backfilled tags exist (v0.6.4..v0.9.0)" "missing:$missing"
+# Prefer the authoritative remote list; fall back to local tags for offline runs.
+remote_tags="$(git ls-remote --tags origin 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||' || true)"
+if [ -n "$remote_tags" ]; then
+  for v in v0.6.4 v0.7.0 v0.8.0 v0.8.1 v0.9.0; do
+    echo "$remote_tags" | grep -qxF "$v" || missing="$missing $v"
+  done
+else
+  for v in v0.6.4 v0.7.0 v0.8.0 v0.8.1 v0.9.0; do
+    git rev-parse -q --verify "refs/tags/$v" >/dev/null 2>&1 || missing="$missing $v"
+  done
+fi
+[ -z "$missing" ] && ok "[SC-004] backfilled tags exist on origin (v0.6.4..v0.9.0)" || bad "[SC-004] backfilled tags exist on origin (v0.6.4..v0.9.0)" "missing:$missing"
 
 echo ""
 echo "TDD tests: $PASS passed, $FAIL failed"
