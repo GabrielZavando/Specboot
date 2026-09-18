@@ -1,40 +1,40 @@
 {
   "schema_version": 1,
-  "change": "cycle-hygiene",
-  "ticket_id": "M-909",
+  "change": "docs-followups",
+  "ticket_id": "M-801+M-910",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-18T01:45:04Z",
+  "timestamp": "2026-09-18T03:37:02Z",
   "tasks": {
-    "total": 6,
-    "passed": 6,
+    "total": 5,
+    "passed": 5,
     "failed": 0,
     "untested": 0
   },
   "scenarios": [
     {
       "id": "SC-001",
-      "test": "mandatory-steps-test.sh [SC-001] build agent owns the Mandatory Steps tick",
+      "test": "mandatory-steps-test.sh [SC-001] consumer git workflow doc (GitHub Flow, optional)",
       "status": "PASS"
     },
     {
       "id": "SC-002",
-      "test": "mandatory-steps-test.sh [SC-002] archive declares /apply as canonical tick owner",
+      "test": "mandatory-steps-test.sh [SC-002] contract+README refs, internal standard untouched",
       "status": "PASS"
     },
     {
       "id": "SC-003",
-      "test": "mandatory-steps-test.sh [SC-003] roadmap records M-701+M-908+history row",
+      "test": "mandatory-steps-test.sh [SC-003] verify/code-auditing tick handoff documented",
       "status": "PASS"
     },
     {
       "id": "SC-004",
-      "test": "plan-proposal-test.sh [SC-004] proposal template Why/What Changes",
+      "test": "mandatory-steps-test.sh [SC-004] F-harness recorded as evaluated",
       "status": "PASS"
     },
     {
       "id": "SC-005",
-      "test": "mandatory-steps-test.sh + plan-proposal-test.sh guards green",
+      "test": "mandatory-steps-test.sh [SC-005] roadmap M-801/M-910 completed + history row",
       "status": "PASS"
     },
     {
