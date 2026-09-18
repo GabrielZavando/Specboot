@@ -294,7 +294,38 @@ check SC-005 "archive block allows rm -f openspec/tickets/* (silent cleanup)" \
 check SC-005 "archive skill instructs checkbox ticking via edit tool" \
   has_all "$ARCHIVE_SKILL" "edit tool"
 
-# --- Summary ---
+# --- M-911 (permissions-cycle-completion) ---
+echo "Permissions cycle completion (M-911):"
+
+check SC-001 "archive block allows mkdir -p openspec/*" \
+  has_all "$ARCHIVE" '"mkdir -p openspec/*": allow'
+
+RUNALL="$ROOT/tests/run-all.sh"
+check SC-002 "canonical runner tests/run-all.sh exists" test -f "$RUNALL"
+check SC-002 "run-all.sh is executable" test -x "$RUNALL"
+check SC-002 "run-all.sh loops over all *-test.sh" \
+  has_all "$RUNALL" "tests/*-test.sh" "for"
+check SC-002 "run-all.sh fails if any test fails" \
+  has_all "$RUNALL" "exit 1"
+
+check SC-003 "commit skill reads stalenessPaths from .specboot.json" \
+  has_all "$ROOT/ai-specs/skills/commit/SKILL.md" "stalenessPaths"
+check SC-004 "commit skill documents the fallback default list" \
+  has_all "$ROOT/ai-specs/skills/commit/SKILL.md" "src"
+
+# W5 schema/materialization
+check SC-003 ".specboot.json standard documents stalenessPaths" \
+  has_all "$ROOT/docs/specboot-json-standard.md" "stalenessPaths"
+check SC-003 ".specboot.json schema validates stalenessPaths" \
+  has_all "$ROOT/validate-specboot.sh" "stalenessPaths"
+
+# SC-005/006: trust model + check-refs variant in opencode.json
+check SC-005 "commit skill documents canonical staleness command marker" \
+  has_all "$ROOT/ai-specs/skills/commit/SKILL.md" "git log --format" "--date=iso"
+check SC-006 "framework-contract documents node/python3 trust model" \
+  has_all "$ROOT/docs/framework-contract.md" "node *" "python3 *"
+check SC-006 "opencode.json allows bash check-refs.sh with args" \
+  has_all "$OCFG" '"bash check-refs.sh *": "allow"'
 echo ""
 echo "Agent permissions sync contract: $PASS passed, $FAIL failed"
 if [ "$FAIL" -gt 0 ]; then

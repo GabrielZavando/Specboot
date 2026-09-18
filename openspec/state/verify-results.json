@@ -1,45 +1,50 @@
 {
   "schema_version": 1,
-  "change": "docs-followups",
-  "ticket_id": "M-801+M-910",
+  "change": "permissions-cycle-completion",
+  "ticket_id": "M-911",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-18T03:37:02Z",
+  "timestamp": "2026-09-18T17:41:11Z",
   "tasks": {
-    "total": 5,
-    "passed": 5,
+    "total": 6,
+    "passed": 6,
     "failed": 0,
     "untested": 0
   },
   "scenarios": [
     {
       "id": "SC-001",
-      "test": "mandatory-steps-test.sh [SC-001] consumer git workflow doc (GitHub Flow, optional)",
+      "test": "agent-permissions-test.sh [SC-001] archive allows mkdir -p openspec/*",
       "status": "PASS"
     },
     {
       "id": "SC-002",
-      "test": "mandatory-steps-test.sh [SC-002] contract+README refs, internal standard untouched",
+      "test": "agent-permissions-test.sh [SC-002] canonical run-all.sh runner",
       "status": "PASS"
     },
     {
       "id": "SC-003",
-      "test": "mandatory-steps-test.sh [SC-003] verify/code-auditing tick handoff documented",
+      "test": "commit-gate-test.sh [SC-003] staleness configurable + standard + validator",
       "status": "PASS"
     },
     {
       "id": "SC-004",
-      "test": "mandatory-steps-test.sh [SC-004] F-harness recorded as evaluated",
+      "test": "agent-permissions-test.sh [SC-004] staleness fallback to default list",
       "status": "PASS"
     },
     {
       "id": "SC-005",
-      "test": "mandatory-steps-test.sh [SC-005] roadmap M-801/M-910 completed + history row",
+      "test": "commit-gate-test.sh [SC-003] canonical staleness command documented",
       "status": "PASS"
     },
     {
       "id": "SC-006",
-      "test": "full verification suite (check-refs + specboot --ci + validate-specboot + all tests)",
+      "test": "agent-permissions-test.sh [SC-006] trust model + check-refs wildcard",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-007",
+      "test": "full verification suite (run-all + check-refs + specboot --ci + validate)",
       "status": "PASS"
     }
   ]

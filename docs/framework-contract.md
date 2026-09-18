@@ -302,6 +302,16 @@ de GitHub (repo `vars` + `secrets`).
 adaptar el despliegue. Para infraestructura específica (VPS, Docker, repo distinto),
 se setea en GitHub, no en el archivo.
 
+**Trust model de la allowlist del primario (`opencode.json`):** los patrones
+`node *` y `python3 *` en allow permiten ejecución de código arbitrario
+(ej. `node -e "fs.rmSync(...)"`); es la misma superficie de confianza que ya
+ofrecen `npm *` y `npx *` (ejecutan scripts arbitrarios vía `package.json`).
+La decisión del mantenedor es **aceptarla y documentarla**: en un entorno
+dev-only con `edit: allow` ya permitido, acotar `node`/`python3` solo movería
+el riesgo a otro runner igual de capaz. Lo que permanece restringido son los
+comandos destructivos/exploratorios (`rm -rf *`, `find`, `sed -i` en `ask`), que
+sí generan confirmación puntual.
+
 **Relación con `update.sh`:** `update.sh` no toca workflows. `specboot update`
 reemplaza los workflows del framework como archivos intocables (archivo por archivo,
 nunca borra un workflow del proyecto). Ninguno de los dos debe ser editado a mano por
