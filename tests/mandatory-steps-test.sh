@@ -171,6 +171,27 @@ check SC-007 "CHANGELOG 0.6.0 section is non-empty" test -n "$changelog_section"
 check SC-007 "CHANGELOG 0.6.0 has no Breaking changes section" \
   bash -c "! grep -qF -- '### Breaking changes' <<< \"\$1\"" _ "$changelog_section"
 
+# --- M-909 (cycle-hygiene): canonical tick in /apply, roadmap record ---
+echo "Canonical tick in /apply + roadmap (SC-001..SC-003, M-909):"
+
+BUILD="$ROOT/ai-specs/agents/build-agent.md"
+ARCHIVE_SKILL_M909="$ROOT/ai-specs/skills/archive/SKILL.md"
+
+check SC-001 "build agent owns the Mandatory Steps tick via edit tool" \
+  has_all "$BUILD" "Mandatory Steps" "edit tool" "\`[x]\`"
+check SC-001 "build agent ticks at the moment each step is satisfied" \
+  has_all "$BUILD" "en cuanto se satisface"
+check SC-001 "apply ends with zero open Mandatory Steps checkboxes" \
+  has_all "$BUILD" "sin checkboxes abiertas"
+check SC-002 "archive declares /apply as the canonical tick owner" \
+  has_all "$ARCHIVE_SKILL_M909" "dueño canónico" "/apply"
+check SC-003 "roadmap marks M-701 completed" \
+  grep -qF -- "## [x] M-701" "$PLAN"
+check SC-003 "roadmap registers M-908 as completed ticket" \
+  grep -qF -- "## [x] M-908" "$PLAN"
+check SC-003 "roadmap history row records the M-701+M-908+M-909 cycle" \
+  has_all "$PLAN" "| v3.10 |" "M-701" "M-908" "M-909"
+
 # --- Summary ---
 echo ""
 echo "Mandatory steps contract: $PASS passed, $FAIL failed"
