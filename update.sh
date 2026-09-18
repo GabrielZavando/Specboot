@@ -111,10 +111,16 @@ do_sync() {
 }
 
 do_bump() {
-  # Current version comes from the latest semver git tag (fallback 0.0.0).
-  local current
-  current="$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")"
-  current="${current#v}"
+  # Current version comes from package.json (canonical source of truth for the
+  # published version). git tags are a historical convenience and may be
+  # missing; do not derive the base version from them anymore (the M-911/M-912
+  # tag backlog showed they can be stale). Fallback to 0.0.0 only if no
+  # package.json exists.
+  local current=""
+  if [ -f "$TARGET/package.json" ] && command -v node >/dev/null 2>&1; then
+    current="$(node -e "console.log(require('$TARGET/package.json').version)")" 2>/dev/null || current=""
+  fi
+  [ -z "$current" ] && current="0.0.0"
   local major minor patch
   IFS='.' read -r major minor patch <<< "$current"
   major="${major:-0}"; minor="${minor:-0}"; patch="${patch:-0}"

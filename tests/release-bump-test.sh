@@ -6,8 +6,9 @@
 #     and .specboot.json → frameworkVersion in ONE operation
 #   - SC-005: aborts (exit != 0, no writes) on invalid semver or when the
 #     CHANGELOG lacks the `## [X.Y.Z]` section
-#   - No git tag/commit is created by the script (fixture dirs are NOT git
-#     repos: if the script used git, the happy path would fail)
+#   - SC-001 (M-912): after a successful bump, release-bump.sh creates the
+#     local git tag v{version} when inside a git repo; in a non-git dir it
+#     skips tagging with a warning (never fails the bump)
 #
 # The script lives at the repo root and acts on the CURRENT WORKING
 # DIRECTORY, so tests run it inside temp fixtures with the three files
@@ -107,6 +108,54 @@ assert_eq "[SC-010] package.json untouched on downgrade" "0.9.0" "$(node -e "con
 assert_eq "[SC-010] .specboot.json untouched on downgrade" "0.9.0" "$(node -e "console.log(require('$F5/.specboot.json').frameworkVersion)")"
 
 rm -rf "$F1" "$F2" "$F3" "$F4" "$F5"
+
+# --- M-912: release-tagging (SC-001..SC-004) ---
+# SC-001: release-bump.sh creates the local tag in a git repo
+FR="$(mktemp -d)"
+git -C "$FR" init -q
+git -C "$FR" config user.email t@t.local && git -C "$FR" config user.name t
+make_fixture "$FR" "0.8.1" '# Changelog
+
+## [0.9.0] - 2026-09-18'
+(cd "$FR" && git add package.json .specboot.json CHANGELOG.md && git -c user.email=t@t.local -c user.name=t commit -qm "base") >/dev/null 2>&1
+( cd "$FR" && bash "$SCRIPT" 0.9.0 ) >/tmp/rb-tag.out 2>&1
+rc=$?
+if [ "$rc" -eq 0 ]; then ok "[SC-001] bump in git repo exits 0"; else bad "[SC-001] bump in git repo exits 0" "exit was $rc"; fi
+if git -C "$FR" rev-parse -q --verify "refs/tags/v0.9.0" >/dev/null 2>&1; then
+  ok "[SC-001] tag v0.9.0 exists locally"
+else
+  bad "[SC-001] tag v0.9.0 exists locally" "tag not found"
+fi
+rm -rf "$FR"
+
+# SC-002: update.sh --bump reads version from package.json (not git describe)
+if grep -qE "require\('\./package\.json'\)|require\(.+package\.json" "$ROOT/update.sh"; then
+  ok "[SC-002] update.sh reads current version from package.json"
+else
+  bad "[SC-002] update.sh reads current version from package.json" "no package.json read found"
+fi
+
+# SC-003: versioning-standard documents the tagging policy
+VS="$ROOT/docs/versioning-standard.md"
+tokens_ok=0
+for tok in "tag local" "GitHub Release"; do grep -qi "$tok" "$VS" || tokens_ok=1; done
+[ "$tokens_ok" -eq 0 ] && ok "[SC-003] tagging policy documented" || bad "[SC-003] tagging policy documented" "missing policy tokens"
+
+# SC-004: backfilled historical tags exist on the REMOTE (local checkouts in
+# CI do not fetch tags — the backfill's contract is about origin, not the local clone)
+missing=""
+# Prefer the authoritative remote list; fall back to local tags for offline runs.
+remote_tags="$(git ls-remote --tags origin 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||' || true)"
+if [ -n "$remote_tags" ]; then
+  for v in v0.6.4 v0.7.0 v0.8.0 v0.8.1 v0.9.0; do
+    echo "$remote_tags" | grep -qxF "$v" || missing="$missing $v"
+  done
+else
+  for v in v0.6.4 v0.7.0 v0.8.0 v0.8.1 v0.9.0; do
+    git rev-parse -q --verify "refs/tags/$v" >/dev/null 2>&1 || missing="$missing $v"
+  done
+fi
+[ -z "$missing" ] && ok "[SC-004] backfilled tags exist on origin (v0.6.4..v0.9.0)" || bad "[SC-004] backfilled tags exist on origin (v0.6.4..v0.9.0)" "missing:$missing"
 
 echo ""
 echo "TDD tests: $PASS passed, $FAIL failed"

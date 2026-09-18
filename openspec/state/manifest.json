@@ -455,6 +455,24 @@
         "timestamp": "2026-09-18T17:41:11Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "release-tagging",
+      "ticket_id": "M-912",
+      "archived_at": "2026-09-18T19:46:58.887Z",
+      "specs_applied": [
+        "release-tagging"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-18T19:39:38Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-18T19:39:38Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }
