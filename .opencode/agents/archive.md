@@ -19,6 +19,7 @@ permission:
     "ls *": allow
     "cat *": allow
     "rm openspec/tickets/*": allow
+    "rm -f openspec/tickets/*": allow
     "*": deny
 ---
 
