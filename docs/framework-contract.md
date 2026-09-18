@@ -253,6 +253,10 @@ framework), nunca `jq`.
 **Customización del proyecto:** el proyecto declara `services` y `stack` en
 `.specboot.json`. No edita el Makefile. Para infraestructura específica (VPS, Docker,
 etc.) usa variables de entorno de GitHub + configuración propia del proyecto.
+Para la estrategia Git, el proyecto consumidor puede adoptar la recomendación
+opcional de [`docs/consumer-git-workflow.md`](consumer-git-workflow.md) (GitHub
+Flow) — el estándar interno que gobierna el desarrollo del propio Specboot es
+`docs/git-workflow-standards.md` y tiene un alcance distinto.
 
 **Relación con `specboot update` / `update.sh`:** `specboot update` reemplaza el
 `Makefile` del framework como archivo intocable (opción A); `update.sh` mantiene solo

@@ -40,6 +40,7 @@ Cada ticket declara además:
 | v3.8 | M-904 y M-905 completados vía change `commit-gate-semantics` (marcados con `[x]`). **M-904**: semántica formal de staleness en `/commit` — git-based: la evidencia es stale solo si existe un commit posterior a su `timestamp` que toca rutas de código (`src/`, `app/`, `tests/`, `ai-specs/`, `.opencode/`); commits solo de `docs/`/`openspec/` no ensucian; se mantiene warn-only con mensaje preciso que declara la regla y sugiere re-ejecutar; prevalencia **last-write-wins** documentada en `commit`, `verify` y `code-auditing` (cada corrida sobrescribe su archivo de estado y el gate lee la más reciente). **M-905**: gramática formal del trailer `Gate-Bypass` fijada en el skill `commit` (Step 6) — EBNF con orden fijo `verify` antes de `adversarial`, separador exacto `; ` y enums cerrados (`PASS|PARTIAL|FAIL|missing` / `SHIP|NO-SHIP|missing`), más regex canónica de parseo para tooling externo. Guard `tests/commit-gate-test.sh` extendido a 35 asserts (nuevos `[SC-001]`..`[SC-005]`, incluida validación funcional de la regex: matchea el ejemplo canónico y rechaza orden invertido y valores fuera del enum). Delta `## MODIFIED` + `## ADDED` sobre la spec `commit-gates`. Bump `0.6.1` → `0.6.2` (patch, sin breaking changes). |
 | v3.9 | M-906 y M-907 completados vía change `phase10-cleanup` (marcados con `[x]`); **Fase 10 cerrada y roadmap completo implementado**. **M-906**: reconciliación del SemVer declarado de M-901 — el roadmap lo clasificó `major` pero el release real fue `minor` `0.5.0` con `### Breaking changes` (válido en 0.x); se añadió nota de reconciliación en el ticket M-901 y `docs/versioning-standard.md` §2 fijó la regla "majors durante 0.x" (un `major` del roadmap se releasa como `minor` con `### Breaking changes`; el `major` estricto solo existe desde `1.0.0`). **M-907**: frase residual pre-gate-duro corregida en la spec viva `openspec/specs/adversarial-state/spec.md` ("the hard gate remains M-901" / "the hard gate is M-901" → archive permanece soft gate; el hard gate ya lo implementa `commit` según la spec `commit-gates`) con delta `## MODIFIED`; guard anti-regresión `[SC-004]` en `tests/commit-gate-test.sh` (36 asserts). Mención residual de la fila v3.4 corregida. Candidatos de la sesión M-904/M-905 registrados como backlog Fase 11 (sin implementar). Bump `0.6.2` → `0.6.3` (patch, sin breaking changes). |
 | v3.10 | **Ciclo M-701 + M-908 + M-909 completado** (ramas acumulativas `feature/m-701-sync-specs` → `feature/m-908-agent-permissions` → `feature/m-909-cycle-hygiene`). **M-701**: `/sync-specs` implementado vía change `sync-specs` (skill token-light, agente dedicado, guard de 15 asserts) — Fase 7 cerrada. **M-908**: fricción de permisos del ciclo SDD eliminada vía change `fix-agent-permissions` (allowlist del primario con tooling de rutina, agente dedicado `sync-specs`, sync rol↔permisos verify/archive, guard de 65 asserts); `gh *` excluido de la allowlist del primario por decisión del mantenedor (no usa gh; los PRs viven en el agente commit). **M-909** (este change): tick del Mandatory Steps movido a su dueño canónico `/apply` (archive queda defensivo, sin dependencia de `--yes`), roadmap reconciliado con la realidad (M-701/M-908 registrados) y template de proposal con `## Why`/`## What Changes` (elimina el warning de `openspec archive`; cierra el ítem 3 del backlog Fase 11; el ítem 2 del backlog — toil del pin — ya estaba resuelto por asserts dinámicos). Registrado F-harness (degradación de tool calls del entorno) como investigación aparte, fuera del roadmap de código. |
+| v3.11 | **M-801 + M-910 + F-harness completados vía change `docs-followups`**. **M-801**: `docs/consumer-git-workflow.md` creado (GitHub Flow opcional para consumidores), referenciado desde `framework-contract.md` y `README.md`; `git-workflow-standards.md` intocado (verificado por guard). **M-910**: hallazgo F1 del adversarial-review de M-909 resuelto — handoff del tick del Mandatory Steps documentado en `verify` (Step 8) y `code-auditing` (Paso 7): el subagente read-only no edita `tasks.md`, el agente orquestador (build/primario) marca la checkbox al validar la evidencia persistida. **F-harness — evaluado, sin acción en el repo**: los incidentes (write rechazado por schema, subagente reviewer cancelado, bucles de lectura) son del entorno OpenCode/harness, no del repo; la fricción repo-side ya la resolvió M-908 (permission blocks sincronizados). Mitigaciones operativas: sesiones cortas y reintentos tras mensaje del usuario; se vuelven a abrir solo si se reproducen. Guard `mandatory-steps-test.sh` extendido a 48 asserts. |
 
 > **⚠️ Estrategia de rama — decisión del mantenedor (2026-09-05):** todas las fases
 > restantes de este plan se implementan en la **rama única**
@@ -655,11 +656,19 @@ specs principales, sin archivar el cambio.
 
 # FASE 8 — Estrategia Git
 
-## M-801 — Reconciliar y documentar la estrategia Git para consumidores
+## [x] M-801 — Reconciliar y documentar la estrategia Git para consumidores
 
 **Nivel SemVer:** `minor` (no toca el flujo Git interno de Specboot, solo añade
 recomendación documental para proyectos consumidores)
 **Dependencias:** ninguna
+
+> **Completado vía change `docs-followups`** (marcado con `[x]`):
+> `docs/consumer-git-workflow.md` creado (GitHub Flow: ramas `feature/*`/`fix/*`/
+> `chore/*`/`docs/*`, PRs Conventional Commits con CI, semver, hotfixes, nota
+> explícita de recomendación opcional), referenciado desde
+> `docs/framework-contract.md` y `README.md`. `docs/git-workflow-standards.md`
+> **permanece intocado** (guard: sin "GitHub Flow" en su contenido y sin diff
+> contra `origin/main`).
 
 **Estado real verificado:** `openspec/specs/git-workflow/spec.md` **ya existe y está
 archivada**, respaldando `docs/git-workflow-standards.md`. Ese documento gobierna
@@ -934,6 +943,18 @@ archivadas no se editan ad-hoc), con guard que impida la regresión.
 > `tests/agent-permissions-test.sh` extendido a 65 asserts. Evidencia: verify
 > `PASS`, adversarial `SHIP` 0.82 (manifest, entrada 32). Follow-ups
 > registrados: trust model node/python3 (warning documentado) y wildcard de
+
+## [x] M-910 — Handoff documentado del tick del Mandatory Steps
+
+**Nivel SemVer:** `patch`
+**Dependencias:** M-909 (el hallazgo se descubrió en su adversarial-review — F1)
+
+> **Completado vía change `docs-followups`** (junto a M-801, marcado `[x]`):
+> los skills `verify` (Step 8) y `code-auditing` (Paso 7) documentan el handoff
+> del tick del Mandatory Steps: el subagente read-only no edita `tasks.md`; el
+> agente orquestador (build/primario) marca la checkbox al validar la evidencia
+> persistida. Resuelve el invariante "0 checkboxes abiertas al cerrar `/apply`"
+> para los pasos post sin cambios de permisos.
 > `check-refs.sh` con args (info).
 
 ---

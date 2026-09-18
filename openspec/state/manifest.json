@@ -419,6 +419,24 @@
         "timestamp": "2026-09-18T02:05:00Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "docs-followups",
+      "ticket_id": "M-801+M-910",
+      "archived_at": "2026-09-18T13:52:47Z",
+      "specs_applied": [
+        "docs-followups"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-18T03:37:02Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-18T03:51:09Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }

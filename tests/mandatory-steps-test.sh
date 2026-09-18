@@ -192,6 +192,39 @@ check SC-003 "roadmap registers M-908 as completed ticket" \
 check SC-003 "roadmap history row records the M-701+M-908+M-909 cycle" \
   has_all "$PLAN" "| v3.10 |" "M-701" "M-908" "M-909"
 
+# --- M-801/M-910/F-harness (docs-followups): consumer git, tick handoff, harness record ---
+echo "Docs follow-ups: consumer git + tick handoff + F-harness (SC-001..SC-005):"
+
+CONSUMER="$ROOT/docs/consumer-git-workflow.md"
+GITSTD="$ROOT/docs/git-workflow-standards.md"
+VERIFY_SKILL="$ROOT/ai-specs/skills/verify/SKILL.md"
+AUDIT_SKILL_M910="$ROOT/ai-specs/skills/code-auditing/SKILL.md"
+CONTRACT="$ROOT/docs/framework-contract.md"
+README="$ROOT/README.md"
+
+check SC-001 "consumer git workflow doc exists with GitHub Flow" \
+  has_all "$CONSUMER" "GitHub Flow" "opcional" "git-workflow-standards.md"
+check SC-001 "consumer doc declares it does not apply to the framework itself" \
+  has_all "$CONSUMER" "No aplica al desarrollo del propio Specboot"
+check SC-002 "framework-contract references the consumer workflow doc" \
+  has_all "$CONTRACT" "docs/consumer-git-workflow.md"
+check SC-002 "README references the consumer git workflow" \
+  has_all "$ROOT/README.md" "consumer-git-workflow.md"
+check SC-002 "internal git standard stays untouched (no GitHub Flow content)" \
+  bash -c '! grep -qF "GitHub Flow" "$1"' _ "$GITSTD"
+check SC-003 "verify skill documents the tick handoff to the orchestrating agent" \
+  has_all "$VERIFY_SKILL" "Mandatory Steps" "orquestador" "read-only"
+check SC-003 "code-auditing skill documents the handoff" \
+  has_all "$ROOT/ai-specs/skills/code-auditing/SKILL.md" "orquestador"
+check SC-004 "roadmap records F-harness as evaluated with no repo action" \
+  has_all "$PLAN" "F-harness" "sin acción en el repo"
+check SC-005 "roadmap marks M-801 completed" \
+  grep -qF -- "## [x] M-801" "$PLAN"
+check SC-005 "roadmap registers M-910 completed" \
+  grep -qF -- "## [x] M-910" "$PLAN"
+check SC-005 "history row v3.11 present" \
+  grep -qF -- "| v3.11 |" "$PLAN"
+
 # --- Summary ---
 echo ""
 echo "Mandatory steps contract: $PASS passed, $FAIL failed"
