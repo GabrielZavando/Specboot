@@ -96,9 +96,9 @@ Test Path: `tests/permission-contracts-test.sh`, `tests/package-files-test.sh`
 
 Prioridad: media | Capa: infrastructure | Estimación: media
 
-- [ ] 5.1 Test RED: proyecto temporal con `specboot init` y otro con `specboot update` deben contener **agentes + helper** idénticos al framework; el validador corre desde el paquete instalado (`node_modules/@gabrielzavando/specboot`) con `--root` al proyecto y pasa (SC-010). Incluir fixture consumidor sin `js-yaml` hoisted.
-- [ ] 5.2 Añadir a `package.json#files` los tres artefactos (helper, validador, manifiesto) y al flujo init/update **solo** el helper (`UPDATE_ITEMS`, `REQUIRED_FILES`); extender `tests/specboot-init-test.sh`, `tests/specboot-update-test.sh` y `tests/package-files-test.sh` con esta cobertura.
-- [ ] 5.3 Verificación final SC-011: `git diff --check`, `bash check-refs.sh`, `bash specboot.sh --ci` en verde.
+- [x] 5.1 Test RED: proyecto temporal con `specboot init` y otro con `specboot update` deben contener **agentes + helper** idénticos al framework; el validador corre desde el paquete instalado (`node_modules/@gabrielzavando/specboot`) con `--root` al proyecto y pasa (SC-010). Incluir fixture consumidor sin `js-yaml` hoisted.
+- [x] 5.2 Añadir a `package.json#files` los tres artefactos (helper, validador, manifiesto) y al flujo init/update **solo** el helper (`FRAMEWORK_ITEMS` para init, `UPDATE_ITEMS` + `REQUIRED_FILES`); extender `tests/specboot-init-test.sh`, `tests/specboot-update-test.sh` y `tests/package-files-test.sh` con esta cobertura (incluidos asserts negativos: validador/manifiesto nunca se copian al proyecto).
+- [x] 5.3 Verificación final SC-011: `git diff --check`, `bash check-refs.sh`, `bash specboot.sh --ci` en verde; además `bash tests/run-all.sh` completo en verde.
 
 Suggested Path: `specboot.sh`
 Test Path: `tests/specboot-init-test.sh`, `tests/specboot-update-test.sh`

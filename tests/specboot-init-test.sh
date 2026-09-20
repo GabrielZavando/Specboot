@@ -68,6 +68,21 @@ assert_exists ".github copied"                     "$EMPTY/.github"
 assert_exists "[SC-002] base-standards intocable"   "$EMPTY/docs/base-standards.md"
 assert_exists "[SC-002] tdd-failure-protocol intocable" "$EMPTY/docs/tdd-failure-protocol.md"
 
+# [SPECBOOT-PERM-01, SC-010] init distributes the read-json-field helper (used
+# by the project's agents) but NOT the validator/manifest (executed from the
+# installed package).
+assert_exists "[PERM-01] helper read-json-field.mjs distributed" "$EMPTY/scripts/read-json-field.mjs"
+if [ -e "$EMPTY/scripts/validate-agent-permissions.mjs" ]; then
+  echo "  ✗ [PERM-01] validator must NOT be copied to the project"; FAIL=$((FAIL + 1))
+else
+  echo "  ✓ [PERM-01] validator not copied (runs from package)"; PASS=$((PASS + 1))
+fi
+if [ -e "$EMPTY/docs/agent-permission-contracts.yml" ]; then
+  echo "  ✗ [PERM-01] contracts manifest must NOT be copied to the project"; FAIL=$((FAIL + 1))
+else
+  echo "  ✓ [PERM-01] manifest not copied (read from package)"; PASS=$((PASS + 1))
+fi
+
 # ---------- Test 2: guard — .specboot.json already exists ----------
 EXISTING="$(mktemp -d)"
 echo '{"frameworkVersion":"0.1.1","name":"x"}' > "$EXISTING/.specboot.json"

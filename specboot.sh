@@ -138,6 +138,7 @@ FRAMEWORK_ITEMS=(
   ".github"
   "LICENSE"
   "README.md"
+  "scripts/read-json-field.mjs"
 )
 
 # Resolve the framework source directory.

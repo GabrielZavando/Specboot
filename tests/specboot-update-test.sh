@@ -54,8 +54,11 @@ assert_exists() {
 # Helper: make a template (framework source) with a given installed version.
 make_template() {
   local dir="$1" ver="$2"
-  mkdir -p "$dir/.opencode/commands" "$dir/.opencode/agents" "$dir/ai-specs/skills/demo" \
-           "$dir/templates/ci" "$dir/.github/workflows" "$dir/docs"
+   mkdir -p "$dir/.opencode/commands" "$dir/.opencode/agents" "$dir/ai-specs/skills/demo" \
+            "$dir/templates/ci" "$dir/.github/workflows" "$dir/docs" "$dir/scripts"
+   # SPECBOOT-PERM-01 (SC-010): el helper se distribuye con update; el validador
+   # y el manifiesto NO (se ejecutan desde el paquete instalado).
+   echo "FW-helper"        > "$dir/scripts/read-json-field.mjs"
   echo "FW-AGENTS"        > "$dir/AGENTS.md"
   echo "FW-checkrefs"     > "$dir/check-refs.sh"
   echo "FW-specboot"      > "$dir/specboot.sh"
@@ -120,6 +123,12 @@ assert_eq "[SC-003] tdd-failure-protocol doc replaced (TICKET-AUDIT-2, 7 intocab
 assert_eq "[SC-008] base-standards doc replaced"  "FW-base"   "$(cat "$PROJ/docs/base-standards.md" 2>/dev/null || echo MISSING)"
 assert_eq "[SC-008] project docs untouched"       "CUSTOM BACKEND STANDARDS - keep me" "$(cat "$PROJ/docs/backend-standards.md")"
 assert_eq "frameworkVersion rewritten"   "0.2.0" "$(node -e "console.log(require('$PROJ/.specboot.json').frameworkVersion)" 2>/dev/null || grep -o '"frameworkVersion": *"[^"]*"' "$PROJ/.specboot.json" | sed 's/.*:"//;s/"//')"
+assert_eq "[SPECBOOT-PERM-01] helper read-json-field.mjs distributed on update" "FW-helper" "$(cat "$PROJ/scripts/read-json-field.mjs" 2>/dev/null || echo MISSING)"
+if [ -e "$PROJ/scripts/validate-agent-permissions.mjs" ] || [ -e "$PROJ/docs/agent-permission-contracts.yml" ]; then
+  echo "  ✗ [SPECBOOT-PERM-01] validator/manifest must NOT be copied on update"; FAIL=$((FAIL + 1))
+else
+  echo "  ✓ [SPECBOOT-PERM-01] validator/manifest not copied on update"; PASS=$((PASS + 1))
+fi
 if ! grep -q "Breaking change" /tmp/up-minor.out; then
   echo "  ✓ no breaking-change warning on minor/patch"; PASS=$((PASS + 1))
 else
