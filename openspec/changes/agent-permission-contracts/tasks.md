@@ -57,11 +57,12 @@ Test Path: `tests/permission-contracts-test.sh`, `tests/fixtures/permission-cont
 
 Prioridad: alta | Capa: infrastructure | Estimación: alta
 
-- [ ] 2.1 Test RED: fixtures YAML — catch-all antes de excepción (SC-002), permiso requerido ausente (SC-008), alcance excedido (SC-009), force-push no cubierto (SC-006).
-- [ ] 2.2 Implementar el validador con interfaz CLI `node scripts/validate-agent-permissions.mjs --root <proyecto>`: descubre `.opencode/agents/*.md` **bajo `--root`** (nunca asume `cwd` como proyecto), parsea front matter con parser YAML real (`node` + **`js-yaml` como dependencia de ejecución** en `package.json#dependencies`, **resuelta desde el directorio del propio validador** — no del `node_modules` hoisted del consumidor), calcula permisos efectivos con `last-match-wins`, compara contra el manifiesto (leído desde el paquete del framework).
-- [ ] 2.3 Reporte por descalce: agente + capacidad + regla causante; exit ≠ 0.
+- [x] 2.1 Test RED: fixtures YAML — catch-all antes de excepción (SC-002), permiso requerido ausente (SC-008), alcance excedido (SC-009), force-push no cubierto (SC-006).
+- [x] 2.2 Implementar el validador con interfaz CLI `node scripts/validate-agent-permissions.mjs --root <proyecto>`: descubre `.opencode/agents/*.md` **bajo `--root`** (nunca asume `cwd` como proyecto), parsea front matter con parser YAML real (`node` + **`js-yaml` como dependencia de ejecución** en `package.json#dependencies`, **resuelta desde el directorio del propio validador** — no del `node_modules` hoisted del consumidor), calcula permisos efectivos con `last-match-wins`, compara contra el manifiesto (leído desde el paquete del framework).
+- [x] 2.3 Reporte por descalce: agente + capacidad + regla causante; exit ≠ 0.
 - [ ] 2.4 Cubrir REQ-003/REQ-004/REQ-005 con fixtures específicos (SC-003, SC-004, SC-005).
-- [ ] 2.5 Test de ejecución dual: dogfooding (desde el repo) y consumidor (desde `node_modules/@gabrielzavando/specboot/`), incluyendo consumidor **sin `js-yaml` hoisted** en su raíz (regla: el validador nunca se instala en el proyecto; solo el helper se distribuye).
+  - Estado honesto (verificado 2026-09-20): el evaluador **ya ejerce** SC-003/SC-004 sobre los agentes reales (`verify`/`reviewer` pasan limpios en el run actual), y SC-006 cubre force-push vía fixture. **Falta** un fixture específico de ownership REQ-005 (SC-005: `git commit`/`git push` denegados a no-commit vía fixture). Se cierra junto a la Tarea 3, donde los agentes reales quedarán conformes al manifiesto.
+- [x] 2.5 Test de ejecución dual: dogfooding (desde el repo) y consumidor (desde `node_modules/@gabrielzavando/specboot/`), incluyendo consumidor **sin `js-yaml` hoisted** en su raíz (regla: el validador nunca se instala en el proyecto; solo el helper se distribuye).
 
 Suggested Path: `scripts/validate-agent-permissions.mjs`
 Test Path: `tests/permission-contracts-test.sh`, `tests/fixtures/permission-contracts/*`

@@ -138,6 +138,62 @@ for (const name of ["build", "backend", "frontend"]) {
 process.exit(0);
 '
 
+# --- Task 2: validator over fixtures (REQ-002, REQ-008) ---
+FIXTURES="$ROOT/tests/fixtures/permission-contracts"
+VALIDATOR="$ROOT/scripts/validate-agent-permissions.mjs"
+
+echo "Validator — fixtures (SC-002, SC-006, SC-008, SC-009):"
+
+check SC-001 "validator script exists (scripts/validate-agent-permissions.mjs)" \
+  test -f "$VALIDATOR"
+
+check SC-002 "catch-all after exception fails (fixture bad-catchall)" \
+  bash -c '! node "$1" --root "$2/bad-catchall" --manifest "$2/bad-catchall/manifest.yml" >/dev/null 2>&1' _ "$VALIDATOR" "$FIXTURES"
+
+check SC-008 "missing required permission fails (fixture bad-missing-required)" \
+  bash -c '! node "$1" --root "$2/bad-missing-required" --manifest "$2/bad-missing-required/manifest.yml" >/dev/null 2>&1' _ "$VALIDATOR" "$FIXTURES"
+
+check SC-009 "exceeded edit scope fails (fixture bad-excess-scope)" \
+  bash -c '! node "$1" --root "$2/bad-excess-scope" --manifest "$2/bad-excess-scope/manifest.yml" >/dev/null 2>&1' _ "$VALIDATOR" "$FIXTURES"
+
+check SC-006 "force-push not effectively denied fails (fixture bad-force-push)" \
+  bash -c '! node "$1" --root "$2/bad-force-push" --manifest "$2/bad-force-push/manifest.yml" >/dev/null 2>&1' _ "$VALIDATOR" "$FIXTURES"
+
+check SC-001 "valid contract passes (fixture good)" \
+  bash -c 'node "$1" --root "$2/good" --manifest "$2/good/manifest.yml" >/dev/null 2>&1' _ "$VALIDATOR" "$FIXTURES"
+
+echo "Validator — reporting detail (REQ-008):"
+
+check REQ-008 "failing fixture reports agent + capability + rule" \
+  bash -c 'node "$1" --root "$2/bad-missing-required" --manifest "$2/bad-missing-required/manifest.yml" 2>&1 | grep -qiE "agent.*demo|demo.*capab"' _ "$VALIDATOR" "$FIXTURES"
+
+check REQ-008 "discovered agent file missing from manifest is flagged (bad-unknown-agent)" \
+  bash -c '! node "$1" --root "$2/good" --manifest "$2/bad-unknown-agent/manifest.yml" >/dev/null 2>&1' _ "$VALIDATOR" "$FIXTURES"
+
+echo "Validator — dual execution dogfooding/consumidor (SC-010):"
+
+check SC-010 "dogfooding: validator runs from repo against the good fixture manifest" \
+  bash -c 'node "$1" --root "$2/good" --manifest "$2/good/manifest.yml" >/dev/null 2>&1' _ "$VALIDATOR" "$FIXTURES"
+
+check SC-010 "consumer: validator runs from node_modules package without hoisted js-yaml" \
+  bash -c '
+set -e
+ROOT="$1"; FIX="$2"
+CONSUMER="$(mktemp -d)"
+trap "rm -rf \"$CONSUMER\"" EXIT
+# Paquete instalado: validador + manifiesto + su propia dependencia js-yaml
+PKG="$CONSUMER/node_modules/@gabrielzavando/specboot"
+mkdir -p "$PKG/scripts" "$PKG/docs" "$PKG/node_modules"
+cp "$ROOT/scripts/validate-agent-permissions.mjs" "$PKG/scripts/"
+cp "$FIX/good/manifest.yml" "$PKG/docs/agent-permission-contracts.yml"
+cp -R "$ROOT/node_modules/js-yaml" "$PKG/node_modules/"
+# El proyecto consumidor: agentes válidos pero SIN js-yaml en su raíz
+mkdir -p "$CONSUMER/.opencode/agents"
+cp "$FIX/good/.opencode/agents/demo.md" "$CONSUMER/.opencode/agents/"
+! ls "$CONSUMER/node_modules/js-yaml" >/dev/null 2>&1 || exit 1
+node "$PKG/scripts/validate-agent-permissions.mjs" --root "$CONSUMER" >/dev/null 2>&1
+' _ "$ROOT" "$FIXTURES"
+
 echo ""
 echo "Permission contracts: $PASS passed, $FAIL failed"
 if [ "$FAIL" -gt 0 ]; then

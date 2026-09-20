@@ -1,0 +1,23 @@
+version: 1
+agents:
+  demo:
+    file: ".opencode/agents/demo.md"
+    edit:
+      mode: restricted
+      allow:
+        - "openspec/state/verify-results.json"
+      forbidden: []
+    bash:
+      required:
+        - "npm test"
+        - "date *"
+      forbidden:
+        - "git push --force*"
+    evidence:
+      must_write:
+        - "openspec/state/verify-results.json"
+    can_commit: false
+    can_push: false
+    can_manage_prs: false
+    can_run_arbitrary_code: false
+    can_spawn_subagents: false
