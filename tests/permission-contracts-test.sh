@@ -231,6 +231,49 @@ check SC-007 "archive and commit no longer allow node -e *" \
   bash -c '! grep -qF "\"node -e *\": allow" "$1/.opencode/agents/archive.md" \
     && ! grep -qF "\"node -e *\": allow" "$1/.opencode/agents/commit.md"' _ "$ROOT"
 
+# --- Task 4: CI integration + estructura requerida (REQ-009, REQ-011) ---
+echo "CI integration (SC-001, REQ-009, REQ-011):"
+
+check SC-001 "specboot.sh --ci muestra la sección de contratos de permisos" \
+  bash -c 'bash "$1/specboot.sh" --ci 2>&1 | grep -qF "Verificando contratos de permisos de agentes"' _ "$ROOT"
+
+check SC-001 "specboot.sh --ci pasa en verde con contratos conformes" \
+  bash -c 'cd "$1" && bash specboot.sh --ci >/dev/null 2>&1' _ "$ROOT"
+
+check REQ-011 "specboot.sh REQUIRED_FILES incluye el helper distribuido" \
+  bash -c 'grep -qF "\"scripts/read-json-field.mjs\"" "$1/specboot.sh"' _ "$ROOT"
+
+check REQ-011 "specboot.sh UPDATE_ITEMS incluye el helper (file-level)" \
+  bash -c 'awk "/^UPDATE_ITEMS=\(/,/^\)/" "$1/specboot.sh" | grep -qF "\"scripts/read-json-field.mjs\""' _ "$ROOT"
+
+check REQ-011 "package.json#files incluye validador, manifiesto y helper" \
+  node_assert '
+const fs = require("fs"), path = require("path");
+const pkg = JSON.parse(fs.readFileSync(path.join(process.argv[1], "package.json"), "utf8"));
+const f = pkg.files || [];
+  const need = ["scripts/validate-agent-permissions.mjs", "scripts/read-json-field.mjs", "docs/agent-permission-contracts.yml"];
+process.exit(need.every(n => f.includes(n)) ? 0 : 1);
+'
+
+check REQ-009 "run_ci invoca la verificación de contratos de permisos" \
+  bash -c 'grep -qF "check_permission_contracts" "$1/specboot.sh"' _ "$ROOT"
+
+check REQ-009 "specboot.sh --ci falla fail-closed cuando Node.js no está disponible" \
+  bash -c '
+ROOT="$1"
+BIN=$(mktemp -d); trap "rm -rf \"$BIN\"" EXIT
+# Stub PATH sin node: symlinks a las herramientas básicas, omitiendo node.
+for c in bash grep awk sed cat tr head tail date ls cp mkdir mv rm dirname basename readlink wc sort uniq mktemp cut xargs; do
+  p=$(command -v "$c" 2>/dev/null) && ln -s "$p" "$BIN/$c"
+done
+if env PATH="$BIN" command -v node >/dev/null 2>&1; then exit 1; fi
+out=$(cd "$ROOT" && env PATH="$BIN" bash specboot.sh --ci 2>&1)
+rc=$?
+[ $rc -ne 0 ] || exit 1
+printf "%s" "$out" | grep -qF "Verificando contratos de permisos de agentes" || exit 1
+printf "%s" "$out" | grep -qiF "no disponible" || exit 1
+' _ "$ROOT"
+
 echo ""
 echo "Permission contracts: $PASS passed, $FAIL failed"
 if [ "$FAIL" -gt 0 ]; then

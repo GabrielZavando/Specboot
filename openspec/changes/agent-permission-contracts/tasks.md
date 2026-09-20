@@ -84,9 +84,10 @@ Test Path: `tests/permission-contracts-test.sh`, `tests/agent-permissions-test.s
 
 Prioridad: media | Capa: infrastructure | Estimación: baja
 
-- [ ] 4.1 Test RED: `specboot.sh --ci` muestra `→ Verificando contratos de permisos de agentes...` y falla con un fixture corrupto (SC-001).
-- [ ] 4.2 Enganchar el validador en `specboot.sh --ci` (antes de cualquier publicación/distribución) invocándolo **desde el directorio real del framework** y pasando `--root` al proyecto: en dogfooding `$SCRIPT_DIR`, en consumidor `node_modules/@gabrielzavando/specboot`.
-- [ ] 4.3 Actualizar las listas estructurales con el split correcto: **helper** → `package.json#files` + `UPDATE_ITEMS` (entry file-level `scripts/read-json-field.mjs`) + `REQUIRED_FILES`; **validador + manifiesto** → solo `package.json#files` (viven en el paquete, nunca se copian al proyecto). Verificar que ningún agente/skill del ciclo actual quede fuera de la estructura requerida.
+- [x] 4.1 Test RED: `specboot.sh --ci` muestra `→ Verificando contratos de permisos de agentes...` y falla con un fixture corrupto (SC-001).
+- [x] 4.2 Enganchar el validador en `specboot.sh --ci` (antes de cualquier publicación/distribución) invocándolo **desde el directorio real del framework** y pasando `--root` al proyecto: en dogfooding `$SCRIPT_DIR`, en consumidor `node_modules/@gabrielzavando/specboot`.
+- [x] 4.3 Actualizar las listas estructurales con el split correcto: **helper** → `package.json#files` + `UPDATE_ITEMS` (entry file-level `scripts/read-json-field.mjs`) + `REQUIRED_FILES`; **validador + manifiesto** → solo `package.json#files` (viven en el paquete, nunca se copian al proyecto). Verificar que ningún agente/skill del ciclo actual quede fuera de la estructura requerida.
+  - Nota: esta tarea también arregló dos fallos preexistentes detectados por `run-all.sh`: allowlist de `package-files-test.sh` (ahora reconoce `docs/agent-permission-contracts.yml` como doc del framework) y wording `read-only` en `ai-specs/skills/verify/SKILL.md` (assert de traspaso de tick).
 
 Suggested Path: `specboot.sh`
 Test Path: `tests/permission-contracts-test.sh`, `tests/package-files-test.sh`

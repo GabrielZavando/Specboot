@@ -32,7 +32,10 @@
     "Makefile",
     ".github/workflows",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "scripts/validate-agent-permissions.mjs",
+    "scripts/read-json-field.mjs",
+    "docs/agent-permission-contracts.yml"
   ],
   "repository": {
     "type": "git",

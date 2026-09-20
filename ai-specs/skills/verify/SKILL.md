@@ -190,9 +190,9 @@ Consumidores de este archivo (no lo re-ejecutan):
 - `archive` copia `{status, timestamp, source}` al manifiesto (Step 5 de su skill).
 
 **Handoff del tick del Mandatory Steps**: el agente `verify` no edita
-`tasks.md`. La checkbox del paso post (`verify`) de la sección
-`## Mandatory Steps` la marca `[x]` el agente orquestador (`build`) después de
-validar la evidencia persistida.
+`tasks.md` (es read-only sobre código y specs). La checkbox del paso post
+(`verify`) de la sección `## Mandatory Steps` la marca `[x]` el agente
+orquestador (`build`) después de validar la evidencia persistida.
 
 ## Stack Notes
 

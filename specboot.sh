@@ -72,6 +72,7 @@ REQUIRED_FILES=(
   "ai-specs/skills/deploy/SKILL.md"
   "ai-specs/skills/onboarding/SKILL.md"
   ".github/pull_request_template.md"
+  "scripts/read-json-field.mjs"
 )
 
 # Note: This template is OpenCode-only. Agent and skill artifacts live in
@@ -522,6 +523,7 @@ UPDATE_ITEMS=(
   "AGENTS.md"
   "Makefile"
   ".github/workflows"
+  "scripts/read-json-field.mjs"
 )
 
 # Resolve the installed framework version.
@@ -920,6 +922,34 @@ check_git_hooks() {
 }
 
 check_ci_cd() {
+# REQ-009: contratos de permisos de agentes (SPECBOOT-PERM-01).
+# El validador vive en el paquete Specboot: en consumidores se ejecuta desde
+# node_modules/@gabrielzavando/specboot; en dogfooding desde el propio repo.
+# El proyecto validado se pasa siempre con --root; el manifiesto se lee desde
+# el paquete (nunca del proyecto).
+check_permission_contracts() {
+  echo "→ Verificando contratos de permisos de agentes..."
+  local validator=""
+  if [ -f "node_modules/@gabrielzavando/specboot/scripts/validate-agent-permissions.mjs" ]; then
+    validator="node_modules/@gabrielzavando/specboot/scripts/validate-agent-permissions.mjs"
+  elif [ -f "$SCRIPT_DIR/scripts/validate-agent-permissions.mjs" ]; then
+    validator="$SCRIPT_DIR/scripts/validate-agent-permissions.mjs"
+  fi
+  if [ -z "$validator" ]; then
+    fail "Validador de contratos de permisos no encontrado (ni en node_modules/@gabrielzavando/specboot ni en scripts/)"
+    return
+  fi
+  if ! command -v node >/dev/null 2>&1; then
+    fail "Node.js no disponible: no se pudieron validar los contratos de permisos (fail-closed REQ-009)"
+    return
+  fi
+  if node "$validator" --root .; then
+    pass "Contratos de permisos de agentes conformes"
+  else
+    fail "Descalce de contratos de permisos de agentes (ver salida del validador)"
+  fi
+}
+
   echo "→ Verificando CI/CD..."
   if [ -f ".github/workflows/ci.yml" ]; then
     pass "GitHub Actions CI configurado"
@@ -1062,6 +1092,8 @@ run_ci() {
   check_git_hooks
   echo ""
   check_ci_cd
+  echo ""
+  check_permission_contracts
   echo ""
   print_summary
 

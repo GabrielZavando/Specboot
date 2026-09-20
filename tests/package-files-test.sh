@@ -28,7 +28,10 @@ process.stdin.on("data", d => (s += d)).on("end", () => {
     // sdd-cycle-hardening follow-up (TICKET-AUDIT-2, SC-001): the canonical
     // TDD Failure Protocol doc is referenced by shipped apply.md/build-agent
     // and MUST travel in the package — no dangling canonical references.
-    "docs/tdd-failure-protocol.md"
+    "docs/tdd-failure-protocol.md",
+    // SPECBOOT-PERM-01: the agent permission contracts manifest is framework-owned
+    // and MUST travel in the package (the validator reads it from there).
+    "docs/agent-permission-contracts.yml"
   ]);
   const requiredDirPrefixes = [
     ".opencode/commands/",
