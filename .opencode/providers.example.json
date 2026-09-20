@@ -1,0 +1,18 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "openrouter": {
+      "npm": "@openrouter/ai-sdk-provider",
+      "name": "OpenRouter",
+      "options": {
+        "baseURL": "https://openrouter.ai/api/v1",
+        "apiKey": "{env:OPENROUTER_API_KEY}"
+      },
+      "models": {
+        "anthropic/claude-sonnet-4.5": { "name": "Claude Sonnet 4.5", "tool_call": true },
+        "moonshotai/kimi-k2-thinking": { "name": "Kimi K2 Thinking", "reasoning": true, "tool_call": true },
+        "z-ai/glm-4.6": { "name": "GLM 4.6", "tool_call": true }
+      }
+    }
+  }
+}
