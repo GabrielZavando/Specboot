@@ -60,8 +60,8 @@ Prioridad: alta | Capa: infrastructure | Estimación: alta
 - [x] 2.1 Test RED: fixtures YAML — catch-all antes de excepción (SC-002), permiso requerido ausente (SC-008), alcance excedido (SC-009), force-push no cubierto (SC-006).
 - [x] 2.2 Implementar el validador con interfaz CLI `node scripts/validate-agent-permissions.mjs --root <proyecto>`: descubre `.opencode/agents/*.md` **bajo `--root`** (nunca asume `cwd` como proyecto), parsea front matter con parser YAML real (`node` + **`js-yaml` como dependencia de ejecución** en `package.json#dependencies`, **resuelta desde el directorio del propio validador** — no del `node_modules` hoisted del consumidor), calcula permisos efectivos con `last-match-wins`, compara contra el manifiesto (leído desde el paquete del framework).
 - [x] 2.3 Reporte por descalce: agente + capacidad + regla causante; exit ≠ 0.
-- [ ] 2.4 Cubrir REQ-003/REQ-004/REQ-005 con fixtures específicos (SC-003, SC-004, SC-005).
-  - Estado honesto (verificado 2026-09-20): el evaluador **ya ejerce** SC-003/SC-004 sobre los agentes reales (`verify`/`reviewer` pasan limpios en el run actual), y SC-006 cubre force-push vía fixture. **Falta** un fixture específico de ownership REQ-005 (SC-005: `git commit`/`git push` denegados a no-commit vía fixture). Se cierra junto a la Tarea 3, donde los agentes reales quedarán conformes al manifiesto.
+- [x] 2.4 Cubrir REQ-003/REQ-004/REQ-005 con fixtures específicos (SC-003, SC-004, SC-005).
+  - Cerrado junto a la Tarea 3: fixture `bad-ownership` (SC-005: `can_commit: false` con `git commit` efectivamente allow → violación), y el validador pasa limpio sobre los agentes reales `verify`/`reviewer` (evidencia efectiva de SC-003/SC-004 en el repo).
 - [x] 2.5 Test de ejecución dual: dogfooding (desde el repo) y consumidor (desde `node_modules/@gabrielzavando/specboot/`), incluyendo consumidor **sin `js-yaml` hoisted** en su raíz (regla: el validador nunca se instala en el proyecto; solo el helper se distribuye).
 
 Suggested Path: `scripts/validate-agent-permissions.mjs`
@@ -71,10 +71,11 @@ Test Path: `tests/permission-contracts-test.sh`, `tests/fixtures/permission-cont
 
 Prioridad: alta | Capa: infrastructure | Estimación: media
 
-- [ ] 3.1 Test RED: aserciones de contrato por agente (SC-003..SC-007) en `tests/permission-contracts-test.sh`.
-- [ ] 3.2 Corregir `opencode.json` y `.opencode/agents/{archive,backend,build,commit,frontend,reviewer,sdd-plan,sync-specs,verify}.md` hasta que el validador pase.
-- [ ] 3.3 Implementar `scripts/read-json-field.mjs` (ESM, helper fijo, solo lectura, con **allowlist cerrada de archivos y campos autorizados** hardcodeada en el propio helper; no acepta rutas JSON arbitrarias) y reemplazar `node -e *` en `archive` y `commit` + actualizar sus roles/skills (`ai-specs/agents/archive-agent.md`, `ai-specs/skills/commit/SKILL.md`) para que documenten el helper (SC-007).
-- [ ] 3.4 Documentar la justificación REQ-007 en los roles de `build`, `backend` y `frontend` (force-push denied, commit ownership denied, operaciones destructivas con confirmación, evidencias intocables).
+- [x] 3.1 Test RED: aserciones de contrato por agente (SC-003..SC-007) en `tests/permission-contracts-test.sh`.
+- [x] 3.2 Corregir `opencode.json` y `.opencode/agents/{archive,backend,build,commit,frontend,reviewer,sdd-plan,sync-specs,verify}.md` hasta que el validador pase.
+  - Nota: `opencode.json` no requirió cambios; los agentes `verify`, `reviewer`, `sdd-plan` y `sync-specs` ya cumplían. Se corrigieron `archive` (sin `git add`, sin `node -e`), `commit` (sin `node -e`) y los implementadores `build`/`backend`/`frontend` (denies de commit/push/force-push/gh PR + evidencias intocables).
+- [x] 3.3 Implementar `scripts/read-json-field.mjs` (ESM, solo lectura, con **allowlist cerrada de archivos y campos autorizados** hardcodeada en el propio helper) y reemplazar `node -e *` en `archive` y `commit` + actualizar roles/skills (`archive-agent.md`, `skills/archive/SKILL.md`, `skills/commit/SKILL.md`) para que documenten el helper (SC-007). Migrados en `agent-permissions-test.sh` los asserts que exigían `node -e *` (tensión documentada resuelta); removida de `verify-agent.md` la documentación de `node -e` (cierra además fallo baseline SC-004).
+- [x] 3.4 Documentar la justificación REQ-007 en los roles de `build`, `backend` y `frontend` (force-push denied, commit ownership denied, operaciones destructivas con confirmación, evidencias intocables).
 
 Suggested Path: `.opencode/agents/*.md`, `opencode.json`, `scripts/read-json-field.mjs`, `ai-specs/agents/archive-agent.md`, `ai-specs/skills/commit/SKILL.md`
 Test Path: `tests/permission-contracts-test.sh`, `tests/agent-permissions-test.sh` (regresión: decisión de ajustar los asserts de `node -e *` de SC-003/SC-006 al nuevo helper; verificar con el usuario antes de tocar ese archivo)

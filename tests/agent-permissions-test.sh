@@ -108,8 +108,10 @@ check SC-003 "archive block allows git diff (Step 3 --stat)" \
   has_all "$ARCHIVE" '"git diff": allow' '"git diff *": allow'
 check SC-003 "archive block allows git log (role documents it)" \
   has_all "$ARCHIVE" '"git log": allow' '"git log *": allow'
-check SC-003 "archive block allows node -e (Step 5 token-light reads)" \
-  has_all "$ARCHIVE" '"node -e *": allow'
+check SC-003 "archive block allows read-json-field helper (Step 5 token-light reads; SPECBOOT-PERM-01 replaces node -e)" \
+  has_all "$ARCHIVE" '"node scripts/read-json-field.mjs *": allow'
+check SC-003 "archive block forbids node -e (SPECBOOT-PERM-01, REQ-006)" \
+  lacks_all "$ARCHIVE" '"node -e *": allow'
 
 # --- SC-004: archive rm scoped to the documented cleanup ---
 echo "Archive rm scoping (SC-004):"
@@ -135,11 +137,11 @@ echo "Reviewer agent sync (SC-006):"
 check SC-006 "reviewer block allows the audited toolchain" \
   has_all "$REVIEWER" '"npm audit *": allow' '"npx eslint *": allow' \
           '"npx dependency-cruiser *": allow'
-check SC-006 "reviewer block allows read-only git and file access" \
+check SC-006 "reviewer block allows read-only git and file access (SPECBOOT-PERM-01: sin cat; usa herramientas de lectura)" \
   has_all "$REVIEWER" '"git diff": allow' '"git diff *": allow' \
-          '"git status": allow' '"ls *": allow' '"cat *": allow'
-check SC-006 "reviewer block allows evidence directory creation" \
-  has_all "$REVIEWER" '"mkdir -p openspec/*": allow'
+          '"git status": allow' '"ls *": allow'
+check SC-006 "reviewer block allows evidence directory creation (scoped a openspec/state)" \
+  has_all "$REVIEWER" '"mkdir -p openspec/state": allow'
 check SC-006 "code-auditing skill documents the audited toolchain" \
   has_all "$AUDIT_SKILL" "npm audit" "npx eslint" "npx dependency-cruiser" \
           "git diff" "git status" "mkdir -p openspec"
@@ -189,13 +191,12 @@ check SC-005 "commit agent does not load build-agent role" \
   lacks_all "$COMMIT_AGENT" "build-agent.md"
 check SC-005 "commit command runs under the commit agent" \
   has_all "$COMMIT_CMD" "agent: commit"
-check SC-006 "commit block allows scoped git/gh chains" \
+check SC-006 "commit block allows scoped git/gh chains (gh restringido a pr create/view/edit, SPECBOOT-PERM-01)" \
   has_all "$COMMIT_AGENT" '"git status' '"git diff' '"git log' \
         '"git add *": allow' '"git commit *": allow' '"git push *": allow' \
-        '"git fetch' '"git merge-base' '"gh *": allow'
-check SC-006 "commit block allows evidence/extraction helpers" \
-  has_all "$COMMIT_AGENT" '"node -e *": allow' '"ls *": allow' \
-        '"cat *": allow' '"mkdir -p openspec/*": allow'
+        '"git fetch' '"git merge-base' '"gh pr create *": allow'
+check SC-006 "commit block allows read-json-field helper (SPECBOOT-PERM-01 replaces node -e)" \
+  has_all "$COMMIT_AGENT" '"node scripts/read-json-field.mjs *": allow' '"ls *": allow'
 check SC-006 "commit block denies force push" \
   has_all "$COMMIT_AGENT" '"git push --force*": deny'
 
@@ -206,8 +207,8 @@ check SC-005 "commit block denies mid-command force push" \
   has_all "$COMMIT_AGENT" '"git push *--force*": deny'
 check SC-005 "commit block denies short-flag push" \
   has_all "$COMMIT_AGENT" '"git push -f*": deny'
-check SC-005 "commit block denies trailing short-flag push" \
-  has_all "$COMMIT_AGENT" '"git push * -f": deny'
+check SC-005 "commit block denies trailing short-flag push (forma ampliada *-f*, SPECBOOT-PERM-01)" \
+  has_all "$COMMIT_AGENT" '"git push *-f*": deny'
 check SC-006 "commit role documents the full deny set" \
   has_all "$COMMIT_AGENT" "git push *--force*" "git push -f*" "git push * -f"
 check SC-006 "commit block keeps wildcard deny" \
@@ -268,11 +269,11 @@ echo "sync-specs dedicated agent (SC-003, M-908):"
 check SC-003 "sync-specs agent file exists" test -f "$SYNC_AGENT"
 check SC-003 "sync-specs command declares agent: sync-specs" \
   has_all "$SYNC_CMD" "agent: sync-specs"
-check SC-003 "sync-specs agent is primary with openspec-only edit" \
-  has_all "$SYNC_AGENT" "mode: primary" '"openspec/**": allow' '"*": deny'
-check SC-003 "sync-specs agent allows scoped read bash" \
-  has_all "$SYNC_AGENT" '"openspec *": allow' '"git status": allow' \
-          '"git diff": allow' '"ls *": allow' '"cat *": allow'
+check SC-003 "sync-specs agent is primary with specs-only edit (SPECBOOT-PERM-01: openspec/specs/**)" \
+  has_all "$SYNC_AGENT" "mode: primary" '"openspec/specs/**": allow' '"*": deny'
+check SC-003 "sync-specs agent allows scoped read bash (sin openspec */cat: el skill no los usa)" \
+  has_all "$SYNC_AGENT" '"git status": allow' '"git diff": allow' \
+          '"ls *": allow'
 check SC-003 "sync-specs agent denies commit/push (ownership)" \
   lacks_all "$SYNC_AGENT" '"git commit": allow' '"git push": allow'
 
@@ -281,8 +282,10 @@ echo "Verify framework dogfooding permissions (SC-004, M-908):"
 
 check SC-004 "verify block allows bash tests and scripts (framework guards)" \
   has_all "$VERIFY" '"bash tests/*": allow' '"bash scripts/*": allow'
-check SC-004 "verify block allows node -e and date (evidence + timestamps)" \
-  has_all "$VERIFY" '"node -e *": allow' '"date *": allow'
+check SC-004 "verify block allows date (timestamps); node -e prohibido (SPECBOOT-PERM-01)" \
+  has_all "$VERIFY" '"date *": allow'
+check SC-004 "verify block forbids node -e (SPECBOOT-PERM-01, REQ-006)" \
+  lacks_all "$VERIFY" '"node -e *": allow'
 check SC-004 "verify role documents bash tests dogfooding" \
   has_all "$VERIFY_ROLE" "bash tests/"
 
@@ -297,8 +300,8 @@ check SC-005 "archive skill instructs checkbox ticking via edit tool" \
 # --- M-911 (permissions-cycle-completion) ---
 echo "Permissions cycle completion (M-911):"
 
-check SC-001 "archive block allows mkdir -p openspec/*" \
-  has_all "$ARCHIVE" '"mkdir -p openspec/*": allow'
+check SC-001 "archive block allows mkdir scoped to openspec/state (SPECBOOT-PERM-01)" \
+  has_all "$ARCHIVE" '"mkdir -p openspec/state": allow'
 
 RUNALL="$ROOT/tests/run-all.sh"
 check SC-002 "canonical runner tests/run-all.sh exists" test -f "$RUNALL"

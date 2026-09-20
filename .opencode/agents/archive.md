@@ -8,14 +8,13 @@ permission:
   bash:
     "*": deny
     "openspec archive *": allow
-    "git add *": allow
     "git status": allow
     "git status *": allow
     "git diff": allow
     "git diff *": allow
     "git log": allow
     "git log *": allow
-    "node -e *": allow
+    "node scripts/read-json-field.mjs *": allow
     "ls *": allow
     "cat *": allow
     "mkdir -p openspec/state": allow

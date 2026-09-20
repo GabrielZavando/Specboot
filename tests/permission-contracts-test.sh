@@ -194,6 +194,43 @@ cp "$FIX/good/.opencode/agents/demo.md" "$CONSUMER/.opencode/agents/"
 node "$PKG/scripts/validate-agent-permissions.mjs" --root "$CONSUMER" >/dev/null 2>&1
 ' _ "$ROOT" "$FIXTURES"
 
+check SC-005 "ownership: git commit effectively denied for non-commit agent (fixture bad-ownership)" \
+  bash -c '! node "$1" --root "$2/bad-ownership" --manifest "$2/bad-ownership/manifest.yml" >/dev/null 2>&1' _ "$VALIDATOR" "$FIXTURES"
+
+# --- Task 3: real agent files must satisfy the manifest ---
+echo "Validator — real agents against the manifest (SC-001, SC-003..SC-007):"
+
+check SC-001 "all real agents in this repo satisfy the manifest" \
+  bash -c 'node "$1/scripts/validate-agent-permissions.mjs" --root "$1" >/dev/null 2>&1' _ "$ROOT"
+
+check SC-007 "scripts/read-json-field.mjs exists (read-only JSON field helper)" \
+  test -f "$ROOT/scripts/read-json-field.mjs"
+
+check SC-007 "read-json-field.mjs rejects files outside its closed allowlist" \
+  bash -c '! node "$1/scripts/read-json-field.mjs" package.json name >/dev/null 2>&1' _ "$ROOT"
+
+check SC-007 "read-json-field.mjs rejects fields outside its closed allowlist" \
+  bash -c '! node "$1/scripts/read-json-field.mjs" openspec/state/verify-results.json password >/dev/null 2>&1' _ "$ROOT"
+
+check SC-007 "read-json-field.mjs reads an allowed field (sandbox, nunca toca archivos del repo)" \
+  bash -c '
+HELPER="$1/scripts/read-json-field.mjs"
+SBX="$(mktemp -d)"
+trap "rm -rf \"$SBX\"" EXIT
+mkdir -p "$SBX/openspec/state"
+printf "{\"verdict\":\"PASS\"}" > "$SBX/openspec/state/verify-results.json"
+cd "$SBX"
+out="$(node "$HELPER" openspec/state/verify-results.json verdict 2>/dev/null)"
+[ "$out" = "PASS" ]
+' _ "$ROOT"
+
+check SC-005 "archive agent no longer allows git add (ownership)" \
+  bash -c '! grep -qF "\"git add *\": allow" "$1/.opencode/agents/archive.md"' _ "$ROOT"
+
+check SC-007 "archive and commit no longer allow node -e *" \
+  bash -c '! grep -qF "\"node -e *\": allow" "$1/.opencode/agents/archive.md" \
+    && ! grep -qF "\"node -e *\": allow" "$1/.opencode/agents/commit.md"' _ "$ROOT"
+
 echo ""
 echo "Permission contracts: $PASS passed, $FAIL failed"
 if [ "$FAIL" -gt 0 ]; then
