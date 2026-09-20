@@ -4,6 +4,7 @@ mode: primary
 permission:
   edit: deny
   bash:
+    "*": deny
     "git status": allow
     "git status *": allow
     "git diff": allow
@@ -18,16 +19,15 @@ permission:
     "git commit *": allow
     "git push": allow
     "git push *": allow
+    "gh pr create *": allow
+    "gh pr view *": allow
+    "gh pr edit *": allow
+    "node -e *": allow
+    "ls *": allow
     "git push --force*": deny
     "git push *--force*": deny
     "git push -f*": deny
-    "git push * -f": deny
-    "gh *": allow
-    "node -e *": allow
-    "ls *": allow
-    "cat *": allow
-    "mkdir -p openspec/*": allow
-    "*": deny
+    "git push *-f*": deny
 ---
 
 # Commit Agent — Spec-Driven Development
