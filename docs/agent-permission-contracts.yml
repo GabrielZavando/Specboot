@@ -1,0 +1,411 @@
+# Agent Permission Contracts — SPECBOOT-PERM-01
+#
+# Fuente de verdad declarativa de los contratos de permisos de los agentes
+# OpenCode de Specboot. El validador
+# (scripts/validate-agent-permissions.mjs) calcula los permisos efectivos de
+# cada `.opencode/agents/*.md` respetando la semántica `last-match-wins` de
+# OpenCode y los compara contra este manifiesto. Ninguna capacidad se infiere
+# desde prosa libre.
+#
+# Estructura por agente:
+#   edit.allow        — rutas que el agente PUEDE modificar (conjunto exacto).
+#   edit.forbidden    — patrones que deben resolver efectivamente a deny.
+#   edit.mode         — "restricted" (solo lo declarado en edit.allow) o
+#                       "implementer" (allow general, menos lo prohibido).
+#   bash.required     — comandos que deben resolver efectivamente a allow.
+#   bash.forbidden    — comandos que deben resolver efectivamente a deny.
+#   evidence.must_write — archivos de evidencia que el agente persiste (fail-closed).
+#   can_commit / can_push / can_manage_prs / can_run_arbitrary_code /
+#   can_spawn_subagents — flags booleanos obligatorios.
+
+version: 1
+
+agents:
+
+  verify:
+    mode: primary
+    edit:
+      mode: restricted
+      allow:
+        - "openspec/state/verify-results.json"
+      forbidden:
+        - "docs/**"
+        - "src/**"
+        - "tasks.md"
+        - "openspec/state/adversarial-result.json"
+    bash:
+      required:
+        - "openspec validate *"
+        - "git diff"
+        - "git diff *"
+        - "git status"
+        - "git status *"
+        - "git log"
+        - "git log *"
+        - "git merge-base *"
+        - "npm test"
+        - "npm test *"
+        - "npm run test *"
+        - "npx vitest *"
+        - "npx jest *"
+        - "pytest *"
+        - "bash tests/*"
+        - "bash scripts/*"
+        - "date *"
+        - "rg *"
+        - "ls *"
+        - "mkdir -p openspec/state"
+      forbidden:
+        - "git add"
+        - "git add *"
+        - "git commit"
+        - "git commit *"
+        - "git push"
+        - "git push *"
+        - "git push --force*"
+        - "git push --force-with-lease*"
+        - "git push -f*"
+        - "git push *-f*"
+        - "node -e *"
+        - "python -c *"
+        - "python3 -c *"
+        - "sed -i *"
+        - "tee *"
+    evidence:
+      must_write:
+        - "openspec/state/verify-results.json"
+    can_commit: false
+    can_push: false
+    can_manage_prs: false
+    can_run_arbitrary_code: false
+    can_spawn_subagents: false
+
+  reviewer:
+    mode: subagent
+    edit:
+      mode: restricted
+      allow:
+        - "openspec/state/adversarial-result.json"
+      forbidden:
+        - "docs/**"
+        - "src/**"
+        - "tests/**"
+        - "tasks.md"
+        - "openspec/specs/**"
+        - "openspec/state/verify-results.json"
+    bash:
+      required:
+        - "npm audit *"
+        - "npx eslint *"
+        - "npx dependency-cruiser *"
+        - "git diff"
+        - "git diff *"
+        - "git status"
+        - "git status *"
+        - "ls *"
+        - "mkdir -p openspec/state"
+        - "date -u *"
+      forbidden:
+        - "git add"
+        - "git add *"
+        - "git commit"
+        - "git commit *"
+        - "git push"
+        - "git push *"
+        - "git push --force*"
+        - "git push --force-with-lease*"
+        - "git push -f*"
+        - "git push *-f*"
+        - "node -e *"
+        - "python -c *"
+        - "python3 -c *"
+        - "sed -i *"
+        - "tee *"
+    evidence:
+      must_write:
+        - "openspec/state/adversarial-result.json"
+    can_commit: false
+    can_push: false
+    can_manage_prs: false
+    can_run_arbitrary_code: false
+    can_spawn_subagents: false
+
+  commit:
+    mode: primary
+    edit:
+      mode: restricted
+      allow: []
+      forbidden:
+        - "*"
+    bash:
+      required:
+        - "git status"
+        - "git status *"
+        - "git diff"
+        - "git diff *"
+        - "git log"
+        - "git log *"
+        - "git fetch *"
+        - "git merge-base *"
+        - "git branch"
+        - "git branch --show-current"
+        - "git add *"
+        - "git commit *"
+        - "git push"
+        - "git push *"
+        - "gh pr create *"
+        - "gh pr view *"
+        - "gh pr edit *"
+        - "node scripts/read-json-field.mjs *"
+        - "ls *"
+      forbidden:
+        - "git push --force*"
+        - "git push --force-with-lease*"
+        - "git push -f*"
+        - "git push *-f*"
+        - "node -e *"
+        - "python -c *"
+        - "python3 -c *"
+        - "sed -i *"
+        - "tee *"
+    evidence:
+      must_write: []
+    can_commit: true
+    can_push: true
+    can_manage_prs: true
+    can_run_arbitrary_code: false
+    can_spawn_subagents: false
+
+  archive:
+    mode: primary
+    edit:
+      mode: restricted
+      allow:
+        - "openspec/**"
+      forbidden: []
+    bash:
+      required:
+        - "openspec archive *"
+        - "git status"
+        - "git status *"
+        - "git diff"
+        - "git diff *"
+        - "git log"
+        - "git log *"
+        - "node scripts/read-json-field.mjs *"
+        - "ls *"
+        - "cat *"
+        - "mkdir -p openspec/state"
+        - "rm openspec/tickets/*"
+        - "rm -f openspec/tickets/*"
+        - "date -u *"
+      forbidden:
+        - "git add"
+        - "git add *"
+        - "git commit"
+        - "git commit *"
+        - "git push"
+        - "git push *"
+        - "git push --force*"
+        - "git push --force-with-lease*"
+        - "git push -f*"
+        - "git push *-f*"
+        - "node -e *"
+        - "python -c *"
+        - "python3 -c *"
+        - "sed -i *"
+        - "tee *"
+    evidence:
+      must_write: []
+    can_commit: false
+    can_push: false
+    can_manage_prs: false
+    can_run_arbitrary_code: false
+    can_spawn_subagents: false
+
+  sdd-plan:
+    mode: primary
+    edit:
+      mode: restricted
+      allow:
+        - "openspec/**"
+      forbidden: []
+    bash:
+      required:
+        - "openspec *"
+        - "git checkout"
+        - "git checkout *"
+        - "git switch"
+        - "git switch *"
+        - "git branch"
+        - "git branch *"
+        - "git status"
+        - "git status *"
+        - "git log *"
+        - "git merge-base *"
+      forbidden:
+        - "git add"
+        - "git add *"
+        - "git commit"
+        - "git commit *"
+        - "git push"
+        - "git push *"
+        - "git push --force*"
+        - "git push --force-with-lease*"
+        - "git push -f*"
+        - "git push *-f*"
+        - "node -e *"
+        - "python -c *"
+        - "python3 -c *"
+    evidence:
+      must_write: []
+    can_commit: false
+    can_push: false
+    can_manage_prs: false
+    can_run_arbitrary_code: false
+    can_spawn_subagents: false
+
+  sync-specs:
+    mode: primary
+    edit:
+      mode: restricted
+      allow:
+        - "openspec/specs/**"
+      forbidden: []
+    bash:
+      required:
+        - "git status"
+        - "git status *"
+        - "git diff"
+        - "git diff *"
+        - "ls *"
+      forbidden:
+        - "git add"
+        - "git add *"
+        - "git commit"
+        - "git commit *"
+        - "git push"
+        - "git push *"
+        - "git push --force*"
+        - "git push -f*"
+        - "node -e *"
+        - "python -c *"
+        - "python3 -c *"
+    evidence:
+      must_write: []
+    can_commit: false
+    can_push: false
+    can_manage_prs: false
+    can_run_arbitrary_code: false
+    can_spawn_subagents: false
+
+  build:
+    mode: primary
+    edit:
+      mode: implementer
+      allow:
+        - "**"
+      forbidden:
+        - "openspec/state/verify-results.json"
+        - "openspec/state/adversarial-result.json"
+    bash:
+      required: []
+      forbidden:
+        - "git add"
+        - "git add *"
+        - "git commit"
+        - "git commit *"
+        - "git push"
+        - "git push *"
+        - "git push --force*"
+        - "git push --force-with-lease*"
+        - "git push -f*"
+        - "git push *-f*"
+    evidence:
+      must_write: []
+    can_commit: false
+    can_push: false
+    can_manage_prs: false
+    can_run_arbitrary_code: true
+    can_spawn_subagents: true
+    justification: |
+      Agente implementador primario de /apply: necesita editar cualquier
+      archivo del proyecto bajo TDD y ejecutar los toolchains del stack
+      (tests, builds, linters). Aun así no puede crear commits ni hacer push
+      (ownership exclusivo del agente commit), no puede forzar push en
+      ninguna variante, no puede modificar las evidencias de verify/
+      adversarial manualmente y las operaciones destructivas de shell quedan
+      bajo confirmación del usuario.
+
+  backend:
+    mode: subagent
+    edit:
+      mode: implementer
+      allow:
+        - "**"
+      forbidden:
+        - "openspec/state/verify-results.json"
+        - "openspec/state/adversarial-result.json"
+    bash:
+      required: []
+      forbidden:
+        - "git add"
+        - "git add *"
+        - "git commit"
+        - "git commit *"
+        - "git push"
+        - "git push *"
+        - "git push --force*"
+        - "git push --force-with-lease*"
+        - "git push -f*"
+        - "git push *-f*"
+    evidence:
+      must_write: []
+    can_commit: false
+    can_push: false
+    can_manage_prs: false
+    can_run_arbitrary_code: true
+    can_spawn_subagents: false
+    justification: |
+      Subagente implementador backend (NestJS/API/migraciones): requiere
+      edición de código y ejecución de toolchains para cumplir TDD bajo
+      /apply. Sin permiso de commit/push (ownership del agente commit), sin
+      force-push en ninguna variante, sin escritura sobre las evidencias de
+      verify/adversarial y con operaciones destructivas sujetas a
+      confirmación.
+
+  frontend:
+    mode: subagent
+    edit:
+      mode: implementer
+      allow:
+        - "**"
+      forbidden:
+        - "openspec/state/verify-results.json"
+        - "openspec/state/adversarial-result.json"
+    bash:
+      required: []
+      forbidden:
+        - "git add"
+        - "git add *"
+        - "git commit"
+        - "git commit *"
+        - "git push"
+        - "git push *"
+        - "git push --force*"
+        - "git push --force-with-lease*"
+        - "git push -f*"
+        - "git push *-f*"
+    evidence:
+      must_write: []
+    can_commit: false
+    can_push: false
+    can_manage_prs: false
+    can_run_arbitrary_code: true
+    can_spawn_subagents: false
+    justification: |
+      Subagente implementador frontend (Angular/Astro/UI): requiere edición
+      de código y ejecución de toolchains para cumplir TDD bajo /apply. Sin
+      permiso de commit/push (ownership del agente commit), sin force-push en
+      ninguna variante, sin escritura sobre las evidencias de verify/
+      adversarial y con operaciones destructivas sujetas a confirmación.

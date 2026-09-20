@@ -46,9 +46,9 @@ Antes de dar la tarea por cerrada:
 
 Prioridad: alta | Capa: infrastructure | Estimación: media
 
-- [ ] 1.1 Escribir el test/fixture TDD primero: caso válido y caso sin manifiesto (SC-001, SC-008) en RED.
-- [ ] 1.2 Crear el manifiesto YAML framework-owned con una entrada por agente: editable paths, bash requerido, prohibiciones, evidencias persistentes y flags `can_commit`/`can_push`/`can_manage_prs`/`can_run_arbitrary_code`/`can_spawn_subagents`.
-- [ ] 1.3 Documentar en el manifiesto la justificación de alcance de `build`, `backend` y `frontend` (REQ-007).
+- [x] 1.1 Escribir el test/fixture TDD primero: caso válido y caso sin manifiesto (SC-001, SC-008) en RED.
+- [x] 1.2 Crear el manifiesto YAML framework-owned con una entrada por agente: editable paths, bash requerido, prohibiciones, evidencias persistentes y flags `can_commit`/`can_push`/`can_manage_prs`/`can_run_arbitrary_code`/`can_spawn_subagents`.
+- [x] 1.3 Documentar en el manifiesto la justificación de alcance de `build`, `backend` y `frontend` (REQ-007).
 
 Suggested Path: `docs/agent-permission-contracts.yml`
 Test Path: `tests/permission-contracts-test.sh`, `tests/fixtures/permission-contracts/*`
