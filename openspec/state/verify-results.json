@@ -1,41 +1,17 @@
 {
   "schema_version": 1,
-  "change": "release-tagging",
-  "ticket_id": "M-912",
+  "change": "opencode-env-config",
+  "ticket_id": "FW-ENV",
   "status": "PASS",
   "evidence_mode": "executable",
-  "tasks": {
-    "total": 6,
-    "passed": 6,
-    "failed": 0,
-    "untested": 0
-  },
+ "timestamp": "2026-09-19T14:41:51Z",
+  "tasks": { "total": 5, "passed": 5, "failed": 0, "untested": 0 },
   "scenarios": [
-    {
-      "id": "SC-001",
-      "test": "release-bump-test.sh [SC-001] tag created in git fixture",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-002",
-      "test": "release-bump-test.sh [SC-002] update.sh reads package.json",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-003",
-      "test": "release-bump-test.sh [SC-003] tagging policy documented",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-004",
-      "test": "release-bump-test.sh [SC-004] backfilled tags v0.6.4..v0.9.0 exist",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-005",
-      "test": "full verification suite via run-all.sh + framework checks",
-      "status": "PASS"
-    }
-  ],
-  "timestamp": "2026-09-18T19:39:38Z"
+    { "id": "SC-001", "test": "[SC-001] no literal apiKey in opencode.json", "status": "PASS" },
+    { "id": "SC-002", "test": "[SC-002] providers.example.json valid with openrouter", "status": "PASS" },
+    { "id": "SC-003", "test": "[SC-003] providers config guide exists", "status": "PASS" },
+    { "id": "SC-004", "test": "[SC-004] .env.example declares provider vars", "status": "PASS" },
+    { "id": "SC-005", "test": "[SC-005] missing variable behavior documented", "status": "PASS" },
+    { "id": "SC-006", "test": "[SC-006] framework checks pass", "status": "PASS" }
+  ]
 }
