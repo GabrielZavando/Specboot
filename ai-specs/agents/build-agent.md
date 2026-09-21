@@ -76,6 +76,25 @@ Reglas:
 - Si algo es ambiguo en las specs, preguntar antes de asumir
 - Si aparece un fix después de `/apply` y antes de `/archive`: actualizar artefactos OpenSpec primero, luego código
 
+## Alcance de permisos (SPECBOOT-PERM-01)
+
+El agente build es **implementador** y necesita `edit: allow` + `bash: allow *
+controlado` para cumplir TDD sobre cualquier archivo del proyecto. Aun así:
+
+- **Ownership del commit**: `git add`, `git commit` y `git push` están
+  denegados estructuralmente; solo el agente `commit` los ejecuta.
+- **Force-push denegado** en todas sus variantes (`--force`,
+  `--force-with-lease`, `-f`, intermedias), igual que en todo agente.
+- **Evidencias intocables**: `openspec/state/verify-results.json` y
+  `openspec/state/adversarial-result.json` están excluidas de edición; nunca
+  se escriben ni editan manualmente.
+- **Operaciones destructivas de shell** (`rm -rf`, etc.) quedan bajo
+  confirmación del usuario.
+
+El contrato completo y verificable vive en
+`docs/agent-permission-contracts.yml` y lo ejerce
+`scripts/validate-agent-permissions.mjs` desde CI.
+
 ## Referencia de stacks
 
 - Backend: ver `docs/backend-standards.md` para el stack específico del proyecto

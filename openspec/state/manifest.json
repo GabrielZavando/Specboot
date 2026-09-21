@@ -469,8 +469,26 @@
         "source": "openspec/state/verify-results.json"
       },
       "adversarial": {
+      "verdict": "SHIP",
+      "timestamp": "2026-09-18T19:39:38Z",
+      "source": "openspec/state/adversarial-result.json"
+      }
+    },
+    {
+      "change_name": "agent-permission-contracts",
+      "ticket_id": "SPECBOOT-PERM-01",
+      "archived_at": "2026-09-20T23:49:32Z",
+      "specs_applied": [
+        "agent-permissions"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-20T20:06:51Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
         "verdict": "SHIP",
-        "timestamp": "2026-09-18T19:39:38Z",
+        "timestamp": "2026-09-20T23:05:03Z",
         "source": "openspec/state/adversarial-result.json"
       }
     }

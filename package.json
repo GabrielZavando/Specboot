@@ -32,7 +32,10 @@
     "Makefile",
     ".github/workflows",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "scripts/validate-agent-permissions.mjs",
+    "scripts/read-json-field.mjs",
+    "docs/agent-permission-contracts.yml"
   ],
   "repository": {
     "type": "git",
@@ -51,5 +54,8 @@
   ],
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "js-yaml": "^5.4.2"
   }
 }

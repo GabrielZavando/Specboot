@@ -131,21 +131,24 @@ Escribir `openspec/state/adversarial-result.json` al finalizar **cada** auditor�
 
 Reglas:
 
-- Escribir vía redirección `cat > openspec/state/adversarial-result.json` (la
-  evidencia es la **única** escritura permitida del reviewer; `edit` permanece
-  denegado). Crear el directorio si falta con `mkdir -p openspec/state`.
+- Crear el directorio con `mkdir -p openspec/state` si todavía no existe.
+- Obtener el timestamp mediante `date -u +"%Y-%m-%dT%H:%M:%SZ"`.
+- Crear o reemplazar `openspec/state/adversarial-result.json` mediante la
+  herramienta de edición. El permiso `edit` del reviewer está restringido
+  exclusivamente a este archivo; cualquier otra escritura permanece denegada.
+- Volver a leer el archivo persistido y comprobar que sea JSON válido y que
+  respete el esquema e invariantes definidos en este paso.
 - `total`/`critical`/`warnings`/`info` salen del `summary` del Paso 5;
   `discarded` del anexo "Descartados". Invariantes: `total = critical +
   warnings + info` y `critical ≤ total`.
 - `timestamp` en ISO-8601 (ej. `2026-09-05T15:00:00Z`).
 - El archivo queda trackeado en git (no gitignored): evidencia auditable en PRs.
-- Si falla la escritura → advertir pero no abortar (el reporte en pantalla ya se
-  emitió). El gate duro del veredicto vive en `/commit` (activo desde M-901),
-- **Handoff del tick del Mandatory Steps**: el reviewer es **read-only** y no
-  edita `tasks.md`; la checkbox del paso post (`adversarial-review`) la marca
-  `[x]` (vía edit tool) el **agente orquestador** (build/primario) al validar el
-  veredicto persistido (ver `ai-specs/agents/build-agent.md`).
-  no en este archivo.
+- Si falla la persistencia o la validación del JSON, reportar que la auditoría
+  fue ejecutada pero su evidencia no pudo persistirse, finalizar con error y no
+  marcar el Mandatory Step como completado. `/commit` debe permanecer bloqueado.
+- **Handoff del tick del Mandatory Steps**: el reviewer no edita `tasks.md`.
+  La checkbox del paso post (`adversarial-review`) la marca `[x]` el agente
+  orquestador (`build`) después de validar el veredicto persistido.
 
 ---
 **Eliminado**: la Fase 7 (OpenSpec Alignment) ha sido removida (cubre `/verify`). Esta skill ahora se enfoca únicamente en auditoría adversarial: robustez, seguridad, tradeoffs y diseño contextual.

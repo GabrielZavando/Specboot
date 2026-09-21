@@ -1,0 +1,23 @@
+version: 1
+agents:
+  demo:
+    file: ".opencode/agents/demo.md"
+    edit:
+      mode: restricted
+      allow:
+        - "openspec/**"
+      forbidden: []
+    bash:
+      required:
+        - "openspec *"
+        - "git status"
+        - "git status *"
+      forbidden:
+        - "git push *"
+    evidence:
+      must_write: []
+    can_commit: false
+    can_push: false
+    can_manage_prs: false
+    can_run_arbitrary_code: false
+    can_spawn_subagents: false

@@ -1,0 +1,23 @@
+version: 1
+agents:
+  demo:
+    file: ".opencode/agents/demo.md"
+    edit:
+      mode: restricted
+      allow: []
+      forbidden: []
+    bash:
+      required:
+        - "git push *"
+      forbidden:
+        - "git push --force*"
+        - "git push *--force*"
+        - "git push -f*"
+        - "git push *-f*"
+    evidence:
+      must_write: []
+    can_commit: true
+    can_push: true
+    can_manage_prs: true
+    can_run_arbitrary_code: false
+    can_spawn_subagents: false

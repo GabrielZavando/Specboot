@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "change": "opencode-env-config",
-  "ticket_id": "FW-ENV",
+  "change": "agent-permission-contracts",
+  "ticket_id": "SPECBOOT-PERM-01",
   "verdict": "SHIP",
-  "confidence":0.85,
-  "timestamp": "2026-09-19T14:27:03Z",
-  "findings": { "total": 3, "critical": 0, "warnings": 1, "info": 2, "discarded": 1 }
+  "confidence": 0.85,
+  "timestamp": "2026-09-20T23:05:03Z",
+  "findings": { "total": 4, "critical": 0, "warnings": 2, "info": 2, "discarded": 2 }
 }
