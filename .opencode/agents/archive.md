@@ -2,6 +2,7 @@
 description: Archive agent — closes OpenSpec changes and stages for commit
 mode: primary
 permission:
+  task: deny
   edit:
     "*": deny
     "openspec/**": allow

@@ -2,6 +2,7 @@
 description: Adversarial red-team code audit — security, robustness, SOLID, tradeoffs. Emits SHIP/NO-SHIP verdict and persists it to openspec/state/adversarial-result.json. Read-only over code.
 mode: subagent
 permission:
+  task: deny
   edit:
     "*": deny
     "openspec/state/adversarial-result.json": allow

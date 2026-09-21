@@ -2,6 +2,7 @@
 description: Commit agent — conventional commits, PRs and hard evidence gates. Read-only over code; only writes commits.
 mode: primary
 permission:
+  task: deny
   edit: deny
   bash:
     "*": deny
@@ -60,5 +61,7 @@ improvises reglas aquí.
 - **Nunca** force-push, en ninguna de sus formas: denegado estructuralmente
   (`git push --force*`, `git push *--force*`, `git push -f*`, `git push * -f`),
   no solo por texto.
+- **Subagentes**: `permission.task: deny` (SPECBOOT-HARDEN-02, REQ-005) — el
+  agente commit no lanza subagentes; `/commit` corre como agente primario.
 - El trailer `Gate-Bypass` solo se emite cuando el usuario forzó `--force`
   tras un gate bloqueado; con gates verdes no se emite.

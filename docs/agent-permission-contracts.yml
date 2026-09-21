@@ -17,6 +17,29 @@
 #   evidence.must_write — archivos de evidencia que el agente persiste (fail-closed).
 #   can_commit / can_push / can_manage_prs / can_run_arbitrary_code /
 #   can_spawn_subagents — flags booleanos obligatorios.
+#   task.allow / task.forbidden — contrato de subagentes (SPECBOOT-HARDEN-02,
+#   REQ-005): build solo invoca backend/frontend; los demás no lanzan subagentes.
+#
+# Decisión de wrapper (SPECBOOT-HARDEN-02, REQ-006): se evaluó un wrapper seguro
+# de `git push` para el agente commit; se retiene la denegación PATTERN-BASED
+# estructural (todas las variantes force + comandos compuestos que embeben git
+# de escritura en un segmento no inicial, con separadores `;`, `&&`, `||`, `|`
+# y newline, con y sin espacios) porque el validador la audita automáticamente
+# con esa cobertura EXACTA (ni más ni menos); un wrapper real queda como
+# hardening futuro si se reintroduce una variante no cubierta. Los agentes
+# implementadores prefieren allowlists de Git de solo lectura: los comandos de
+# escritura git (add/commit/push y compuestos) resuelven deny.
+#
+# Límite de la frontera (defensa en profundidad — SPECBOOT-HARDEN-02, REQ-006):
+# cuando can_run_arbitrary_code es true (build/backend/frontend), las
+# denegaciones pattern-based son defensa contra ERRORES ACCIDENTALES, no una
+# frontera de seguridad frente a EVASIÓN DELIBERADA: un wrapper como
+# `bash -c`, `node -e`, un subshell `$(...)` o backticks podría ejecutar git de
+# escritura sin que ningún patrón lo intercepte (OpenCode matchea el string del
+# comando, no desenvuelve procesos). La denegación de `node -e *`/
+# `python -c *` en agentes con can_run_arbitrary_code=false acota ese canal
+# allí donde la capacidad no está concedida; donde sí lo está, el límite real
+# es el flag mismo, no el patrón.
 
 version: 1
 
@@ -79,6 +102,10 @@ agents:
     can_manage_prs: false
     can_run_arbitrary_code: false
     can_spawn_subagents: false
+    task:
+      allow: []
+      forbidden:
+        - "*"
 
   reviewer:
     mode: subagent
@@ -129,6 +156,10 @@ agents:
     can_manage_prs: false
     can_run_arbitrary_code: false
     can_spawn_subagents: false
+    task:
+      allow: []
+      forbidden:
+        - "*"
 
   commit:
     mode: primary
@@ -175,6 +206,10 @@ agents:
     can_manage_prs: true
     can_run_arbitrary_code: false
     can_spawn_subagents: false
+    task:
+      allow: []
+      forbidden:
+        - "*"
 
   archive:
     mode: primary
@@ -222,6 +257,10 @@ agents:
     can_manage_prs: false
     can_run_arbitrary_code: false
     can_spawn_subagents: false
+    task:
+      allow: []
+      forbidden:
+        - "*"
 
   sdd-plan:
     mode: primary
@@ -264,6 +303,10 @@ agents:
     can_manage_prs: false
     can_run_arbitrary_code: false
     can_spawn_subagents: false
+    task:
+      allow: []
+      forbidden:
+        - "*"
 
   sync-specs:
     mode: primary
@@ -298,6 +341,10 @@ agents:
     can_manage_prs: false
     can_run_arbitrary_code: false
     can_spawn_subagents: false
+    task:
+      allow: []
+      forbidden:
+        - "*"
 
   build:
     mode: primary
@@ -321,6 +368,36 @@ agents:
         - "git push --force-with-lease*"
         - "git push -f*"
         - "git push *-f*"
+        - "gh pr create *"
+        - "gh pr edit *"
+        - "gh pr view *"
+        - "gh pr *"
+        - "*; git add*"
+        - "* && git add*"
+        - "*; git commit*"
+        - "* && git commit*"
+        - "*; git push*"
+        - "* && git push*"
+        - "*; git push --force*"
+        - "* && git push --force*"
+        # Compound separators WITHOUT surrounding spaces (validator coverage is
+        # EXACT: `;`, `&&`, `||`, `|`, newline — each ± space; the spaced forms
+        # above are subsumed but kept for explicit documentation).
+        - "*;*git add*"
+        - "*&&*git add*"
+        - "*||*git add*"
+        - "*|*git add*"
+        - "*\n*git add*"
+        - "*;*git commit*"
+        - "*&&*git commit*"
+        - "*||*git commit*"
+        - "*|*git commit*"
+        - "*\n*git commit*"
+        - "*;*git push*"
+        - "*&&*git push*"
+        - "*||*git push*"
+        - "*|*git push*"
+        - "*\n*git push*"
     evidence:
       must_write: []
     can_commit: false
@@ -328,6 +405,12 @@ agents:
     can_manage_prs: false
     can_run_arbitrary_code: true
     can_spawn_subagents: true
+    task:
+      allow:
+        - backend
+        - frontend
+      forbidden:
+        - "*"
     justification: |
       Agente implementador primario de /apply: necesita editar cualquier
       archivo del proyecto bajo TDD y ejecutar los toolchains del stack
@@ -359,6 +442,36 @@ agents:
         - "git push --force-with-lease*"
         - "git push -f*"
         - "git push *-f*"
+        - "gh pr create *"
+        - "gh pr edit *"
+        - "gh pr view *"
+        - "gh pr *"
+        - "*; git add*"
+        - "* && git add*"
+        - "*; git commit*"
+        - "* && git commit*"
+        - "*; git push*"
+        - "* && git push*"
+        - "*; git push --force*"
+        - "* && git push --force*"
+        # Compound separators WITHOUT surrounding spaces (validator coverage is
+        # EXACT: `;`, `&&`, `||`, `|`, newline — each ± space; the spaced forms
+        # above are subsumed but kept for explicit documentation).
+        - "*;*git add*"
+        - "*&&*git add*"
+        - "*||*git add*"
+        - "*|*git add*"
+        - "*\n*git add*"
+        - "*;*git commit*"
+        - "*&&*git commit*"
+        - "*||*git commit*"
+        - "*|*git commit*"
+        - "*\n*git commit*"
+        - "*;*git push*"
+        - "*&&*git push*"
+        - "*||*git push*"
+        - "*|*git push*"
+        - "*\n*git push*"
     evidence:
       must_write: []
     can_commit: false
@@ -366,6 +479,10 @@ agents:
     can_manage_prs: false
     can_run_arbitrary_code: true
     can_spawn_subagents: false
+    task:
+      allow: []
+      forbidden:
+        - "*"
     justification: |
       Subagente implementador backend (NestJS/API/migraciones): requiere
       edición de código y ejecución de toolchains para cumplir TDD bajo
@@ -396,6 +513,36 @@ agents:
         - "git push --force-with-lease*"
         - "git push -f*"
         - "git push *-f*"
+        - "gh pr create *"
+        - "gh pr edit *"
+        - "gh pr view *"
+        - "gh pr *"
+        - "*; git add*"
+        - "* && git add*"
+        - "*; git commit*"
+        - "* && git commit*"
+        - "*; git push*"
+        - "* && git push*"
+        - "*; git push --force*"
+        - "* && git push --force*"
+        # Compound separators WITHOUT surrounding spaces (validator coverage is
+        # EXACT: `;`, `&&`, `||`, `|`, newline — each ± space; the spaced forms
+        # above are subsumed but kept for explicit documentation).
+        - "*;*git add*"
+        - "*&&*git add*"
+        - "*||*git add*"
+        - "*|*git add*"
+        - "*\n*git add*"
+        - "*;*git commit*"
+        - "*&&*git commit*"
+        - "*||*git commit*"
+        - "*|*git commit*"
+        - "*\n*git commit*"
+        - "*;*git push*"
+        - "*&&*git push*"
+        - "*||*git push*"
+        - "*|*git push*"
+        - "*\n*git push*"
     evidence:
       must_write: []
     can_commit: false
@@ -403,6 +550,10 @@ agents:
     can_manage_prs: false
     can_run_arbitrary_code: true
     can_spawn_subagents: false
+    task:
+      allow: []
+      forbidden:
+        - "*"
     justification: |
       Subagente implementador frontend (Angular/Astro/UI): requiere edición
       de código y ejecución de toolchains para cumplir TDD bajo /apply. Sin

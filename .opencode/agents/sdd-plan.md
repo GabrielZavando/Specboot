@@ -2,6 +2,7 @@
 description: Planning agent — generates and updates OpenSpec artifacts only
 mode: primary
 permission:
+  task: deny
   edit:
     "*": deny
     "openspec/**": allow

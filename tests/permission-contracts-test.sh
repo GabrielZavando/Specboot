@@ -138,6 +138,60 @@ for (const name of ["build", "backend", "frontend"]) {
 process.exit(0);
 '
 
+# --- SPECBOOT-HARDEN-02 REQ-005: subagent task contracts (SC-008, SC-009) ---
+echo "Subagent contracts (SC-008, SC-009, REQ-005):"
+
+check SC-008 "every manifest agent declares a task contract (allow/forbidden arrays)" \
+  node_assert '
+const fs = require("fs"), path = require("path");
+const yaml = require(path.join(process.argv[1], "node_modules", "js-yaml"));
+const root = process.argv[1];
+const doc = yaml.load(fs.readFileSync(path.join(root, "docs/agent-permission-contracts.yml"), "utf8"));
+for (const [name, cfg] of Object.entries(doc.agents || {})) {
+  if (!cfg.task || !Array.isArray(cfg.task.allow) || !Array.isArray(cfg.task.forbidden)) process.exit(1);
+}
+process.exit(0);
+'
+
+check SC-009 "build task contract allows only backend and frontend" \
+  node_assert '
+const fs = require("fs"), path = require("path");
+const yaml = require(path.join(process.argv[1], "node_modules", "js-yaml"));
+const root = process.argv[1];
+const doc = yaml.load(fs.readFileSync(path.join(root, "docs/agent-permission-contracts.yml"), "utf8"));
+const t = doc.agents.build.task;
+const ok = t.allow.length === 2 && t.allow.includes("backend") && t.allow.includes("frontend")
+  && t.forbidden.includes("*");
+process.exit(ok ? 0 : 1);
+'
+
+check SC-008 "non-spawner agents task contract forbids every subagent" \
+  node_assert '
+const fs = require("fs"), path = require("path");
+const yaml = require(path.join(process.argv[1], "node_modules", "js-yaml"));
+const root = process.argv[1];
+const doc = yaml.load(fs.readFileSync(path.join(root, "docs/agent-permission-contracts.yml"), "utf8"));
+const spawners = new Set(["build"]);
+for (const [name, cfg] of Object.entries(doc.agents)) {
+  if (spawners.has(name)) continue;
+  if (cfg.task.allow.length !== 0 || !cfg.task.forbidden.includes("*")) process.exit(1);
+}
+process.exit(0);
+'
+
+check SC-008 "non-spawner front matters declare task: deny; build allows backend/frontend" \
+  node_assert '
+const fs = require("fs"), path = require("path");
+const root = process.argv[1];
+for (const name of ["verify","reviewer","commit","archive","sdd-plan","sync-specs","backend","frontend"]) {
+  const fm = fs.readFileSync(path.join(root, ".opencode", "agents", name + ".md"), "utf8");
+  if (!fm.includes("task: deny")) process.exit(1);
+}
+const build = fs.readFileSync(path.join(root, ".opencode", "agents", "build.md"), "utf8");
+const ok = build.includes("backend: allow") && build.includes("frontend: allow") && build.includes("\"*\": deny");
+process.exit(ok ? 0 : 1);
+'
+
 # --- Task 2: validator over fixtures (REQ-002, REQ-008) ---
 FIXTURES="$ROOT/tests/fixtures/permission-contracts"
 VALIDATOR="$ROOT/scripts/validate-agent-permissions.mjs"
