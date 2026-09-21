@@ -55,7 +55,7 @@ assert_exists() {
 make_template() {
   local dir="$1" ver="$2"
    mkdir -p "$dir/.opencode/commands" "$dir/.opencode/agents" "$dir/ai-specs/skills/demo" \
-            "$dir/templates/ci" "$dir/.github/workflows" "$dir/docs" "$dir/scripts"
+            "$dir/templates/ci" "$dir/templates/github/workflows" "$dir/docs" "$dir/scripts"
    # SPECBOOT-PERM-01 (SC-010): el helper se distribuye con update; el validador
    # y el manifiesto NO (se ejecutan desde el paquete instalado).
    echo "FW-helper"        > "$dir/scripts/read-json-field.mjs"
@@ -76,7 +76,8 @@ make_template() {
   echo "FW-agent"         > "$dir/.opencode/agents/backend.md"
   echo "FW-skill"         > "$dir/ai-specs/skills/demo/SKILL.md"
   echo "FW-template"      > "$dir/templates/ci/eslint.yml"
-  echo "FW-wf"            > "$dir/.github/workflows/framework-ci.yml"
+  echo "FW-consumer-ci"   > "$dir/templates/github/workflows/consumer-ci.yml"
+  echo "FW-pr-template"   > "$dir/templates/github/pull_request_template.md"
   printf '{"name":"fw","version":"%s"}\n' "$ver" > "$dir/package.json"
 }
 
@@ -196,8 +197,9 @@ assert_eq "LICENSE preserved (excluded)"     "CUSTOM LICENSE"  "$(cat "$PROJ/LIC
 assert_eq "backend code preserved"           "CUSTOM SERVER"   "$(cat "$PROJ/backend/src/server.ts")"
 assert_eq "frontend code preserved"          "CUSTOM APP"      "$(cat "$PROJ/frontend/src/app.tsx")"
 assert_eq "project .github workflow preserved" "CUSTOM PROJECT WF" "$(cat "$PROJ/.github/workflows/my-own-ci.yml")"
-# framework workflow WAS replaced
-assert_eq "framework .github workflow replaced" "FW-wf" "$(cat "$PROJ/.github/workflows/framework-ci.yml")"
+# consumer CI + PR template installed from the templates (framework-owned)
+assert_eq "consumer CI installed on update" "FW-consumer-ci" "$(cat "$PROJ/.github/workflows/ci.yml")"
+assert_eq "PR template installed on update" "FW-pr-template" "$(cat "$PROJ/.github/pull_request_template.md")"
 
 # ---------- Test 8: --dry-run changes nothing ----------
 TPL_DRY="$(mktemp -d)"; make_template "$TPL_DRY" "0.3.0"
@@ -240,9 +242,111 @@ else
   echo "  ✗ dogfooding guard prints note"; FAIL=$((FAIL + 1))
 fi
 
+# ---------- Test 12: legacy release.yml repair (REQ-002, SC-002/SC-003) ----------
+# Exact framework-owned signature -> backed up + removed.
+TPL_REL="$(mktemp -d)"; make_template "$TPL_REL" "0.2.0"
+PROJ_REL="$(mktemp -d)"; make_project "$PROJ_REL" "0.1.1"
+cp "$ROOT/.github/workflows/release.yml" "$PROJ_REL/.github/workflows/release.yml"
+( cd "$PROJ_REL" && bash "$SCRIPT" update --template "$TPL_REL" --yes ) >/tmp/up-rel.out 2>&1
+assert_exit "update with legacy release exits 0" 0 $?
+if [ -e "$PROJ_REL/.github/workflows/release.yml" ]; then
+  echo "  ✗ [HARDEN-02] exact legacy release.yml MUST be removed"; FAIL=$((FAIL + 1))
+else
+  echo "  ✓ [HARDEN-02] exact legacy release.yml removed"; PASS=$((PASS + 1))
+fi
+if ls -d "$PROJ_REL"/.specboot-backup-*/.github/workflows/release.yml >/dev/null 2>&1; then
+  echo "  ✓ [HARDEN-02] legacy release.yml backed up before removal"; PASS=$((PASS + 1))
+else
+  echo "  ✗ [HARDEN-02] legacy release.yml NOT backed up before removal"; FAIL=$((FAIL + 1))
+fi
+# Custom workflow survives the update (SC-003).
+assert_exists "[HARDEN-02] custom workflow survives" "$PROJ_REL/.github/workflows/my-own-ci.yml"
+
+# Modified legacy release -> warn + explicit resolution, NEVER removed.
+PROJ_MOD="$(mktemp -d)"; make_project "$PROJ_MOD" "0.1.1"
+cp "$ROOT/.github/workflows/release.yml" "$PROJ_MOD/.github/workflows/release.yml"
+echo "# consumer-modified" >> "$PROJ_MOD/.github/workflows/release.yml"
+( cd "$PROJ_MOD" && bash "$SCRIPT" update --template "$TPL_REL" --yes ) >/tmp/up-mod.out 2>&1
+assert_exit "update with modified legacy release exits 0" 0 $?
+if [ -e "$PROJ_MOD/.github/workflows/release.yml" ]; then
+  echo "  ✓ [HARDEN-02] modified legacy release.yml preserved (never auto-delete)"; PASS=$((PASS + 1))
+else
+  echo "  ✗ [HARDEN-02] modified legacy release.yml was auto-deleted"; FAIL=$((FAIL + 1))
+fi
+if grep -qi "NO coincide con la firma" /tmp/up-mod.out && grep -qi "resolución explícita" /tmp/up-mod.out; then
+  echo "  ✓ [HARDEN-02] modified legacy release warns for explicit resolution"; PASS=$((PASS + 1))
+else
+  echo "  ✗ [HARDEN-02] modified legacy release did NOT warn for explicit resolution"; FAIL=$((FAIL + 1))
+fi
+
+# ---------- Test 13: legacy fingerprint ALLOWLIST (REQ-002, historical variants) ----------
+# Every release.yml variant Specboot distributed before artifact isolation must be
+# detected and repaired. The variants are the historical versions of the framework's
+# own file, pinned here by their pre-isolation commits (immutable commits — the
+# test stays stable after the isolation boundary; later internal edits to
+# release.yml were never distributed and MUST NOT enter the allowlist).
+LEGACY_V1_SHA="ea2f096a4586183597bd9ce62b8ff9d9607e145f"  # initial release workflow
+LEGACY_V2_SHA="033806f46bd2135d9af339dc5269b96c7a4e7735"  # node 24 bump, orphan publish removed
+LEGACY_V3_SHA="e68135b04305da9f7572c037020d2e3a8e060c64"  # idempotent publish (last distributed)
+
+# (a) Provenance: every pre-isolation variant hash is in the specboot.sh allowlist.
+ALLOWLIST_BLOCK="$(sed -n '/^KNOWN_RELEASE_FINGERPRINTS=(/,/^)/p' "$SCRIPT")"
+for vsha in "$LEGACY_V1_SHA" "$LEGACY_V2_SHA" "$LEGACY_V3_SHA"; do
+  vh="$(git show "$vsha":.github/workflows/release.yml | git hash-object --stdin)"
+  if printf '%s' "$ALLOWLIST_BLOCK" | grep -q "$vh"; then
+    echo "  ✓ [REQ-002] allowlist contains fingerprint of pre-isolation variant $(printf '%s' "$vh" | cut -c1-7)"; PASS=$((PASS + 1))
+  else
+    echo "  ✗ [REQ-002] allowlist MISSES pre-isolation variant fingerprint $(printf '%s' "$vh" | cut -c1-7)"; FAIL=$((FAIL + 1))
+  fi
+done
+# (b) No invented hashes: every allowlist entry derives from release.yml git history.
+HISTORICAL_SET="$(git log --format=%H --all -- .github/workflows/release.yml | while read -r c; do
+  git show "$c":.github/workflows/release.yml 2>/dev/null | git hash-object --stdin
+done | sort -u)"
+INVENTED=0
+while read -r entry; do
+  [ -z "$entry" ] && continue
+  printf '%s\n' "$HISTORICAL_SET" | grep -qx "$entry" || INVENTED=1
+done <<EOF
+$(printf '%s' "$ALLOWLIST_BLOCK" | grep -oE '"[0-9a-f]{40}"' | tr -d '"')
+EOF
+if [ "$INVENTED" -eq 0 ] && [ -n "$HISTORICAL_SET" ]; then
+  echo "  ✓ [REQ-002] allowlist has no invented hashes (all entries derive from git history)"; PASS=$((PASS + 1))
+else
+  echo "  ✗ [REQ-002] allowlist contains a hash with no release.yml history provenance"; FAIL=$((FAIL + 1))
+fi
+# (c) Documentation: immutable legacy content, never derived from the internal file.
+if grep -q "IMMUTABLE" "$SCRIPT" && grep -q "never derived from the current internal" "$SCRIPT"; then
+  echo "  ✓ [REQ-002] allowlist documented as immutable legacy content (not derived from current release.yml)"; PASS=$((PASS + 1))
+else
+  echo "  ✗ [REQ-002] allowlist missing immutable-legacy documentation"; FAIL=$((FAIL + 1))
+fi
+# (d) Behavior: a consumer contaminated with EACH legacy variant is repaired.
+i=0
+for vsha in "$LEGACY_V1_SHA" "$LEGACY_V2_SHA" "$LEGACY_V3_SHA"; do
+  i=$((i + 1))
+  vh="$(git show "$vsha":.github/workflows/release.yml | git hash-object --stdin)"
+  TPL_VAR="$(mktemp -d)"; make_template "$TPL_VAR" "0.2.0"
+  PROJ_VAR="$(mktemp -d)"; make_project "$PROJ_VAR" "0.1.1"
+  git show "$vsha":.github/workflows/release.yml > "$PROJ_VAR/.github/workflows/release.yml"
+  ( cd "$PROJ_VAR" && bash "$SCRIPT" update --template "$TPL_VAR" --yes ) >/tmp/up-var-$i.out 2>&1
+  assert_exit "update with legacy variant v$i exits 0" 0 $?
+  if [ -e "$PROJ_VAR/.github/workflows/release.yml" ]; then
+    echo "  ✗ [REQ-002] legacy variant v$i (fingerprint $(printf '%s' "$vh" | cut -c1-7)) MUST be removed"; FAIL=$((FAIL + 1))
+  else
+    echo "  ✓ [REQ-002] legacy variant v$i (fingerprint $(printf '%s' "$vh" | cut -c1-7)) removed"; PASS=$((PASS + 1))
+  fi
+  if ls -d "$PROJ_VAR"/.specboot-backup-*/.github/workflows/release.yml >/dev/null 2>&1; then
+    echo "  ✓ [REQ-002] legacy variant v$i backed up before removal"; PASS=$((PASS + 1))
+  else
+    echo "  ✗ [REQ-002] legacy variant v$i NOT backed up"; FAIL=$((FAIL + 1))
+  fi
+  rm -rf "$TPL_VAR" "$PROJ_VAR"
+done
+
 rm -rf "$NO_CFG" "$TPL" "$PROJ" "$TPL_MAJOR" "$PROJ_MAJOR" "$PROJ_CANCEL" \
        "$TPL_OLD" "$PROJ_OLD" "$TPL_EQ" "$PROJ_EQ" "$TPL_DRY" "$PROJ_DRY" \
-       "$TPL_NB" "$PROJ_NB"
+       "$TPL_NB" "$PROJ_NB" "$TPL_REL" "$PROJ_REL" "$PROJ_MOD"
 
 echo ""
 echo "TDD tests: $PASS passed, $FAIL failed"
