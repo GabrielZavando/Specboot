@@ -225,8 +225,17 @@ que tú personalizas):
 | `opencode.json` | Configuración de OpenCode (sin `model` fijado) |
 | `AGENTS.md` | Instrucciones de OpenCode (puente, intocable) |
 | `Makefile` | Targets CI stack-agnostic (intocable) |
-| `.github/workflows/` | CI/CD del framework (intocable) |
+| `templates/github/` | Plantillas consumidoras (`consumer-ci.yml`, `deploy.example.yml`, `pull_request_template.md`) que `init`/`update` instalan en `.github/` |
 | `LICENSE`, `README.md` | Licencia MIT y este README |
+
+> **Workflows internos vs plantillas consumidoras (SPECBOOT-HARDEN-02):** los
+> workflows del repositorio Specboot (`.github/workflows/{ci.yml, deploy.yml,
+> release.yml}`) son **internos** del desarrollo del framework y **no** se
+> publican en el paquete ni se instalan en consumidores. Los consumidores
+> reciben, vía `templates/github/`, únicamente el workflow CI de consumidores
+> (`consumer-ci.yml` → `.github/workflows/ci.yml`) y el PR template; el deploy es
+> una plantilla opcional (`deploy.example.yml`) que `init`/`update` no instalan
+> por defecto. El `release.yml` interno nunca se copia mediante `init`/`update`.
 
 > Son **5** los documentos estándar del framework que se publican (los listados arriba).
 > El resto de `docs/` del repositorio **no** se incluye en el paquete.
