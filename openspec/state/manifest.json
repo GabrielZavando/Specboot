@@ -491,6 +491,28 @@
         "timestamp": "2026-09-20T23:05:03Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "isolate-internal-artifacts",
+      "ticket_id": "SPECBOOT-HARDEN-02",
+      "archived_at": "2026-09-21T20:33:44Z",
+      "specs_applied": [
+        "agent-permissions",
+        "cycle-hygiene",
+        "npm-distribution",
+        "specboot-update",
+        "specboot-workflows"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-21T19:59:21Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-21T20:25:00Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }

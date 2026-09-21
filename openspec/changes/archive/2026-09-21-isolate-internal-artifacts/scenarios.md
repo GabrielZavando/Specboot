@@ -23,8 +23,10 @@
 
 ### SC-002: Actualizar un consumidor contaminado elimina de forma segura el release heredado
 
-- **GIVEN** un proyecto consumidor contaminado con el `release.yml` heredado de
-  Specboot intacto (coincide con la firma conocida del archivo framework-owned)
+- **GIVEN** un proyecto consumidor contaminado con una variante del
+  `release.yml` heredado de Specboot intacta (coincide con cualquiera de las
+  firmas de la allowlist de fingerprints framework-owned, derivadas del
+  historial git: contenido legacy inmutable)
 - **WHEN** el proyecto ejecuta `specboot update`
 - **THEN** el `release.yml` heredado es respaldado antes de eliminarse y luego
   eliminado de `.github/workflows/`
@@ -47,8 +49,8 @@
   (incluido `release.yml`)
 - **AND** el tarball incluye `templates/github/workflows/consumer-ci.yml`,
   `templates/github/workflows/deploy.example.yml`,
-  `templates/github/pull_request_template.md` y `.github/pull_request_template.md`
-  (fuente del PR template que `init` instala)
+  `templates/github/pull_request_template.md` (fuente de los artifacts que
+  `init` instala en `.github/`)
 
 ### SC-005: `/apply` comienza con artefactos de planificación sin exigir commit manual
 
@@ -119,13 +121,18 @@
 - **GIVEN** el validador con semántica de patrones fiel a OpenCode
 - **WHEN** se evalúan patrones con `*` (comodín multi-carácter) y `?` (comodín de
   un carácter), permisos efectivos combinando defaults → globales de
-  `opencode.json` → agente, comandos compuestos (`;`, `&&`, `|` con comandos
-  prohibidos embebidos) y variantes de force-push (`--force`, `--force-with-lease`,
-  `-f`, variantes con argumentos intermedios) y variantes de GitHub CLI
+  `opencode.json` → agente, comandos compuestos (`;`, `&&`, `||`, `|` y
+  newline, cada uno con y sin espacios alrededor) y variantes de force-push
+  (`--force`, `--force-with-lease`, `-f`, variantes con argumentos intermedios)
+  y variantes de GitHub CLI
 - **THEN** cada caso resuelve conforme a la semántica de OpenCode
 - **AND** los fixtures de bypass (comando compuesto que esconde `git push --force`
   o `gh pr create` en un segmento no inicial) resuelven a `deny` donde el contrato
   lo exige
+- **AND** el comentario del validador y la documentación prometen exactamente la
+  cobertura comprobada; los wrappers de código arbitrario (`bash -c`, `node -e`,
+  subshells, backticks) quedan gobernados por `can_run_arbitrary_code` y la nota
+  de defensa en profundidad, sin prometer una frontera pattern-based imposible
 
 ### SC-012: Ejecutar `--ci` desde el paquete valida el consumidor y detecta una configuración inválida allí
 

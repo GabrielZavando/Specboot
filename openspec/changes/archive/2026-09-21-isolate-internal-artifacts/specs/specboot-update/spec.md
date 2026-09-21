@@ -5,24 +5,47 @@
 ### Requirement: Legacy release.yml workflows are detected and repaired safely (REQ-002)
 
 `specboot update` MUST detect a legacy Specboot-owned `release.yml` in the
-consumer's `.github/workflows/` using the known framework-owned signature
-(stable markers of the framework's own file or an exact content fingerprint).
-When the file matches the known signature exactly, update MUST back it up
-(`.specboot-backup-*/`) before removing it. When the file does NOT match the
-known signature exactly (it was modified, or it is not the framework's file —
-e.g. a consumer-authored `release.yml`), update MUST warn and require
-explicit resolution — it MUST NEVER delete a non-matching `release.yml`
-automatically. Custom workflows unrelated to the framework MUST always be
-preserved, and the framework's internal `release.yml`/`deploy.yml` are never
-installed by `init` or `update`.
+consumer's `.github/workflows/` using an allowlist of known framework-owned
+signatures: the exact content fingerprints of EVERY `release.yml` variant
+Specboot distributed before artifact isolation, derived from the framework's
+git history and documented as immutable legacy content. The allowlist MUST
+NOT be derived from the current internal `.github/workflows/release.yml`
+(which may evolve and is no longer distributed). When the file matches ANY
+allowlisted fingerprint exactly, update MUST back it up (`.specboot-backup-*/`)
+before removing it. When the file does NOT match any allowlisted fingerprint
+exactly (it was modified, or it is not the framework's file — e.g. a
+consumer-authored `release.yml`), update MUST warn and require explicit
+resolution — it MUST NEVER delete a non-matching `release.yml` automatically.
+Custom workflows unrelated to the framework MUST always be preserved, and the
+framework's internal `release.yml`/`deploy.yml` are never installed by `init`
+or `update`.
 
 #### Scenario: Intact legacy release is backed up and removed
 
-- **GIVEN** a consumer whose `.github/workflows/release.yml` matches the
-  framework-owned signature exactly
+- **GIVEN** a consumer whose `.github/workflows/release.yml` matches any
+  allowlisted framework-owned fingerprint exactly
 - **WHEN** `specboot update` runs
 - **THEN** the file is backed up to `.specboot-backup-*/` before removal
 - **AND** the file is then removed and the removal and backup path are reported
+
+#### Scenario: Every distributed legacy variant is repaired
+
+- **GIVEN** a consumer contaminated with any `release.yml` variant Specboot
+  distributed before artifact isolation (each historical version of the
+  framework's `release.yml`, identified by its immutable content fingerprint)
+- **WHEN** `specboot update` runs
+- **THEN** every matching variant is backed up and removed exactly like the
+  latest variant
+
+#### Scenario: The fingerprint allowlist covers the distributed history
+
+- **GIVEN** the framework repo with git history for its internal `release.yml`
+- **WHEN** the regression tests derive the content fingerprints of every
+  pre-isolation `release.yml` variant from the git history
+- **THEN** each derived fingerprint is present in the update allowlist
+- **AND** no allowlist entry exists outside that historical set (no invented
+  hashes), and the allowlist is documented as immutable legacy content, never
+  derived from the current internal `release.yml`
 
 #### Scenario: Modified legacy release requires explicit resolution
 

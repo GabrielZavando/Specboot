@@ -18,10 +18,14 @@ mediante `init` ni `update`.
 ## REQ-002 — Reparar consumidores existentes
 
 `specboot update` debe detectar el `release.yml` heredado de Specboot, eliminarlo
-si coincide con la firma conocida del archivo framework-owned (respaldándolo antes
-de eliminarlo), no eliminar workflows personalizados, advertir y exigir resolución
-explícita si el archivo fue modificado, y preservar todos los workflows ajenos al
-framework.
+si coincide con cualquier firma de la **allowlist de fingerprints framework-owned**
+— todos los fingerprints de contenido de las variantes de `release.yml` que
+Specboot distribuyó antes de este cambio, derivados del historial git y
+documentados como contenido legacy inmutable (nunca derivados del
+`release.yml` interno actual, que puede evolucionar y ya no se distribuye) —
+respaldándolo antes de eliminarlo, no eliminar workflows personalizados,
+advertir y exigir resolución explícita si el archivo fue modificado, y preservar
+todos los workflows ajenos al framework.
 
 **Formalizado en**: `specs/specboot-update/spec.md` (delta normativo).
 
@@ -76,9 +80,16 @@ conforme a OpenCode (wildcards, no literales); comparar el `mode` real con el
 manifiesto; validar `permission.task`; fiscalizar independientemente `can_commit`,
 `can_push`, `can_manage_prs`, `can_run_arbitrary_code` y `can_spawn_subagents` (sin
 derivar `can_push` o PR management desde `can_commit`); detectar bypasses mediante
-variantes de Git, GitHub CLI y comandos compuestos; preferir allowlists de Git de
-solo lectura para agentes implementadores; y considerar un wrapper seguro para
-`git push` del agente `commit`, rechazando cualquier variante force.
+variantes de Git, GitHub CLI y comandos compuestos (`;`, `&&`, `||`, `|` y
+newline, con y sin espacios alrededor del separador), con el comentario del
+validador y la documentación prometiendo exactamente la cobertura que el
+validador comprueba; documentar que para agentes con
+`can_run_arbitrary_code: true` las denegaciones pattern-based son defensa contra
+errores accidentales (defensa en profundidad) y no una frontera de seguridad
+frente a evasión deliberada vía wrappers (`bash -c`, `node -e`, subshells,
+backticks); preferir allowlists de Git de solo lectura para agentes
+implementadores; y considerar un wrapper seguro para `git push` del agente
+`commit` (mantenido como hardening futuro), rechazando cualquier variante force.
 
 **Traza**: SC-010, SC-011.
 

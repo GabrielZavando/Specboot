@@ -61,6 +61,56 @@ the command and the offending rule reported.
 - **THEN** the violation is reported (command + rule) and the validation exits
   non-zero
 
+### Requirement: Capability flags are fiscalized independently with bypass detection
+
+The validator MUST audit each capability flag independently — `can_commit`,
+`can_push`, `can_manage_prs`, `can_run_arbitrary_code` and
+`can_spawn_subagents` — without deriving `can_push` or PR management from
+`can_commit`. It MUST detect bypasses through Git variants, GitHub CLI variants
+and compound commands embedding forbidden commands in a non-initial position,
+covering at least the separators `;`, `&&`, `||`, `|` and newline, each with
+and without surrounding spaces. The validator's comment and documentation MUST
+promise exactly the coverage it checks — never a broader claim ("total
+coverage"). For agents with `can_run_arbitrary_code: true`, pattern-based
+denials of git write operations MUST be documented as defense against
+accidental mistakes (defense-in-depth), not as a security boundary against
+deliberate evasion via arbitrary-code wrappers (`bash -c`, `node -e`,
+subshells, backticks); the safe `git push` wrapper for the `commit` agent
+stays documented as future hardening. Implementer agents MUST prefer read-only
+Git allowlists in the manifest (with their scope justification updated). A safe
+wrapper for the `commit` agent's `git push` MUST be evaluated, rejecting any
+force variant; the effective denial of every force variant remains validated
+automatically either way.
+
+#### Scenario: Each flag fails CI independently
+
+- **GIVEN** fixtures violating each flag independently (for example
+  `can_push: false` with `git push` effectively allow, `can_manage_prs: false`
+  with `gh pr create *` allow, `can_spawn_subagents: false` with a permissive
+  `task` contract)
+- **WHEN** the validator runs
+- **THEN** each violation is reported independently (agent + capability + rule)
+  and `specboot.sh --ci` exits non-zero
+- **AND** removing a `can_commit` violation does not hide a `can_push` or PR
+  management violation
+
+#### Scenario: Compound command bypass is detected
+
+- **GIVEN** probe commands embedding a forbidden command in a non-initial
+  segment using each supported separator — `;`, `&&`, `||`, `|` and newline,
+  each with and without surrounding spaces (e.g. `echo hi; git push --force`,
+  `echo hi;git push --force`, `echo hi&&git push --force`,
+  `echo hi || git push --force`, `echo hi||git push --force`,
+  `echo hi|git push --force`)
+- **WHEN** the validator evaluates the compound command for an agent whose
+  contract forbids them
+- **THEN** every separator variant is detected (the bypass is reported or the
+  denial enforced per contract)
+- **AND** the validator's comment and documentation promise exactly this
+  coverage; wrappers (`bash -c`, `node -e`, subshells, backticks) are governed
+  by `can_run_arbitrary_code` and the defense-in-depth note, not claimed as
+  pattern-covered
+
 ## MODIFIED Requirements
 
 ### Requirement: Effective permission evaluation honors last-match-wins
@@ -111,40 +161,6 @@ shadowed, or any force-push variant is not effectively denied even when
   `git push --force-with-lease`, `git push -f`, intermediate-argument variants)
   is evaluated for any agent
 - **THEN** the effective permission is `deny`
-
-### Requirement: Capability flags are fiscalized independently with bypass detection
-
-The validator MUST audit each capability flag independently — `can_commit`,
-`can_push`, `can_manage_prs`, `can_run_arbitrary_code` and
-`can_spawn_subagents` — without deriving `can_push` or PR management from
-`can_commit`. It MUST detect bypasses through Git variants, GitHub CLI variants
-and compound commands (segments after `;`, `&&`, `|` that embed forbidden
-commands in a non-initial position). Implementer agents MUST prefer read-only
-Git allowlists in the manifest (with their scope justification updated). A safe
-wrapper for the `commit` agent's `git push` MUST be evaluated, rejecting any
-force variant; the effective denial of every force variant remains validated
-automatically either way.
-
-#### Scenario: Each flag fails CI independently
-
-- **GIVEN** fixtures violating each flag independently (for example
-  `can_push: false` with `git push` effectively allow, `can_manage_prs: false`
-  with `gh pr create *` allow, `can_spawn_subagents: false` with a permissive
-  `task` contract)
-- **WHEN** the validator runs
-- **THEN** each violation is reported independently (agent + capability + rule)
-  and `specboot.sh --ci` exits non-zero
-- **AND** removing a `can_commit` violation does not hide a `can_push` or PR
-  management violation
-
-#### Scenario: Compound command bypass is detected
-
-- **GIVEN** a probe command like `echo hi && git push --force` or
-  `echo hi; gh pr create ...` evaluated for an agent whose contract forbids
-  them
-- **WHEN** the validator evaluates the compound command segments
-- **THEN** the embedded forbidden command in a non-initial segment is detected
-  and the bypass is reported or the denial enforced per contract
 
 ### Requirement: Automated validator integrated into CI
 
