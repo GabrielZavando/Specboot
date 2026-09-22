@@ -244,9 +244,16 @@ fi
 
 # ---------- Test 12: legacy release.yml repair (REQ-002, SC-002/SC-003) ----------
 # Exact framework-owned signature -> backed up + removed.
+# The fixture is a distributed legacy variant derived from git history (v3 — the
+# last variant Specboot distributed before artifact isolation), NOT the live
+# internal release.yml, whose fingerprint may evolve freely (REQ-001 /
+# SPECBOOT-HARDEN-03 adds fetch-depth: 0) and therefore is not a legacy signature.
+# LEGACY_V3_SHA is the pre-isolation commit of the framework's own file (immutable).
+LEGACY_V3_SHA="e68135b04305da9f7572c037020d2e3a8e060c64"  # idempotent publish (last distributed)
+legacy_v3="$(git show "$LEGACY_V3_SHA":.github/workflows/release.yml 2>/dev/null)"
 TPL_REL="$(mktemp -d)"; make_template "$TPL_REL" "0.2.0"
 PROJ_REL="$(mktemp -d)"; make_project "$PROJ_REL" "0.1.1"
-cp "$ROOT/.github/workflows/release.yml" "$PROJ_REL/.github/workflows/release.yml"
+printf '%s\n' "$legacy_v3" > "$PROJ_REL/.github/workflows/release.yml"
 ( cd "$PROJ_REL" && bash "$SCRIPT" update --template "$TPL_REL" --yes ) >/tmp/up-rel.out 2>&1
 assert_exit "update with legacy release exits 0" 0 $?
 if [ -e "$PROJ_REL/.github/workflows/release.yml" ]; then
@@ -264,7 +271,7 @@ assert_exists "[HARDEN-02] custom workflow survives" "$PROJ_REL/.github/workflow
 
 # Modified legacy release -> warn + explicit resolution, NEVER removed.
 PROJ_MOD="$(mktemp -d)"; make_project "$PROJ_MOD" "0.1.1"
-cp "$ROOT/.github/workflows/release.yml" "$PROJ_MOD/.github/workflows/release.yml"
+printf '%s\n' "$legacy_v3" > "$PROJ_MOD/.github/workflows/release.yml"
 echo "# consumer-modified" >> "$PROJ_MOD/.github/workflows/release.yml"
 ( cd "$PROJ_MOD" && bash "$SCRIPT" update --template "$TPL_REL" --yes ) >/tmp/up-mod.out 2>&1
 assert_exit "update with modified legacy release exits 0" 0 $?
