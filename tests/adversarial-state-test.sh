@@ -219,6 +219,38 @@ else
   bad "[SC-005] accepts a NO-SHIP verdict document (validator rejected a valid document)"
 fi
 
+# --- SC-014 (HARDEN-04 follow-up): the code-auditing skill documents that
+# --- missing optional tools are recorded as SKIP and persistence is
+# --- unconditional (the reviewer must persist its verdict even when the
+# --- optional audit tooling — eslint, dependency-cruiser, npm audit — is
+# --- absent or fails; observed silent-death ×2 before this contract).
+SKILL_014="$ROOT/ai-specs/skills/code-auditing/SKILL.md"
+if [ ! -f "$SKILL_014" ]; then
+  bad "[SC-014] code-auditing SKILL.md not found"
+else
+  tokens_ok=0
+  for tok in \
+    "registran como \*\*skip\*\*\|skip registrado" \
+    "nunca bloquean la persistencia\|persistencia.*incondicional\|incondicionalmente" \
+    "npx.*instalaciones interactivas\|no está disponible" \
+    "SIEMPRE al final de cada auditoría\|persiste SIEMPRE"; do
+    grep -qi "$tok" "$SKILL_014" || tokens_ok=1
+  done
+  if [ "$tokens_ok" -eq 0 ]; then
+    ok "[SC-014] skill documents skip-registration for missing optional tools + unconditional persistence"
+  else
+    bad "[SC-014] skill missing the skip-registration / unconditional-persistence contract"
+  fi
+  # The persisted JSON schema stays FIXED: no skip fields leak into the
+  # verdict document — asserted on the canonical fixture (the schema example
+  # the validator self-validates), not on the skill prose.
+  if grep -qE '"tool_skips"' "$FIXTURE"; then
+    bad "[SC-014] skip fields leaked into the persisted JSON schema (canonical fixture)"
+  else
+    ok "[SC-014] persisted JSON schema stays fixed (no skip fields in the canonical fixture)"
+  fi
+fi
+
 echo ""
 echo "TDD tests: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

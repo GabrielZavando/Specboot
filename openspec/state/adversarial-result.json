@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "change": "release-validate-depth",
-  "ticket_id": "SPECBOOT-HARDEN-03",
+  "change": "protect-consumer-ci",
+  "ticket_id": "SPECBOOT-HARDEN-04",
   "verdict": "SHIP",
-  "confidence": 0.9,
-  "timestamp": "2026-09-22T02:32:00Z",
+  "confidence": 0.8,
+  "timestamp": "2026-09-22T18:55:44Z",
   "findings": {
-    "total": 4,
+    "total": 3,
     "critical": 0,
-    "warnings": 2,
+    "warnings": 1,
     "info": 2,
-    "discarded": 3
+    "discarded": 0
   }
 }

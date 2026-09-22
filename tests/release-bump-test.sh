@@ -1,20 +1,23 @@
 #!/usr/bin/env bash
 # TDD test for TICKET-AUDIT-3 — release-bump.sh: atomic version bump.
 #
-# Contract:
+# Contract (corrected by protect-consumer-ci / SPECBOOT-HARDEN-04, REQ-006):
 #   - SC-004: `bash release-bump.sh <semver>` updates package.json → version
 #     and .specboot.json → frameworkVersion in ONE operation
-#   - SC-005: aborts (exit != 0, no writes) on invalid semver or when the
-#     CHANGELOG lacks the `## [X.Y.Z]` section
-#   - SC-001 (M-912): after a successful bump, release-bump.sh creates the
-#     local git tag v{version} when inside a git repo; in a non-git dir it
-#     skips tagging with a warning (never fails the bump)
+#   - SC-005: the bump syncs ALL version files — package.json, package-lock.json
+#     (root + packages[""]) and .specboot.json — in one atomic operation:
+#     a corrupted lock aborts with no partial writes; a missing lock is
+#     skipped with a note; invalid semver or a missing `## [X.Y.Z]` CHANGELOG
+#     section aborts (exit != 0, no writes)
+#   - SC-006 (inverts the old M-912 SC-001): the bump creates NO git tag —
+#     tag creation belongs to the maintainer's post-merge phase, pointing
+#     exactly at the main commit containing the bump
 #
 # The script lives at the repo root and acts on the CURRENT WORKING
-# DIRECTORY, so tests run it inside temp fixtures with the three files
+# DIRECTORY, so tests run it inside temp fixtures with the version files
 # pre-populated.
 #
-# Run: bash tests/release-bump-test.sh (RED until Task 4 lands)
+# Run: bash tests/release-bump-test.sh
 
 set -uo pipefail
 
@@ -40,26 +43,30 @@ make_fixture() {
   printf '%s\n' "$changelog" > "$dir/CHANGELOG.md"
 }
 
-# --- Precondition: script exists (RED until Task 4) ---
+# --- Precondition: script exists at the repo root ---
 if [ ! -f "$SCRIPT" ]; then
-  echo "  ✗ [SC-004] release-bump.sh does not exist at repo root (RED)"
+  echo "  ✗ [SC-004] release-bump.sh does not exist at repo root"
   echo ""
   echo "TDD tests: 0 passed, 1 failed"
   exit 1
 fi
 
-# --- SC-004: happy path syncs both files atomically ---
+# --- SC-004 + SC-005: happy path syncs ALL version files atomically ---
 F1="$(mktemp -d)"
 make_fixture "$F1" "0.8.1" '# Changelog
 
 ## [0.9.0] - 2026-09-16
 
 - stuff'
+# Realistic npm lockfile (lockfileVersion 3): root version + packages[""] entry.
+printf '{\n  "name": "fw",\n  "version": "0.8.1",\n  "lockfileVersion": 3,\n  "packages": {\n    "": {\n      "name": "fw",\n      "version": "0.8.1"\n    }\n  }\n}\n' > "$F1/package-lock.json"
 ( cd "$F1" && bash "$SCRIPT" 0.9.0 ) >/tmp/rb-happy.out 2>&1
 rc=$?
 assert_eq "[SC-004] happy path exits 0" "0" "$rc"
 assert_eq "[SC-004] package.json bumped" "0.9.0" "$(node -e "console.log(require('$F1/package.json').version)")"
 assert_eq "[SC-004] .specboot.json bumped" "0.9.0" "$(node -e "console.log(require('$F1/.specboot.json').frameworkVersion)")"
+assert_eq '[SC-005] package-lock.json root version bumped' "0.9.0" "$(node -e "console.log(JSON.parse(require('fs').readFileSync('$F1/package-lock.json','utf8')).version)")"
+assert_eq '[SC-005] package-lock.json packages[""] version bumped' "0.9.0" "$(node -e "console.log(JSON.parse(require('fs').readFileSync('$F1/package-lock.json','utf8')).packages[''].version)")"
 # No git repo here: success itself proves the script never touches git.
 if grep -qi "git tag" /tmp/rb-happy.out; then
   bad "[SC-004] script output mentions git tag" "output mentions git tag"
@@ -107,24 +114,57 @@ if [ "$rc" -ne 0 ]; then ok "[SC-010] downgrade aborts"; else bad "[SC-010] down
 assert_eq "[SC-010] package.json untouched on downgrade" "0.9.0" "$(node -e "console.log(require('$F5/package.json').version)")"
 assert_eq "[SC-010] .specboot.json untouched on downgrade" "0.9.0" "$(node -e "console.log(require('$F5/.specboot.json').frameworkVersion)")"
 
-rm -rf "$F1" "$F2" "$F3" "$F4" "$F5"
+# --- SC-005: atomicity — corrupt package-lock.json aborts BEFORE any write ---
+F6="$(mktemp -d)"
+make_fixture "$F6" "0.8.1" '## [0.9.0]'
+echo "{ not-json" > "$F6/package-lock.json"
+( cd "$F6" && bash "$SCRIPT" 0.9.0 ) >/tmp/rb-lock-corrupt.out 2>&1
+rc=$?
+if [ "$rc" -ne 0 ]; then ok "[SC-005] corrupt package-lock.json aborts"; else bad "[SC-005] corrupt package-lock.json aborts" "exit was 0"; fi
+assert_eq "[SC-005] package.json NOT modified on corrupt lock" "0.8.1" "$(node -e "console.log(require('$F6/package.json').version)")"
+assert_eq "[SC-005] .specboot.json NOT modified on corrupt lock" "0.8.1" "$(node -e "console.log(require('$F6/.specboot.json').frameworkVersion)")"
 
-# --- M-912: release-tagging (SC-001..SC-004) ---
-# SC-001: release-bump.sh creates the local tag in a git repo
+# --- SC-005: package-lock.json absent → bump succeeds and notes the skip ---
+F7="$(mktemp -d)"
+make_fixture "$F7" "0.8.1" '## [0.9.0]'
+# No package-lock.json on purpose.
+( cd "$F7" && bash "$SCRIPT" 0.9.0 ) >/tmp/rb-lock-absent.out 2>&1
+rc=$?
+assert_eq "[SC-005] bump without lock exits 0" "0" "$rc"
+assert_eq "[SC-005] package.json bumped without lock" "0.9.0" "$(node -e "console.log(require('$F7/package.json').version)")"
+assert_eq "[SC-005] .specboot.json bumped without lock" "0.9.0" "$(node -e "console.log(require('$F7/.specboot.json').frameworkVersion)")"
+if grep -q "package-lock" /tmp/rb-lock-absent.out && grep -qiE "not found|skipped" /tmp/rb-lock-absent.out; then
+  ok "[SC-005] output notes the lock was skipped"
+else
+  bad "[SC-005] output notes the lock was skipped" "missing skip note in output"
+fi
+
+rm -rf "$F1" "$F2" "$F3" "$F4" "$F5" "$F6" "$F7"
+
+# --- SC-006: bump with uncommitted changes creates NO git tag ---
+# Inverts the old M-912 SC-001 (which required a tag after the bump): the tag
+# used to be created while the bump changes were still uncommitted, so it
+# could point at the commit BEFORE the bump. Tag creation belongs to the
+# maintainer's post-merge phase.
 FR="$(mktemp -d)"
 git -C "$FR" init -q
 git -C "$FR" config user.email t@t.local && git -C "$FR" config user.name t
 make_fixture "$FR" "0.8.1" '# Changelog
 
 ## [0.9.0] - 2026-09-18'
-(cd "$FR" && git add package.json .specboot.json CHANGELOG.md && git -c user.email=t@t.local -c user.name=t commit -qm "base") >/dev/null 2>&1
-( cd "$FR" && bash "$SCRIPT" 0.9.0 ) >/tmp/rb-tag.out 2>&1
+printf '{\n  "name": "fw",\n  "version": "0.8.1",\n  "lockfileVersion": 3,\n  "packages": {\n    "": {\n      "name": "fw",\n      "version": "0.8.1"\n    }\n  }\n}\n' > "$FR/package-lock.json"
+(cd "$FR" && git add package.json .specboot.json CHANGELOG.md package-lock.json && git -c user.email=t@t.local -c user.name=t commit -qm "base") >/dev/null 2>&1
+( cd "$FR" && bash "$SCRIPT" 0.9.0 ) >/tmp/rb-notag.out 2>&1
 rc=$?
-if [ "$rc" -eq 0 ]; then ok "[SC-001] bump in git repo exits 0"; else bad "[SC-001] bump in git repo exits 0" "exit was $rc"; fi
-if git -C "$FR" rev-parse -q --verify "refs/tags/v0.9.0" >/dev/null 2>&1; then
-  ok "[SC-001] tag v0.9.0 exists locally"
+if [ "$rc" -eq 0 ]; then ok "[SC-006] bump in git repo exits 0"; else bad "[SC-006] bump in git repo exits 0" "exit was $rc"; fi
+assert_eq "[SC-006] package.json bumped" "0.9.0" "$(node -e "console.log(require('$FR/package.json').version)")"
+assert_eq "[SC-006] .specboot.json bumped" "0.9.0" "$(node -e "console.log(require('$FR/.specboot.json').frameworkVersion)")"
+assert_eq "[SC-006] package-lock.json bumped" "0.9.0" "$(node -e "console.log(JSON.parse(require('fs').readFileSync('$FR/package-lock.json','utf8')).version)")"
+tags="$(git -C "$FR" tag -l)"
+if [ -z "$tags" ]; then
+  ok "[SC-006] bump creates NO git tag"
 else
-  bad "[SC-001] tag v0.9.0 exists locally" "tag not found"
+  bad "[SC-006] bump creates NO git tag" "tags found: $tags"
 fi
 rm -rf "$FR"
 
@@ -135,11 +175,12 @@ else
   bad "[SC-002] update.sh reads current version from package.json" "no package.json read found"
 fi
 
-# SC-003: versioning-standard documents the tagging policy
+# SC-003: versioning-standard documents the corrected tagging policy
+# (bump never tags; tag is a post-merge maintainer action; GitHub Release is manual)
 VS="$ROOT/docs/versioning-standard.md"
 tokens_ok=0
-for tok in "tag local" "GitHub Release"; do grep -qi "$tok" "$VS" || tokens_ok=1; done
-[ "$tokens_ok" -eq 0 ] && ok "[SC-003] tagging policy documented" || bad "[SC-003] tagging policy documented" "missing policy tokens"
+for tok in "post-merge" "GitHub Release" "nunca crea tags"; do grep -qi "$tok" "$VS" || tokens_ok=1; done
+[ "$tokens_ok" -eq 0 ] && ok "[SC-003] corrected tagging policy documented" || bad "[SC-003] corrected tagging policy documented" "missing policy tokens"
 
 # SC-004: backfilled historical tags exist on the REMOTE (local checkouts in
 # CI do not fetch tags — the backfill's contract is about origin, not the local clone)

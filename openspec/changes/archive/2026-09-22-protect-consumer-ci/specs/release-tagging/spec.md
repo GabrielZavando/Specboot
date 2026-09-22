@@ -1,16 +1,15 @@
-# release-tagging Specification
+# release-tagging Specification Delta
 
-## Purpose
-TBD - created by archiving change release-tagging. Update Purpose after archive.
-## Requirements
-### Requirement: update.sh --bump reads version from package.json
+## REMOVED Requirements
 
-`update.sh --bump` SHALL compute the next version from `package.json` (the source of truth), not from `git describe --tags`, so the flow is independent of tag completeness.
+### Requirement: release-bump.sh creates the git tag locally
 
-#### Scenario: bump computes from package.json
-- **GIVEN** next version computed on a repo whose tags are stale
-- **WHEN** running `update.sh --bump minor`
-- **THEN** the TO version derives from `package.json`'s current version (0.9.0 → 0.10.0), not from `git describe --tags`
+**Reason**: The tag creation happened while the bump changes were still
+uncommitted, so the tag could point at the commit BEFORE the bump. Tag
+creation moves to the maintainer's post-merge phase (REQ-006 / SC-006); the
+replacement requirements below define the corrected contract.
+
+## MODIFIED Requirements
 
 ### Requirement: Release tagging policy is documented
 
@@ -32,19 +31,7 @@ regardless of tags (publish is not conditioned on the GitHub Release).
   manual from the UI; and `release.yml` publishes idempotently without
   requiring a tag
 
-### Requirement: Backfill of missing historical tags
-
-The missing tag slots for historical versions (v0.6.4, v0.7.0, v0.8.0, v0.8.1, v0.9.0) SHALL be created pointing at their respective bump commits and pushed; they SHALL NOT trigger `release.yml` (whose triggers are `push: branches: [main]` and `release: types: [published]` only).
-
-#### Scenario: tags created
-- **GIVEN** bump commits in git history (each with its version commit message)
-- **WHEN** the tags are created and pushed
-- **THEN** `git tag -l 'v*'` includes all versions (including historic 0.6.4..0.9.0) and `git ls-remote --tags origin` shows them
-
-#### Scenario: no release.yml triggered
-- **GIVEN** a tag pushed (e.g. v0.9.0)
-- **WHEN** it is only a tag, not a main-branch push and not a release-published
-- **THEN** no publish job runs on that trigger (implicit absence by design)
+## ADDED Requirements
 
 ### Requirement: The version bump never creates git tags
 
@@ -84,4 +71,3 @@ it exists and cannot be parsed, the bump aborts without writing anything.
 - **WHEN** the bump runs
 - **THEN** it exits non-zero and neither `package.json` nor `.specboot.json`
   was modified
-

@@ -1,0 +1,9 @@
+{
+  "change": "protect-consumer-ci",
+  "ticket": "SPECBOOT-HARDEN-04",
+  "status": "passed",
+  "branch": "feature/specboot-harden-04-safe-ci-update",
+  "firstRun": true,
+  "foreignChanges": [],
+  "timestamp": "2026-09-22T00:00:00Z"
+}

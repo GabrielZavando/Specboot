@@ -19,6 +19,7 @@ Auditoría adversarial de calidad de código. Ejecútala antes de archivar un ca
 - `npx dependency-cruiser --config templates/ci/.dependency-cruiser.js src/` → validar regla `no-infra-from-domain` (ningún archivo en `domain/` o `application/` importe infraestructura).
 - **Pasar los JSON resultantes al LLM para interpretar y priorizar**, no para leer código línea por línea.
 - Si algún config no existe (`templates/ci/*.js` no presentes), saltar ese paso e informar.
+- **Herramientas opcionales ausentes → skip registrado (SPECBOOT-HARDEN-04, REQ-008, SC-014)**: si una herramienta opcional no está disponible — el binario no existe en `node_modules/.bin` (compruébalo con lectura simple, p. ej. `ls node_modules/.bin/`) o su ejecución falla / `npm audit` está indisponible — NO la ejecutes con `npx` (evita descargas/instalaciones interactivas que bloquean la subejecución en silencio) y regístrala como **skip** en el anexo del reporte (Paso 5, `tool_skips`), sin contarla como hallazgo ni como fallo. Los skips **nunca bloquean la persistencia** (Paso 7): el veredicto se persiste SIEMPRE al final de cada auditoría — incluso con TODAS las herramientas opcionales ausentes y también en veredictos NO-SHIP. El lente adversarial (Pasos 3–4) es manual y obligatorio, independiente de las herramientas opcionales. Los skips viven SOLO en el reporte en pantalla: el JSON persistido conserva su esquema `schema_version: 1` exacto, sin campos de skip.
 
 ## Paso 3 — Lente adversarial (red-team)
 
