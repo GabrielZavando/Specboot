@@ -6,8 +6,11 @@
 #       Copy the template-owned, non-customizable files into the current project,
 #       WITHOUT touching docs/ (which the project personalizes).
 #   bash update.sh --bump <major|minor|patch> [--template DIR]
-#       Maintainers: bump the Specboot semver (git tag vX.Y.Z), prepend a CHANGELOG
-#       entry, then sync the tooling.
+#       Maintainers: bump the Specboot semver, prepend a CHANGELOG entry, then
+#       sync the tooling. NEVER creates git tags: tagging belongs to the
+#       maintainer's post-merge phase — after merging to main, the tag
+#       v{X.Y.Z} is created pointing exactly at the main commit containing
+#       the bump (see docs/versioning-standard.md, "Política de tags").
 #
 # Sync set (relative to the template directory):
 #   ai-specs/  AGENTS.md  specboot.sh  check-refs.sh  Makefile  templates/
@@ -133,12 +136,11 @@ do_bump() {
   esac
 
   local new_ver="$major.$minor.$patch"
-  local new_tag="v$new_ver"
   local today
   today="$(date +%F)"
 
   echo "🔖 Specboot — Bump version"
-  echo "  $current -> $new_tag"
+  echo "  $current -> $new_ver"
   echo ""
 
   # Prepend a CHANGELOG.md entry right after the Unreleased section.
@@ -147,7 +149,7 @@ do_bump() {
 
 ### Changed
 
-- Tooling synced to Specboot $new_tag.
+- Tooling synced to Specboot $new_ver.
 
 "
   if [ -f CHANGELOG.md ]; then
@@ -168,15 +170,9 @@ do_bump() {
       printf '%s\n' "$entry"
     } > CHANGELOG.md
   fi
-  pass "CHANGELOG.md actualizado con $new_tag"
+  pass "CHANGELOG.md actualizado con $new_ver"
 
-  if git tag "$new_tag" 2>/dev/null; then
-    pass "Tag $new_tag creado"
-  else
-    warn "No se pudo crear el tag $new_tag (¿ya existe?)"
-  fi
-
-  note "Recuerda commitear CHANGELOG.md y empujar el tag: git push origin $new_tag"
+  note "El bump no crea tags: crea v$new_ver post-merge, apuntando exactamente al commit de main que contiene el bump (solo con autorización explícita)"
 
   # Finally, sync the tooling as well.
   do_sync
