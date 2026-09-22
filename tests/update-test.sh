@@ -5,7 +5,8 @@
 # consumer projects is `specboot update` (see specboot.sh). Per
 # cleanup-publish-and-junk (TICKET-CLEANUP, Fase G) this test therefore:
 #   1. Tests the current `--bump` mode as the primary behavior
-#      (maintainer release flow: tag + CHANGELOG entry).
+#      (maintainer release flow: CHANGELOG entry, NO git tags — tag creation
+#      belongs to the maintainer's post-merge phase, SPECBOOT-HARDEN-04).
 #   2. Keeps a light assertion that the deprecated sync mode prints its
 #      deprecation warning (no full sync behavior assertions — deprecated).
 #
@@ -54,10 +55,11 @@ REPO="$(mktemp -d)"
 # so the bump behavior is tested hermetically.
 ( cd "$REPO" && bash "$SCRIPT" --template "$REPO" --bump minor ) >/tmp/up-bump.out 2>&1
 assert_exit "bump exits 0" 0 $?
-if git -C "$REPO" tag | grep -q "v0.1.0"; then
-  echo "  ✓ tag v0.1.0 created"; PASS=$((PASS + 1))
+tags="$(git -C "$REPO" tag -l)"
+if [ -z "$tags" ]; then
+  echo "  ✓ --bump creates NO git tag (tagging is post-merge)"; PASS=$((PASS + 1))
 else
-  echo "  ✗ tag v0.1.0 created"; FAIL=$((FAIL + 1))
+  echo "  ✗ --bump creates NO git tag (found: $tags)"; FAIL=$((FAIL + 1))
 fi
 if grep -q "## \[0.1.0\]" "$REPO/CHANGELOG.md"; then
   echo "  ✓ CHANGELOG has 0.1.0"; PASS=$((PASS + 1))
