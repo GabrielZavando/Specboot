@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-09-22
+
+### Changed
+
+- **Protección del CI personalizado de consumidores (SPECBOOT-HARDEN-04)** — `specboot update` ya no sobrescribe un `.github/workflows/ci.yml` personalizado: nueva política tri-estado segura (instala la plantilla actual si falta / respalda en `.specboot-backup-*/` y reemplaza solo las variantes históricas conocidas distribuidas por Specboot desde 0.10.0 / preserva byte-for-byte y exige resolución explícita ante contenido modificado o ajeno). La detección usa una allowlist inmutable de content fingerprints con proveniencia git verificable (nunca derivada del `ci.yml` interno mutable); los workflows personalizados siempre se preservan; la coincidencia exacta con la plantilla actual es un no-op idempotente; y la misma política aplica desde la instalación en `node_modules`. Guard: `tests/specboot-update-test.sh` (suite de proveniencia SC-011 + sub-bloques 15a–15g).
+- **`release-bump.sh` / `update.sh --bump` ya no crean tags con el bump sin commit (SPECBOOT-HARDEN-04)** — la creación del tag `v{X.Y.Z}` pertenece a la fase post-merge del mantenedor: tras fusionar a `main`, el tag se crea apuntando exactamente al commit que contiene el bump y se publica solo con autorización explícita (política reescrita en `docs/versioning-standard.md` §6.1 y §Política de tags; ningún script del framework crea tags durante el bump, `/apply`, `/archive` ni el commit de la rama).
+
+### Added
+
+- **Aislamiento de workflows internos (SPECBOOT-HARDEN-02)** — los workflows internos del framework (`release.yml`, `deploy.yml`) nunca se embarcan ni instalan a consumidores: las únicas fuentes distribuibles son las plantillas de consumidor (`templates/github/workflows/consumer-ci.yml`, `templates/github/workflows/deploy.example.yml` y la plantilla de PR), y el tarball npm excluye `.github/**` por completo. Guard: `tests/workflow-isolation-test.sh`.
+- **Reparación de `release.yml` heredados (SPECBOOT-HARDEN-02)** — `specboot update` detecta los `release.yml` de framework heredados que versiones anteriores copiaron en consumidores, vía una allowlist de fingerprints inmutables con proveniencia git, los respalda en `.specboot-backup-*/` y los elimina; los archivos modificados o ajenos exigen resolución explícita y nunca se eliminan automáticamente.
+- **Contratos operacionales de agentes y comandos (SPECBOOT-PERM-01 + HARDEN-02)** — manifiesto de contratos de permisos + validadores (`docs/agent-permission-contracts.yml`, `scripts/validate-agent-permissions.mjs`, `scripts/validate-command-contracts.mjs`): semántica de permisos fiel a OpenCode, contratos de tareas de subagentes y contratos front-matter comando→agente, distribuidos vía init/update y aplicados en CI.
+- **Pre-flight reanudable de `/apply` (SPECBOOT-HARDEN-02)** — pre-condiciones (rama conforme + estado git) verificadas una vez por change con marker persistente en `openspec/state/`: la primera corrida tolera los artefactos del plan (`openspec/changes/**`) y las corridas siguientes reanudan desde la primera tarea pendiente.
+- **Configuración de OpenCode por variables de entorno (FW-ENV)** — la configuración de proveedores de OpenCode admite interpolación `{env:VAR}` (ej. `"apiKey": "{env:OMNIROUTE_API_KEY}"`), con ejemplo en `.opencode/providers.example.json`, `.env.example` extendido y guía en `docs/opencode-providers-config.md`.
+
+### Fixed
+
+- **Resolución correcta del proyecto objetivo (SPECBOOT-HARDEN-02)** — `specboot.sh --ci`/`--init` validan el directorio desde el que se invocaron (el repo en dogfooding; el proyecto consumidor cuando se corre desde `node_modules`), no el contenido del paquete, eliminando falsos errores de versión tras un update exitoso en modo consumidor.
+- **Historial completo en los jobs de validación (SPECBOOT-HARDEN-03)** — el job `validate` de `release.yml` clona con `fetch-depth: 0` para que los tests de provenancia/fingerprint (re-derivación de variantes históricas desde git) vean el historial completo y no fallen por clones shallow.
+- **Sincronía de `package-lock.json` en el bump canónico (SPECBOOT-HARDEN-04)** — `release-bump.sh` sincroniza ahora la versión raíz y la entrada principal `packages[""]` del lock junto a `package.json` y `.specboot.json`, de forma atómica: parsea y valida los tres archivos ANTES de escribir cualquiera (un lock corrupto aborta sin escrituras; si el lock no existe, se omite con nota). Antes quedaba desfasado respecto de `package.json`.
+- **Respaldo verificable del `ci.yml` de consumidores (SPECBOOT-HARDEN-04, SC-013)** — el respaldo del CI personalizado durante `specboot update` ahora se crea con `cp -p` (conserva metadatos para una restauración fiel) y se verifica explícitamente: si falla, el archivo NO se reemplaza, permanece byte-for-byte intacto, se emite un error claro y el update devuelve estado no exitoso (nunca un reemplazo sin respaldo previo exitoso). Guard: Test 16 de `tests/specboot-update-test.sh`.
+- **Auditoría adversarial resiliente (SPECBOOT-HARDEN-04, SC-014)** — la skill `code-auditing` registra las herramientas opcionales ausentes (`eslint`, `dependency-cruiser`, `npm audit`) como **skip** en lugar de fallar en silencio, y persiste su veredicto `openspec/state/adversarial-result.json` SIEMPRE al final de cada auditoría — incluidos NO-SHIP y corridas con skips — para que el gate de `/commit` lea siempre la corrida más reciente. Guard: `tests/adversarial-state-test.sh`.
+
+### Breaking changes
+
+None. (La política de update del CI de consumidores es estrictamente más conservadora que en 0.10.0 — instala si falta, repara solo variantes conocidas con respaldo previo y preserva byte-for-byte cualquier `ci.yml` modificado o ajeno — y nada de este release fuerza migración de consumidores.)
+
 ## [0.10.0] - 2026-09-18
 
 ### Changed
