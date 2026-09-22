@@ -1,22 +1,91 @@
 {
   "schema_version": 1,
-  "change": "agent-permission-contracts",
-  "ticket_id": "SPECBOOT-PERM-01",
+  "change": "isolate-internal-artifacts",
+  "ticket_id": "SPECBOOT-HARDEN-02",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-20T20:06:51Z",
-  "tasks": { "total": 5, "passed": 5, "failed": 0, "untested": 0 },
+  "timestamp": "2026-09-21T19:59:21Z",
+  "tasks": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0,
+    "untested": 0
+  },
   "scenarios": [
-    { "id": "SC-001", "test": "[SC-001] specboot.sh --ci pasa en verde con contratos conformes (tests/permission-contracts-test.sh)", "status": "PASS" },
-    { "id": "SC-002", "test": "[SC-002] catch-all after exception fails (fixture bad-catchall)", "status": "PASS" },
-    { "id": "SC-003", "test": "[SC-003] reviewer manifest entry persists only openspec/state/adversarial-result.json", "status": "PASS" },
-    { "id": "SC-004", "test": "[SC-004] verify manifest entry persists only openspec/state/verify-results.json", "status": "PASS" },
-    { "id": "SC-005", "test": "[SC-005] ownership: git commit effectively denied for non-commit agent (fixture bad-ownership)", "status": "PASS" },
-    { "id": "SC-006", "test": "[SC-006] force-push not effectively denied fails (fixture bad-force-push)", "status": "PASS" },
-    { "id": "SC-007", "test": "[SC-007] read-json-field.mjs rejects files outside its closed allowlist (+ allowlist read)", "status": "PASS" },
-    { "id": "SC-008", "test": "[SC-008] missing required permission fails (fixture bad-missing-required)", "status": "PASS" },
-    { "id": "SC-009", "test": "[SC-009] exceeded edit scope fails (fixture bad-excess-scope)", "status": "PASS" },
-    { "id": "SC-010", "test": "[SC-010] consumer: validator runs from node_modules package without hoisted js-yaml + init/update distribution asserts", "status": "PASS" },
-    { "id": "SC-011", "test": "git diff --check + check-refs.sh (0 errores) + specboot.sh --ci (PASS)", "status": "PASS" }
+    {
+      "id": "SC-001",
+      "test": "workflow-isolation-test.sh — init installs consumer CI + PR template, no release.yml/internal deploy",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-002",
+      "test": "specboot-update-test.sh — legacy release repaired per VARIANT (v1/v2/v3 fingerprints): removed + backed up",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-003",
+      "test": "specboot-update-test.sh — modified legacy preserved never auto-delete + custom workflow survives",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-004",
+      "test": "workflow-isolation-test.sh — tarball contains no .github/** and includes consumer templates",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-005",
+      "test": "apply-preflight-test.sh — first-run dirt limited to plan artifacts requires no commit/stash",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-006",
+      "test": "apply-preflight-test.sh — resumed /apply accepts prior-task changes without commits",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-007",
+      "test": "apply-preflight-test.sh — foreign pre-existing changes still block /apply",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-008",
+      "test": "permission-contracts-test.sh — non-spawner agents task contract forbids every subagent + front matter deny",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-009",
+      "test": "permission-contracts-test.sh — build task contract allows only backend and frontend",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-010",
+      "test": "permission-contracts-test.sh + validator-opencode-test.sh — can_push/can_manage_prs audited independently",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-011",
+      "test": "validator-opencode-test.sh — ? wildcard + compound bypass detected for ALL 10 separators (;, &&, ||, |, newline ± spaces) + control no-false-positives",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-012",
+      "test": "target-resolution-test.sh — --ci/--init from consumer dir validate THAT dir",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-013",
+      "test": "docs-alignment-test.sh — plan-change skill validates Why ≤ 1000 chars",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-014",
+      "test": "run-all.sh — 29 suites passed, 0 failed + specboot.sh --ci direct PASS + check-refs.sh direct PASS (0 errors)",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-015",
+      "test": "command-contracts-test.sh — all real commands declare contracted agent from front matter",
+      "status": "PASS"
+    }
   ]
 }

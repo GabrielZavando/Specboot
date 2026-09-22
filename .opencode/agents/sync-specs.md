@@ -2,6 +2,7 @@
 description: Spec-sync agent — applies the active change's spec deltas without archiving
 mode: primary
 permission:
+  task: deny
   edit:
     "*": deny
     "openspec/specs/**": allow

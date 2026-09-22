@@ -6,6 +6,12 @@ Eres un desarrollador full-stack senior que implementa features siguiendo TDD y 
 
 ## Al iniciar una tarea
 
+> **Contrato de subagentes (SPECBOOT-HARDEN-02, REQ-005):** `permission.task`
+> del agente `build` permite invocar únicamente los subagentes `backend` y
+> `frontend`; cualquier otro subagente (`verify`, `reviewer`, `commit`, etc.)
+> resuelve `deny`. Si la tarea es de infraestructura/`framework puras (sin
+> backend/frontend), continúa como tú mismo (build) sin desplegar subagentes.
+
 1. Leer `docs/base-standards.md`
 2. Identificar si la tarea es **backend**, **frontend** o **ambas**:
    - Si es **backend** → leer `docs/backend-standards.md` y adoptar las responsabilidades de `ai-specs/agents/backend-developer.md`

@@ -15,7 +15,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # project being bootstrapped (we cd into SCRIPT_DIR below for the validation modes).
 ORIGINAL_PWD="$(pwd)"
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
-  cd "$SCRIPT_DIR"
+  # Validation modes (`--init`/`--ci`) validate the INVOCATION directory
+  # (SPECBOOT-HARDEN-02, REQ-008): the framework repo in dogfooding, the
+  # consumer project when this script is executed from
+  # node_modules/@gabrielzavando/specboot. Project `init`/`update` target
+  # $ORIGINAL_PWD explicitly regardless, so they keep running from the
+  # framework source directory.
+  case "${1:-}" in
+    --init|--ci) cd "$ORIGINAL_PWD" ;;
+    *) cd "$SCRIPT_DIR" ;;
+  esac
 fi
 
 # Do NOT use 'set -e': this script counts errors/warnings and must keep running.
@@ -135,9 +144,9 @@ FRAMEWORK_ITEMS=(
   "opencode.json"
   "AGENTS.md"
   "Makefile"
-  ".github"
   "LICENSE"
   "README.md"
+  "templates/github"
   "scripts/read-json-field.mjs"
 )
 
@@ -187,6 +196,31 @@ copy_framework_files() {
       warn "falló la copia de: $item"
     fi
   done
+}
+
+# Install the GitHub consumer artifacts into the target from the templates.
+# Only the consumer CI workflow and the PR template are installed by default;
+# the internal release.yml/deploy.yml workflows are NEVER copied (Health-2 /
+# SPECBOOT-HARDEN-02, REQ-001/REQ-003). Never overwrites an existing file.
+install_github_artifacts() {
+  local fw_dir="$1" dst="$2"
+  mkdir -p "$dst/.github/workflows"
+  local pr_src="$fw_dir/templates/github/pull_request_template.md"
+  local ci_src="$fw_dir/templates/github/workflows/consumer-ci.yml"
+  if [ -f "$pr_src" ] && [ ! -f "$dst/.github/pull_request_template.md" ]; then
+    if cp "$pr_src" "$dst/.github/pull_request_template.md" 2>/dev/null; then
+      pass "instalado: .github/pull_request_template.md"
+    else
+      warn "falló la instalación de .github/pull_request_template.md"
+    fi
+  fi
+  if [ -f "$ci_src" ] && [ ! -f "$dst/.github/workflows/ci.yml" ]; then
+    if cp "$ci_src" "$dst/.github/workflows/ci.yml" 2>/dev/null; then
+      pass "instalado: .github/workflows/ci.yml (consumer CI)"
+    else
+      warn "falló la instalación de .github/workflows/ci.yml"
+    fi
+  fi
 }
 
 # Build a JSON array string from a comma/space separated list.
@@ -460,6 +494,9 @@ run_init_project() {
   echo "→ Copiando archivos del framework..."
   copy_framework_files "$fw_dir" "$target"
   echo ""
+  echo "→ Instalando artefactos GitHub de consumidores..."
+  install_github_artifacts "$fw_dir" "$target"
+  echo ""
   echo "→ Creando .specboot.json..."
   create_initial_specboot_json "$target" "$interactive"
   echo ""
@@ -523,7 +560,7 @@ UPDATE_ITEMS=(
   "opencode.json"
   "AGENTS.md"
   "Makefile"
-  ".github/workflows"
+  "templates/github"
   "scripts/read-json-field.mjs"
 )
 
@@ -667,6 +704,90 @@ ensure_gitignore_entry() {
     && info "Añadido .specboot-backup-* a .gitignore"
 }
 
+# Known framework-owned legacy release.yml content fingerprints (git blob hashes)
+# of EVERY release.yml variant Specboot distributed to consumers before artifact
+# isolation (SPECBOOT-HARDEN-02, REQ-002):
+#   v1 87847ce0... — initial release workflow (ea2f096)
+#   v2 ed2a6f7d... — node 24 bump / orphan publish removed (033806f)
+#   v3 122cb15d... — idempotent publish (e68135b, last distributed)
+# These hashes describe IMMUTABLE legacy content — never derived from the current internal
+# .github/workflows/release.yml, which may evolve freely and is no longer
+# distributed. A consumer file matching ANY allowlisted hash is a framework-owned
+# legacy artifact (backed up + removed by update); anything else is never
+# auto-deleted. The regression suite (tests/specboot-update-test.sh) re-derives
+# every pre-isolation variant from git history and fails if this allowlist
+# drifts from the distributed history.
+KNOWN_RELEASE_FINGERPRINTS=(
+  "87847ce00d9dd02e98302962cdc39787194a5733"  # v1 — initial release workflow
+  "ed2a6f7dd68b0e29e7b4bf1c78c6b8611b360871"  # v2 — node 24 bump, orphan publish removed
+  "122cb15dccf07599ef4ddd494e3f9a3643e8948f"  # v3 — idempotent publish (last distributed)
+)
+
+# True when the fingerprint matches any known legacy framework-owned variant.
+is_known_legacy_release_fingerprint() {
+  local fp="$1" known
+  for known in "${KNOWN_RELEASE_FINGERPRINTS[@]}"; do
+    [ "$fp" = "$known" ] && return 0
+  done
+  return 1
+}
+
+# Return a stable content fingerprint of a file (git blob hash; git is always
+# available in this git-based framework). Empty string when it cannot be computed.
+content_fingerprint() {
+  local f="$1"
+  if command -v git >/dev/null 2>&1; then
+    git hash-object "$f" 2>/dev/null
+  fi
+}
+
+# Refresh the consumer GitHub artifacts (consumer CI + PR template) into the
+# target from the templates. These are framework-owned (intocable) files: update
+# replaces them without mercy, and never copies the internal release/deploy
+# workflows (SPECBOOT-HARDEN-02, REQ-001/REQ-003).
+update_github_artifacts() {
+  local fw_dir="$1" dst="$2"
+  mkdir -p "$dst/.github/workflows"
+  local ci_src="$fw_dir/templates/github/workflows/consumer-ci.yml"
+  local pr_src="$fw_dir/templates/github/pull_request_template.md"
+  if [ -f "$ci_src" ]; then
+    if cp "$ci_src" "$dst/.github/workflows/ci.yml" 2>/dev/null; then
+      pass "reemplazado: .github/workflows/ci.yml (consumer CI)"
+    else
+      warn "falló el reemplazo de .github/workflows/ci.yml"
+    fi
+  fi
+  if [ -f "$pr_src" ]; then
+    if cp "$pr_src" "$dst/.github/pull_request_template.md" 2>/dev/null; then
+      pass "reemplazado: .github/pull_request_template.md"
+    else
+      warn "falló el reemplazo de .github/pull_request_template.md"
+    fi
+  fi
+}
+
+# Repair a contaminated consumer: remove the framework-owned legacy release.yml
+# (backed up first) when it matches ANY fingerprint of the historical allowlist
+# exactly; otherwise warn and require explicit resolution (never auto-delete a
+# modified or consumer-owned release.yml). Custom workflows are never touched.
+repair_legacy_release() {
+  local dst="$1" backup_dir="$2"
+  local legacy="$dst/.github/workflows/release.yml"
+  [ -f "$legacy" ] || return 0
+  local fp
+  fp="$(content_fingerprint "$legacy")"
+  if [ -n "$fp" ] && is_known_legacy_release_fingerprint "$fp"; then
+    if [ -n "$backup_dir" ]; then
+      mkdir -p "$backup_dir/.github/workflows"
+      cp "$legacy" "$backup_dir/.github/workflows/release.yml" 2>/dev/null
+    fi
+    rm -f "$legacy"
+    pass "eliminado release.yml heredado de Specboot (respaldado${backup_dir:+ en $backup_dir})"
+  else
+    warn "release.yml en .github/workflows/ NO coincide con la firma framework-owned y NO se eliminó; requiere resolución explícita manual (nunca se auto-elimina un archivo modificado o ajeno)"
+  fi
+}
+
 run_update_project() {
   local interactive_confirm=1   # 1 = ask; 0 = --yes
   local template=""
@@ -779,6 +900,12 @@ run_update_project() {
   echo ""
   echo "→ Reemplazando archivos del framework..."
   replace_framework_files "$fw_dir" "$target"
+
+  # 6b. Refresh consumer GitHub artifacts and repair a contaminated consumer.
+  echo ""
+  echo "→ Actualizando artefactos GitHub de consumidores..."
+  update_github_artifacts "$fw_dir" "$target"
+  repair_legacy_release "$target" "$backup_dir"
 
   # 7. Rewrite frameworkVersion if it changed (eq = leave intact).
   if [ "$jump" != "eq" ]; then
@@ -923,11 +1050,23 @@ check_git_hooks() {
 }
 
 check_ci_cd() {
-# REQ-009: contratos de permisos de agentes (SPECBOOT-PERM-01).
-# El validador vive en el paquete Specboot: en consumidores se ejecuta desde
-# node_modules/@gabrielzavando/specboot; en dogfooding desde el propio repo.
-# El proyecto validado se pasa siempre con --root; el manifiesto se lee desde
-# el paquete (nunca del proyecto).
+  echo "→ Verificando CI/CD..."
+  if [ -f ".github/workflows/ci.yml" ]; then
+    pass "GitHub Actions CI configurado"
+  else
+    warn ".github/workflows/ci.yml no encontrado"
+  fi
+  if [ -f ".commitlintrc.json" ]; then
+    pass "commitlint configurado"
+  else
+    info ".commitlintrc.json no encontrado (opcional)"
+  fi
+}
+
+# REQ-009 (SPECBOOT-HARDEN-02): check_permission_contracts() vive FUERA de
+# check_ci_cd() para no depender del orden de ejecución. El validador vive en el
+# paquete Specboot (node_modules en consumidores, scripts/ en dogfooding); el
+# proyecto validado se pasa con --root; el manifiesto se lee desde el paquete.
 check_permission_contracts() {
   echo "→ Verificando contratos de permisos de agentes..."
   local validator=""
@@ -951,16 +1090,28 @@ check_permission_contracts() {
   fi
 }
 
-  echo "→ Verificando CI/CD..."
-  if [ -f ".github/workflows/ci.yml" ]; then
-    pass "GitHub Actions CI configurado"
-  else
-    warn ".github/workflows/ci.yml no encontrado"
+# REQ-007 (SPECBOOT-HARDEN-02): contratos de comandos (agent + subtask) validados
+# desde el front matter. El validador vive en el paquete Specboot.
+check_command_contracts() {
+  echo "→ Verificando contratos de comandos..."
+  local vcmd=""
+  if [ -f "node_modules/@gabrielzavando/specboot/scripts/validate-command-contracts.mjs" ]; then
+    vcmd="node_modules/@gabrielzavando/specboot/scripts/validate-command-contracts.mjs"
+  elif [ -f "$SCRIPT_DIR/scripts/validate-command-contracts.mjs" ]; then
+    vcmd="$SCRIPT_DIR/scripts/validate-command-contracts.mjs"
   fi
-  if [ -f ".commitlintrc.json" ]; then
-    pass "commitlint configurado"
+  if [ -z "$vcmd" ]; then
+    fail "Validador de contratos de comandos no encontrado (ni en node_modules/@gabrielzavando/specboot ni en scripts/)"
+    return
+  fi
+  if ! command -v node >/dev/null 2>&1; then
+    fail "Node.js no disponible: no se pudieron validar los contratos de comandos"
+    return
+  fi
+  if node "$vcmd" --root .; then
+    pass "Contratos de comandos conformes"
   else
-    info ".commitlintrc.json no encontrado (opcional)"
+    fail "Descalce de contratos de comandos (ver salida del validador)"
   fi
 }
 
@@ -1095,6 +1246,8 @@ run_ci() {
   check_ci_cd
   echo ""
   check_permission_contracts
+  echo ""
+  check_command_contracts
   echo ""
   print_summary
 

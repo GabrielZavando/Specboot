@@ -61,7 +61,13 @@ assert_exists "docs skeleton backend-standards"   "$EMPTY/docs/backend-standards
 assert_exists "docs skeleton project/domain"      "$EMPTY/docs/project/domain.md"
 assert_exists "docs skeleton api/api-spec.yml"    "$EMPTY/docs/api/api-spec.yml"
 assert_exists "docs skeleton data-model"           "$EMPTY/docs/data-model/data-model.md"
-assert_exists ".github copied"                     "$EMPTY/.github"
+assert_exists ".github/workflows/ci.yml (consumer CI)"  "$EMPTY/.github/workflows/ci.yml"
+assert_exists ".github/pull_request_template.md installed" "$EMPTY/.github/pull_request_template.md"
+if [ -e "$EMPTY/.github/workflows/release.yml" ] || [ -e "$EMPTY/.github/workflows/deploy.yml" ]; then
+  echo "  ✗ [HARDEN-02] init must NOT install internal workflows (release/deploy)"; FAIL=$((FAIL + 1))
+else
+  echo "  ✓ [HARDEN-02] no internal workflows installed by init"; PASS=$((PASS + 1))
+fi
 
 # [SC-002, TICKET-AUDIT-2] init copies the 7 intocable framework docs,
 # including the canonical TDD Failure Protocol (referenced by apply.md).

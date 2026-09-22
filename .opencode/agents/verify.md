@@ -2,6 +2,7 @@
 description: Verification agent — runs tests, checks traceability, persists verify evidence (read-only over code)
 mode: primary
 permission:
+  task: deny
   edit:
     "*": deny
     "openspec/state/verify-results.json": allow

@@ -85,7 +85,7 @@ Listar `openspec/changes/` y tomar el único cambio presente. Si hay varios, lis
 
 - **No** ejecutar `git add`: el staging es ownership exclusivo del agente
   `commit` (SPECBOOT-PERM-01, REQ-005). `/archive` informa qué quedó listo:
-  - Los archivos nuevos/archivados en `openspec/archive/`.
+  - Los archivos nuevos/archivados en `openspec/changes/archive/`.
   - El `manifest.json` actualizado.
   - Cualquier otro archivo de spec modificado por `openspec archive`.
 - **No** ejecutar `git commit`. El staging y el commit los hace `/commit` en el paso siguiente del ciclo (`git add openspec/` incluido).
@@ -95,14 +95,14 @@ Listar `openspec/changes/` y tomar el único cambio presente. Si hay varios, lis
   chore(specs): archive change PROJ-123 (auth-reset)
 
   - Specs updated: auth-spec.md, user-spec.md
-  - Archived to: openspec/archive/2026-08-25-auth-reset/
+  - Archived to: openspec/changes/archive/2026-08-25-auth-reset/
   ```
 - **Nota**: `/commit` será quien ejecute `git commit -m "..."` en el siguiente paso.
 
 ## Step 7 — Limpieza
 
 - Eliminar `openspec/tickets/{TICKET-ID}-enriched.md` si existe (el ciclo del ticket enriquecido terminó).
-- **No** tocar archivos dentro de `openspec/archive/` (son histórico).
+- **No** tocar archivos dentro de `openspec/changes/archive/` (son histórico).
 - Reporte final en YAML compacto (solo pantalla, no persistido):
   ```yaml
   change: auth-reset

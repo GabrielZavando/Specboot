@@ -71,6 +71,31 @@ else
   bad "[SC-008] specboot-workflows spec still requires the project-ci job"
 fi
 
+# --- fetch-depth: 0 regression checks ---
+# Now that fetch-depth: 0 is set on the validate job checkout only, guard the
+# decision: validate MUST fetch the full history, project-ci MUST NOT.
+echo "fetch-depth: 0 placement (validate only):"
+
+if grep -q 'fetch-depth: 0' "$CI"; then
+  ok "ci.yml declares fetch-depth: 0 (full history for validate)"
+else
+  bad "ci.yml declares fetch-depth: 0 (full history for validate)"
+fi
+
+# validate job must have fetch-depth: 0 on its checkout
+if awk '/^  validate:/{v=1} /^  project-ci:/{v=0} v' "$CI" | grep -q 'fetch-depth: 0'; then
+  ok "validate job contains fetch-depth: 0"
+else
+  bad "validate job contains fetch-depth: 0"
+fi
+
+# project-ci job must NOT have fetch-depth: 0
+if awk '/^  project-ci:/{p=1} p' "$CI" | grep -q 'fetch-depth: 0'; then
+  bad "project-ci job does NOT contain fetch-depth: 0"
+else
+  ok "project-ci job does NOT contain fetch-depth: 0"
+fi
+
 # --- 2. M-902 evaluation closed as "keep, no action" with justification ---
 echo "M-902 evaluation registered in PLAN_MEJORAS_SPECBOOT.md:"
 

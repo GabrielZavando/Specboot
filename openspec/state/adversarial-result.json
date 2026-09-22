@@ -1,9 +1,69 @@
 {
   "schema_version": 1,
-  "change": "agent-permission-contracts",
-  "ticket_id": "SPECBOOT-PERM-01",
+  "change": "isolate-internal-artifacts",
+  "ticket_id": "SPECBOOT-HARDEN-02",
   "verdict": "SHIP",
-  "confidence": 0.85,
-  "timestamp": "2026-09-20T23:05:03Z",
-  "findings": { "total": 4, "critical": 0, "warnings": 2, "info": 2, "discarded": 2 }
+  "confidence": 0.8,
+  "timestamp": "2026-09-21T20:25:00Z",
+  "findings": {
+    "total": 6,
+    "critical": 0,
+    "warnings": 1,
+    "info": 5,
+    "discarded": 0
+  },
+  "detail": {
+    "audit_pass": 4,
+    "tools": {
+      "npm_audit": "0 vulnerabilities (3 prod deps, 0 dev) — clean",
+      "eslint": "skipped — no src/ in this bash/shell+MJS framework; templates/ci/*.js are consumer templates, not lint targets for this repo",
+      "dependency_cruiser": "skipped — no src/ target",
+      "test_execution": "blocked by session sandbox permissions (only ls/git status/git diff/npm audit/npx eslint/npx dependency-cruiser/date allowed); corroboration relies on the CURRENT fresh /verify run (2026-09-21T19:59:21Z, 15/15 PASS, suites update 67/0, validator-opencode 17/0, permission-contracts 35/0, run-all 29/0) plus static re-audit of the current working tree"
+    },
+    "findings_list": [
+      {
+        "severity": "WARNING",
+        "category": "robustness",
+        "file": "specboot.sh:748-767",
+        "evidence": "update_github_artifacts overwrites .github/workflows/ci.yml unconditionally on every `specboot update` with no fingerprint check and no backup (backup_framework_files iterates UPDATE_ITEMS, which does NOT include .github/workflows/ci.yml). This is asymmetric with the careful fingerprint-protected handling of release.yml (repair_legacy_release) and with REQ-001's 'custom workflows never touched' principle: a consumer that replaced ci.yml before adopting Specboot (or a non-framework ci.yml) would have it silently clobbered.",
+        "recommendation": "Fingerprint-gate the ci.yml overwrite (allowlist the consumer-ci.yml content) or back it up into .specboot-backup-<ts>/ before replacing; at minimum warn when the existing ci.yml differs from the framework template."
+      },
+      {
+        "severity": "INFO",
+        "category": "robustness",
+        "file": "specboot.sh:779-786",
+        "evidence": "repair_legacy_release: if the backup cp fails (stderr swallowed at line 782) or backup_dir is empty (--no-backup), rm -f (line 784) still removes the allowlisted legacy release.yml; recoverable from framework git history because content is blob-addressed in the allowlist. Confirmed unchanged in the current tree.",
+        "recommendation": "Abort or warn with higher severity when the backup of a framework-owned file fails before rm -f."
+      },
+      {
+        "severity": "INFO",
+        "category": "tests",
+        "file": "openspec/state/verify-results.json:7",
+        "evidence": "The verify staleness flagged in pass 3 is RESOLVED: current evidence timestamp 2026-09-21T19:59:21Z is FRESH and newer than this post-fix audit. PASS 15/15 scenarios, 11/11 tasks; suites update 67/0, validator-opencode 17/0, permission-contracts 35/0, run-all 29/0, specboot --ci PASS, check-refs 0 errors. The validator/separator coverage (validator-opencode 17/0 incl. per-separator SC-011 family + control) is corroborated by the fresh recorded run and statically re-confirmed against the current tree.",
+        "recommendation": "No action required — evidence order verify(19:59:21Z) → adversarial(20:25:00Z) holds."
+      },
+      {
+        "severity": "INFO",
+        "category": "security",
+        "file": "templates/github/workflows/deploy.example.yml:38",
+        "evidence": "appleboy/ssh-action pinned by mutable major tag (@v1) in the optional consumer deploy template that carries DEPLOY_SSH_KEY (also lines 64 and 82); never auto-installed, job-gated by vars.DEPLOY_ENABLED.",
+        "recommendation": "Pin third-party actions by commit SHA in the example to model supply-chain hygiene for consumers."
+      },
+      {
+        "severity": "INFO",
+        "category": "solid",
+        "file": "scripts/validate-agent-permissions.mjs:115-139",
+        "evidence": "mergedBlock keeps a global scalar permission as fallback after agent-map patterns (lines 115-126) and evaluateEffective (129-139) still applies that scalar fallback; if OpenCode's per-key agent override replaces the global scalar instead of falling back to it, the emulation could diverge for agents lacking catch-all patterns. In this repo all agent front matters declare catch-alls and every forbidden/required probe fails closed either way.",
+        "recommendation": "Document the assumed merge semantics (defaults -> global -> agent, scalar-as-fallback) in the validator header or validate against an OpenCode fixture."
+      },
+      {
+        "severity": "INFO",
+        "category": "tradeoff",
+        "file": ".opencode/agents/build.md:43",
+        "evidence": "Compound families like *;*git add*, *|*git add* can false-positive-deny benign read commands that contain a pipe plus the literal text (e.g. git log | grep 'git add'); deny direction is fail-safe and the guardrail is documented as defense-in-depth in the manifest. Arbitrary-code keyholders (build/backend/frontend) can still bypass pattern denies via bash -c/subshel/backticks; this is documented and bounded by can_run_arbitrary_code.",
+        "recommendation": "Accepted tradeoff; no action required."
+      }
+    ],
+    "discarded_findings": []
+  }
 }

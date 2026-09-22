@@ -36,9 +36,9 @@ process.stdin.on("data", d => (s += d)).on("end", () => {
   const requiredDirPrefixes = [
     ".opencode/commands/",
     ".opencode/agents/",
-    ".github/workflows/",
     "ai-specs/",
-    "templates/ci/"
+    "templates/ci/",
+    "templates/github/"
   ];
   const requiredExact = [
     "check-refs.sh",
@@ -89,14 +89,16 @@ process.stdin.on("data", d => (s += d)).on("end", () => {
     if (x.startsWith(".opencode/") && !x.startsWith(".opencode/commands/") && !x.startsWith(".opencode/agents/"))
       fail("FORBIDDEN .opencode path: " + x);
   }
-  // .github/ may only contain workflows/
+  // .github/ MUST be absent — internal workflows are never packaged; consumer
+  // GitHub artifacts ship under templates/github/ instead (SPECBOOT-HARDEN-02).
   for (const x of files) {
-    if (x.startsWith(".github/") && !x.startsWith(".github/workflows/"))
+    if (x.startsWith(".github/"))
       fail("FORBIDDEN .github path: " + x);
   }
-  // templates/ may only contain ci/
+  // templates/ may only contain ci/ and github/
+  const allowedTemplatePrefixes = ["templates/ci/", "templates/github/"];
   for (const x of files) {
-    if (x.startsWith("templates/") && !x.startsWith("templates/ci/"))
+    if (x.startsWith("templates/") && !allowedTemplatePrefixes.some(p => x.startsWith(p)))
       fail("FORBIDDEN templates path: " + x);
   }
 
