@@ -1,35 +1,90 @@
 {
   "schema_version": 1,
-  "change": "release-validate-depth",
-  "ticket_id": "SPECBOOT-HARDEN-03",
+  "change": "protect-consumer-ci",
+  "ticket_id": "SPECBOOT-HARDEN-04",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-22T02:27:18Z",
+  "timestamp": "2026-09-22T18:50:04Z",
   "tasks": {
-    "total": 6,
-    "passed": 6,
+    "total": 8,
+    "passed": 8,
     "failed": 0,
     "untested": 0
   },
   "scenarios": [
     {
       "id": "SC-001",
-      "test": "release-workflow-test.sh — validate job declares fetch-depth: 0 (SC-001)",
+      "test": "[SC-001] consumer CI installed when missing",
       "status": "PASS"
     },
     {
       "id": "SC-002",
-      "test": "release-workflow-test.sh — publish job has no fetch-depth (SC-002)",
+      "test": "[SC-002] historical consumer CI variants backed up and replaced",
       "status": "PASS"
     },
     {
       "id": "SC-003",
-      "test": "release-workflow-test.sh — publish job keeps needs: validate (SC-003)",
+      "test": "[SC-003] modified consumer CI preserved with explicit warning",
       "status": "PASS"
     },
     {
       "id": "SC-004",
-      "test": "release-workflow-test.sh — contract fails if fetch-depth leaves validate or enters publish (SC-004)",
+      "test": "[SC-004] custom workflows preserved",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-005",
+      "test": "[SC-005] package-lock.json synced atomically",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-006",
+      "test": "[SC-006] bump creates NO git tag",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-007",
+      "test": "[SC-007] release.yml contract: publish idempotent via npm view check",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-008",
+      "test": "[SC-008] release.yml contract: fetch-depth 0 in validate, needs: validate",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-009",
+      "test": "[SC-009] exact-template ci.yml idempotent no-op",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-010",
+      "test": "[SC-010] consumer-mode (node_modules) update follows same policy",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-011",
+      "test": "[SC-011] KNOWN_CONSUMER_CI_FINGERPRINTS allowlist with git provenance",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-012",
+      "test": "[SC-012] foreign consumer CI preserved with explicit warning",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-013",
+      "test": "[SC-013] backup failure prevents replacement, ci.yml stays intact, non-success state",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-014",
+      "test": "[SC-014] code-auditing documents skip of absent tools + unconditional persistence",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-015",
+      "test": "[SC-015] replacement failure detected, no false success, verified destination; --no-backup explicit opt-out",
       "status": "PASS"
     }
   ]
