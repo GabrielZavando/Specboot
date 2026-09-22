@@ -10,6 +10,8 @@
 #   - has NO hashFiles in job-level `if` (only at step level)
 #   - does NOT invoke update.sh --bump
 #   - uses actions/checkout@v5, actions/setup-node@v5, node-version: '24'
+#   - (SPECBOOT-HARDEN-03) validate job declares fetch-depth: 0; fetch-depth is
+#     NOT present in the publish job; publish keeps needs: validate
 #
 # Run: bash tests/release-workflow-test.sh
 # Exits 0 when all assertions pass, 1 otherwise.
@@ -171,6 +173,33 @@ if grep -q "node-version: '24'" "$WORKFLOW"; then
   pass "uses node-version: '24'"
 else
   fail "does not use node-version: '24'"
+fi
+
+# --- 9. fetch-depth: 0 belongs exclusively to the validate job ---
+# (SPECBOOT-HARDEN-03, SC-001/SC-002/SC-004)
+# Extract the validate job block (from "  validate:" up to the next job "  publish:")
+# and the publish job block (from "  publish:" to end), then assert fetch-depth: 0
+# appears ONLY in validate and never in publish.
+VALIDATE_BLOCK="$(awk '/^  validate:/{f=1} /^  publish:/{f=0} f' "$WORKFLOW")"
+PUBLISH_BLOCK="$(awk '/^  publish:/{f=1} f' "$WORKFLOW")"
+
+if printf '%s' "$VALIDATE_BLOCK" | grep -q 'fetch-depth: 0'; then
+  pass "validate job declares fetch-depth: 0 (SC-001)"
+else
+  fail "validate job does NOT declare fetch-depth: 0 (SC-001/SC-004)"
+fi
+
+if printf '%s' "$PUBLISH_BLOCK" | grep -q 'fetch-depth'; then
+  fail "publish job contains fetch-depth (SC-002/SC-004) — must stay unchanged"
+else
+  pass "publish job has no fetch-depth (SC-002)"
+fi
+
+# --- 9b. publish job keeps needs: validate (SC-003) ---
+if printf '%s' "$PUBLISH_BLOCK" | grep -q 'needs: validate'; then
+  pass "publish job keeps needs: validate (SC-003)"
+else
+  fail "publish job missing needs: validate (SC-003)"
 fi
 
 echo ""

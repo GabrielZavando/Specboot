@@ -513,6 +513,24 @@
         "timestamp": "2026-09-21T20:25:00Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "release-validate-depth",
+      "ticket_id": "SPECBOOT-HARDEN-03",
+      "archived_at": "2026-09-22T02:37:08Z",
+      "specs_applied": [
+        "specboot-release"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-22T02:27:18Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-22T02:32:00Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }
