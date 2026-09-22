@@ -1,0 +1,9 @@
+{
+  "change": "release-validate-depth",
+  "ticket": "SPECBOOT-HARDEN-03",
+  "status": "passed",
+  "branch": "feature/specboot-harden-03-release-validate-depth",
+  "firstRun": true,
+  "foreignChanges": [],
+  "timestamp": "2026-09-21T17:40:00Z"
+}
