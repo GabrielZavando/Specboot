@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.1] - 2026-09-23
+
+### Fixed
+
+- **Plantilla consumer CI YAML válido (SPECBOOT-HOTFIX-01)** — `templates/github/workflows/consumer-ci.yml` distribuía el step `Project gate (make ci: refs + solid-lint + lint + test + audit)` con un `name` no entrecomillado que contiene `: `, sintaxis que GitHub Actions rechaza ("Invalid workflow file: yaml syntax on line 42"): todo consumidor con 0.11.0 tenía el CI roto. El `name` se reformula sin `: ` (precedente del workflow interno: `make ci (refs + ...)`); el job `ci`, su wiring de consumidor y el resto del workflow quedan intactos. Guard: `tests/consumer-ci-yaml-test.sh` (valida `yaml.safe_load` sobre la plantilla distribuible — el hueco que dejó pasar la regresión — y falla si un `name` vuelve a incluir `: ` sin comillas).
+
+### Breaking changes
+
+None. (El fix corrige la sintaxis YAML de la plantilla distribuible sin cambios funcionales del job `ci`; los consumidores reciben el `ci.yml` válido vía `specboot update` con la política tri-estado vigente de 0.11.0.)
+
 ## [0.11.0] - 2026-09-22
 
 ### Changed
