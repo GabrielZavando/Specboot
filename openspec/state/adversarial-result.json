@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "change": "protect-consumer-ci",
-  "ticket_id": "SPECBOOT-HARDEN-04",
+  "change": "fix-consumer-ci-yaml",
+  "ticket_id": "SPECBOOT-HOTFIX-01",
   "verdict": "SHIP",
-  "confidence": 0.8,
-  "timestamp": "2026-09-22T18:55:44Z",
+  "confidence": 0.85,
+  "timestamp": "2026-09-24T02:11:15Z",
   "findings": {
     "total": 3,
     "critical": 0,
     "warnings": 1,
     "info": 2,
-    "discarded": 0
+    "discarded": 1
   }
 }
