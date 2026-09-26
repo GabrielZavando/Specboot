@@ -550,6 +550,25 @@
         "timestamp": "2026-09-22T18:55:44Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "fix-consumer-ci-yaml",
+      "ticket_id": "SPECBOOT-HOTFIX-01",
+      "archived_at": "2026-09-25T16:47:34Z",
+      "specs_applied": [
+        "specboot-workflows"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-25T14:51:10Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-24T02:11:15Z",
+        "source": "openspec/state/adversarial-result.json"
+      },
+      "notes": "Two later reviewer re-runs finished empty (no persistence); the SHIP 0.85 verdict of this same change (2026-09-24T02:11:15Z) was kept — change-field match, not stale (no commits at archive time); its single WARNING (transient SC-004 asserts baked in the permanent test) was resolved by Tasks 6/7: the asserts were removed from tests/consumer-ci-yaml-test.sh and the transient scope verification moved to the change's own script (verification/sc-004-scope-test.sh, archived with the change, never run by tests/run-all.sh)."
     }
   ]
 }
