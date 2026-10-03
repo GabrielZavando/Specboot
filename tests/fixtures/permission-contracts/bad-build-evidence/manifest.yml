@@ -1,0 +1,25 @@
+version: 1
+agents:
+  build:
+    file: ".opencode/agents/build.md"
+    edit:
+      mode: implementer
+      allow:
+        - "**"
+      forbidden:
+        - "openspec/state/verify-results.json"
+        - "openspec/state/adversarial-result.json"
+    bash:
+      required: []
+      forbidden: []
+    evidence:
+      must_write: []
+    can_commit: false
+    can_push: false
+    can_manage_prs: false
+    can_run_arbitrary_code: true
+    can_spawn_subagents: false
+    task:
+      allow: []
+      forbidden:
+        - "*"

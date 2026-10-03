@@ -1,0 +1,28 @@
+{
+  "validator": "tests/run-all.sh",
+  "command": "bash tests/run-all.sh",
+  "status": "PASS",
+  "exitCode": 0,
+  "note": "pre-created before execution so the baseline test can assert file existence; updated with the real result right after run-all completes",
+  "recordedAt": "2026-10-02T20:21:04Z",
+  "summary": {
+    "passed": 31,
+    "failed": 0,
+    "includes": "tests/baseline-capabilities-test.sh"
+  },
+  "history": [
+    {
+      "run": "first",
+      "passed": 30,
+      "failed": 1,
+      "failing": "tests/baseline-capabilities-test.sh",
+      "note": "case-sensitivity bug in the new test own assertion (Reproduc vs reproducirlo) — fixed in the RED-GREEN cycle"
+    },
+    {
+      "run": "second",
+      "passed": 31,
+      "failed": 0,
+      "note": "final GREEN result"
+    }
+  ]
+}

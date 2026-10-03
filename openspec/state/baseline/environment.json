@@ -1,0 +1,86 @@
+{
+  "feature": "SPECBOOT-PREC-01",
+  "change": "permission-baseline",
+  "recordedAt": "2026-10-02T20:21:04Z",
+  "locationSeparation": {
+    "humanReport": "docs/baseline/specboot-prec-01-baseline.md",
+    "rawData": "openspec/state/baseline/*.json"
+  },
+  "baselineSha": {
+    "description": "main at feature start",
+    "sha": "b252a63",
+    "subject": "Merge pull request #41 from GabrielZavando/feature/specboot-hotfix-01-ci-yaml-fix"
+  },
+  "branch": "feature/specboot-prec-01-baseline",
+  "versions": {
+    "specboot": "0.11.1",
+    "specbootFrameworkVersionDotSpecbootJson": "0.11.1",
+    "openspecCli": "1.3.1",
+    "node": "v22.23.3",
+    "opencodeCli": "1.18.34"
+  },
+  "opencodeConfig": {
+    "source": "opencode.json",
+    "autoupdate": true,
+    "instructions": [
+      "docs/base-standards.md",
+      "AGENTS.md"
+    ],
+    "provider": {
+      "name": "OmniRoute",
+      "npm": "@ai-sdk/openai-compatible",
+      "baseURL": "http://localhost:20128/v1",
+      "apiKey": "{env:OMNIROUTE_API_KEY} (placeholder — the value is never recorded)",
+      "models": [
+        "auto/best-free",
+        "auto/pro-coding",
+        "auto/best-coding",
+        "auto/best-coding-fast",
+        "auto/best-reasoning",
+        "auto/best-vision"
+      ]
+    },
+    "modelField": "absent — model-agnostic config; model selection managed externally (per AGENTS.md section 5.1)",
+    "sessionModel": {
+      "name": "z-ai/glm-5.3-flash",
+      "id": "nvidia/z-ai/glm-5.3-flash",
+      "source": "as reported by the active session system prompt"
+    },
+    "permission": {
+      "edit": "allow",
+      "webfetch": "allow",
+      "bash": {
+        "*": "ask",
+        "git *": "allow",
+        "npm *": "allow",
+        "npx *": "allow",
+        "openspec *": "allow",
+        "bash tests/*": "allow",
+        "bash scripts/*": "allow",
+        "bash check-refs.sh": "allow",
+        "bash check-refs.sh *": "allow",
+        "bash specboot.sh *": "allow",
+        "bash validate-specboot.sh": "allow",
+        "node *": "allow",
+        "mkdir *": "allow",
+        "date *": "allow",
+        "python3 *": "allow",
+        "rm -rf *": "ask"
+      },
+      "note": "M-908 primary allowlist: specific allows last-match-win over the ask fallback; rm -rf stays under user confirmation"
+    }
+  },
+  "testCommands": [
+    "node scripts/validate-agent-permissions.mjs --root <proyecto>",
+    "node scripts/validate-command-contracts.mjs --root <proyecto>",
+    "bash specboot.sh --ci",
+    "bash tests/run-all.sh",
+    "bash tests/baseline-capabilities-test.sh",
+    "bash tests/benchmark-recorder-test.sh"
+  ],
+  "metricsPolicy": {
+    "tokens": "not measured — agents have no permission to query the provider billing/usage APIs",
+    "volume": "aproximación_de_volumen (bytes/characters of prompts and responses) — never presented as measured tokens",
+    "label": "aproximación_de_volumen"
+  }
+}

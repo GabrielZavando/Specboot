@@ -1,0 +1,9 @@
+{
+  "validator": "scripts/validate-agent-permissions.mjs",
+  "command": "node scripts/validate-agent-permissions.mjs --root .",
+  "exitCode": 0,
+  "stdout": "Contratos de permisos OK (9 agentes validados contra el manifiesto)",
+  "stderr": "",
+  "recordedAt": "2026-10-02T20:21:04Z",
+  "interpretation": "0 deltas: effective permissions of the 9 agents match docs/agent-permission-contracts.yml"
+}
