@@ -1,0 +1,21 @@
+{
+  "validator": "specboot.sh --ci",
+  "command": "bash specboot.sh --ci",
+  "exitCode": 0,
+  "summary": {
+    "checkRefs": "20 file references checked, 0 errors",
+    "specbootJson": "valid — frameworkVersion 0.11.1 matches installed 0.11.1",
+    "fileStructure": "PASS",
+    "placeholders": "none detected in docs/",
+    "opencodeJson": "valid",
+    "skills": "PASS",
+    "examples": "PASS",
+    "husky": "not installed (optional, info)",
+    "ciCd": "GitHub Actions CI configured, commitlint configured",
+    "agentPermissionContracts": "OK — 9 agentes validados contra el manifiesto",
+    "commandContracts": "OK — 11 comandos validados desde el front matter",
+    "totalErrors": 0,
+    "totalWarnings": 0
+  },
+  "recordedAt": "2026-10-02T20:21:04Z"
+}

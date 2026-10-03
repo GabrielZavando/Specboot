@@ -1,0 +1,13 @@
+{
+  "change": "permission-baseline",
+  "ticket": "SPECBOOT-PREC-01",
+  "branch": "feature/specboot-prec-01-baseline",
+  "preflight": "PASS",
+  "firstRun": true,
+  "date": "2026-10-02",
+  "checks": {
+    "branchConvention": "PASS (feature/*, matches docs/git-workflow-standards.md)",
+    "firstRunGitState": "PASS — dirt limited to openspec/changes/permission-baseline/** (plan artifacts, allowed) plus openspec/tickets/SPECBOOT-PREC-01-enriched.md (user-approved exception: stays uncommitted during the cycle, included in the final cycle commit, per tasks.md Nota de plan)"
+  },
+  "notes": "Resumed /apply runs skip the strict first-run check and only re-verify branch + absence of foreign changes. This marker NEVER replaces or touches openspec/state/verify-results.json or openspec/state/adversarial-result.json (fail-closed for build)."
+}

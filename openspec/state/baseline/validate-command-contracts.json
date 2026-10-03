@@ -1,0 +1,8 @@
+{
+  "validator": "scripts/validate-command-contracts.mjs",
+  "command": "node scripts/validate-command-contracts.mjs --root .",
+  "exitCode": 0,
+  "stdout": "Contratos de comandos OK (11 comandos validados desde el front matter)",
+  "stderr": "",
+  "recordedAt": "2026-10-02T20:21:04Z"
+}

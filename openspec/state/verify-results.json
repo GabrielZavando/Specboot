@@ -1,36 +1,76 @@
-{
-  "schema_version": 1,
-  "change": "fix-consumer-ci-yaml",
-  "ticket_id": "SPECBOOT-HOTFIX-01",
-  "status": "PASS",
-  "evidence_mode": "executable",
-  "timestamp": "2026-09-25T14:51:10Z",
-  "tasks": {
-    "total": 7,
-    "passed": 7,
-    "failed": 0,
-    "untested": 0
-  },
-  "scenarios": [
-    {
-      "id": "SC-001",
-      "test": "[SC-001] consumer CI template parses as valid YAML",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-002",
-      "test": "[SC-002] no unquoted step name contains ': '",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-003",
-      "test": "[SC-003] resulting consumer ci.yml parses as valid YAML after update (update simulation over the broken 0.11.0 variant, 5 asserts)",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-004",
-      "test": "[SC-004] PASS: scope verification complete (openspec/changes/fix-consumer-ci-yaml/verification/sc-004-scope-test.sh, 2/2 — working-tree scope + .github/workflows/ unchanged vs v0.11.0; change's own evidence, archived with the change)",
-      "status": "PASS"
-    }
-  ]
-}
+ {                                                                                                                                                              
+   "schema_version": 1,                                                                                                                                         
+   "change": "permission-baseline",                                                                                                                             
+   "ticket_id": "SPECBOOT-PREC-01",                                                                                                                             
+   "status": "PASS",                                                                                                                                         
+   "evidence_mode": "executable",                                                                                                                               
+   "timestamp": "2026-10-03T19:01:10Z",                                                                                                                         
+   "tasks": {                                                                                                                                                   
+     "total": 5,                                                                                                                                                
+     "passed": 5,                                                                                                                                               
+     "failed": 0,                                                                                                                                               
+     "untested": 0                                                                                                                                              
+   },                                                                                                                                                           
+   "scenarios": [                                                                                                                                               
+     {                                                                                                                                                          
+       "id": "SC-001",                                                                                                                                          
+       "test": "tests/baseline-capabilities-test.sh [SC-001] (9 asserts: snapshot del baseline, separación estricta docs/ + openspec/state/, sin credenciales)",
+       "status": "PASS"                                                                                                                                         
+     },                                                                                                                                                         
+     {                                                                                                                                                          
+       "id": "SC-002",                                                                                                                                          
+       "test": "tests/baseline-capabilities-test.sh [SC-002] (6 asserts: resultados reales de validadores preservados)",                                        
+       "status": "PASS"                                                                                                                                         
+     },                                                                                                                                                         
+     {                                                                                                                                                          
+       "id": "SC-003",                                                                                                                                          
+       "test": "tests/baseline-capabilities-test.sh [SC-003] (validador pasa contra agentes reales, 0 deltas)",                                                 
+       "status": "PASS"                                                                                                                                         
+     },                                                                                                                                                         
+     {                                                                                                                                                          
+       "id": "SC-004",                                                                                                                                          
+       "test": "tests/baseline-capabilities-test.sh [SC-004] (2 asserts: fixture bad-build-evidence detecta la regresión de evidencia)",                        
+       "status": "PASS"                                                                                                                                         
+     },                                                                                                                                                         
+     {                                                                                                                                                          
+       "id": "SC-005",                                                                                                                                          
+       "test": "tests/baseline-capabilities-test.sh [SC-005] (fixture bad-reviewer-edit-code detecta que reviewer edita código)",                               
+       "status": "PASS"                                                                                                                                         
+     },                                                                                                                                                         
+      {                                                                                                                                                          
+        "id": "SC-006",                                                                                                                                          
+        "test": "tests/baseline-capabilities-test.sh [SC-006] (fixture reutilizada bad-ownership detecta staging de agente sin commit)",                         
+        "status": "PASS"                                                                                                                                         
+      },                                                                                                                                                         
+      {                                                                                                                                                          
+        "id": "SC-007",                                                                                                                                          
+        "test": "tests/baseline-capabilities-test.sh [SC-007] (fixture bad-commit-subagents detecta commit lanzando subagentes)",                                
+        "status": "PASS"                                                                                                                                         
+      },                                                                                                                                                         
+      {                                                                                                                                                          
+        "id": "SC-008",                                                                                                                                          
+        "test": "tests/baseline-capabilities-test.sh [SC-008] (fixture reutilizada bad-force-push detecta force-push no denegado)",                              
+        "status": "PASS"                                                                                                                                         
+      },                                                                                                                                                         
+      {                                                                                                                                                          
+        "id": "SC-009",                                                                                                                                          
+        "test": "tests/benchmark-recorder-test.sh [SC-009] (3 asserts: etiqueta aproximación_de_volumen, prohibido calcular tokens)",                            
+        "status": "PASS"                                                                                                                                         
+      },                                                                                                                                                         
+      {                                                                                                                                                          
+        "id": "SC-010",                                                                                                                                          
+        "test": "tests/benchmark-recorder-test.sh [SC-010] (10 asserts: script auxiliar + plantilla + fixtures representativos; celdas del ciclo pendientes de /  adversarial-review y /archive)",
+        "status": "PASS"                                                                                                                                         
+      },                                                                                                                                                         
+      {                                                                                                                                                          
+        "id": "SC-011",                                                                                                                                          
+        "test": "tests/baseline-capabilities-test.sh [SC-011]/[SC-012] (guardias: fixtures sin duplicados + permission blocks intactos)",                                                                                                                                      
+        "status": "PASS"                                                                                                                                     
+      },                                                                                                                                                         
+      {                                                                                                                                                          
+        "id": "SC-012",                                                                                                                                          
+        "test": "tests/baseline-capabilities-test.sh [SC-011]/[SC-012] (guardias: fixtures sin duplicados + permission blocks intactos)",                                                                                                                                      
+        "status": "PASS"                                                                                                                                     
+      }                                                                                                                                                          
+    ]                                                                                                                                                            
+  }                                                                                                                                                              
