@@ -1,0 +1,23 @@
+version: 1
+agents:
+  commit:
+    file: ".opencode/agents/commit.md"
+    edit:
+      mode: restricted
+      allow: []
+      forbidden:
+        - "*"
+    bash:
+      required: []
+      forbidden: []
+    evidence:
+      must_write: []
+    can_commit: true
+    can_push: true
+    can_manage_prs: true
+    can_run_arbitrary_code: false
+    can_spawn_subagents: false
+    task:
+      allow: []
+      forbidden:
+        - "*"

@@ -1,0 +1,30 @@
+version: 1
+agents:
+  reviewer:
+    file: ".opencode/agents/reviewer.md"
+    edit:
+      mode: restricted
+      allow:
+        - "openspec/state/adversarial-result.json"
+      forbidden:
+        - "docs/**"
+        - "src/**"
+        - "tests/**"
+        - "tasks.md"
+        - "openspec/specs/**"
+        - "openspec/state/verify-results.json"
+    bash:
+      required: []
+      forbidden: []
+    evidence:
+      must_write:
+        - "openspec/state/adversarial-result.json"
+    can_commit: false
+    can_push: false
+    can_manage_prs: false
+    can_run_arbitrary_code: false
+    can_spawn_subagents: false
+    task:
+      allow: []
+      forbidden:
+        - "*"
